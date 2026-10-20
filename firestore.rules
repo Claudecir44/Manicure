@@ -1,0 +1,80 @@
+rules_version = '2';
+
+// Regras do Manicure (profissional, cliente e admin no mesmo projeto).
+// Princípio: cada profissional grava só o próprio perfil — uma nunca mexe no
+// da outra; as clientes só leem perfis publicados e não bloqueados. Bloqueio
+// só o admin muda. Admins vêm SÓ da Cloud Function cadastrarAdmin.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function logado() {
+      return request.auth != null;
+    }
+
+    function dono(uid) {
+      return logado() && request.auth.uid == uid;
+    }
+
+    function ehAdmin() {
+      return logado() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function permissaoAdmin(chave) {
+      let dados = get(/databases/$(database)/documents/admins/$(request.auth.uid)).data;
+      return dados.cpf == '56413025034'
+        || !('permissoes' in dados)
+        || dados.permissoes == null
+        || dados.permissoes.get(chave, false) == true;
+    }
+
+    function alterados() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // Galeria com no máximo 20 fotos e até 30 serviços.
+    function limites(d) {
+      return d.fotos is list && d.fotos.size() <= 20
+        && d.servicos is list && d.servicos.size() <= 30;
+    }
+
+    // ===== Profissionais =====
+    match /profissionais/{uid} {
+      // Cliente logada vê perfis publicados; a dona e o admin veem sempre.
+      allow read: if (logado() && resource.data.publicado == true && resource.data.bloqueado == false)
+        || dono(uid)
+        || (ehAdmin() && permissaoAdmin('profissionais'));
+      allow create: if dono(uid)
+        && request.resource.data.bloqueado == false
+        && request.resource.data.fotos.size() == 0
+        && limites(request.resource.data);
+      allow update: if (dono(uid)
+          && resource.data.bloqueado == false
+          && !alterados().hasAny(['bloqueado', 'email', 'codigo', 'criadoEm'])
+          && limites(request.resource.data))
+        || (ehAdmin() && permissaoAdmin('profissionais') && alterados().hasOnly(['bloqueado']));
+      allow delete: if false;
+    }
+
+    // ===== Clientes =====
+    match /clientes/{uid} {
+      allow read: if dono(uid) || (ehAdmin() && permissaoAdmin('clientes'));
+      allow create: if dono(uid) && request.resource.data.bloqueado == false;
+      allow update: if (dono(uid) && !alterados().hasAny(['bloqueado', 'email', 'criadoEm']))
+        || (ehAdmin() && permissaoAdmin('clientes') && alterados().hasOnly(['bloqueado']));
+      allow delete: if false;
+    }
+
+    // ===== Administradores =====
+    match /admins/{uid} {
+      allow read: if dono(uid) || ehAdmin();
+      // Só a foto, pelo próprio admin. Criar/excluir: só Cloud Function.
+      allow update: if dono(uid) && alterados().hasOnly(['fotoUrl']);
+      allow create, delete: if false;
+    }
+
+    match /logsAdministracao/{id} {
+      allow read: if ehAdmin() && permissaoAdmin('administradores');
+      allow write: if false;
+    }
+  }
+}

@@ -1,0 +1,102 @@
+package com.cjstudio.manicure.ui.auth
+
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.cjstudio.manicure.R
+import com.cjstudio.manicure.data.model.ContaBloqueadaException
+import com.cjstudio.manicure.data.model.EmailNaoVerificadoException
+import com.cjstudio.manicure.data.repository.IAuthRepository
+import com.cjstudio.manicure.data.repository.IClienteRepository
+import com.cjstudio.manicure.data.repository.IProfissionalRepository
+import com.cjstudio.manicure.ui.common.UiTexto
+import com.cjstudio.manicure.ui.common.paraUiTexto
+import com.cjstudio.manicure.ui.common.texto
+import com.cjstudio.manicure.util.Papel
+import com.cjstudio.manicure.util.Validacao
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+// Login de profissional ou cliente (o papel vem da tela anterior). Conta sem
+// perfil desse papel vai completar o cadastro com a mesma conta.
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val auth: IAuthRepository,
+    private val profissionais: IProfissionalRepository,
+    private val clientes: IClienteRepository,
+    estado: SavedStateHandle
+) : ViewModel() {
+
+    val papel: Papel = (estado.get<String>(EXTRA_PAPEL))?.let { Papel.valueOf(it) } ?: Papel.CLIENTE
+
+    sealed interface Evento {
+        data object IrParaInicio : Evento
+        data object CompletarCadastro : Evento
+        data class EmailNaoConfirmado(val email: String, val reenviado: Boolean) : Evento
+        data class Mensagem(val texto: UiTexto) : Evento
+    }
+
+    private val _carregando = MutableStateFlow(false)
+    val carregando: StateFlow<Boolean> = _carregando
+
+    private val _eventos = Channel<Evento>(Channel.BUFFERED)
+    val eventos: Flow<Evento> = _eventos.receiveAsFlow()
+
+    fun entrar(email: String, senha: String) {
+        if (_carregando.value) return
+        if (!Validacao.email(email) || senha.isEmpty()) {
+            _eventos.trySend(Evento.Mensagem(texto(R.string.login_erro_campos)))
+            return
+        }
+        _carregando.value = true
+        viewModelScope.launch {
+            val evento = try {
+                auth.entrar(email, senha).getOrThrow()
+                if (temPerfil()) Evento.IrParaInicio else Evento.CompletarCadastro
+            } catch (e: EmailNaoVerificadoException) {
+                Evento.EmailNaoConfirmado(email, e.reenviado)
+            } catch (e: Exception) {
+                if (e is ContaBloqueadaException) auth.sair()
+                Evento.Mensagem(e.paraUiTexto())
+            }
+            _carregando.value = false
+            _eventos.send(evento)
+        }
+    }
+
+    private suspend fun temPerfil(): Boolean {
+        val bloqueado = when (papel) {
+            Papel.PROFISSIONAL -> profissionais.buscarLogada().getOrThrow()?.bloqueado ?: return false
+            Papel.CLIENTE -> clientes.buscarLogada().getOrThrow()?.bloqueado ?: return false
+        }
+        if (bloqueado) throw ContaBloqueadaException()
+        return true
+    }
+
+    fun recuperarSenha(email: String) {
+        if (!Validacao.email(email)) {
+            _eventos.trySend(Evento.Mensagem(texto(R.string.login_erro_email_recuperar)))
+            return
+        }
+        viewModelScope.launch {
+            val resultado = auth.enviarRedefinicaoSenha(email)
+            _eventos.send(Evento.Mensagem(resultado.fold({ texto(R.string.login_redefinicao_enviada, email) }, { it.paraUiTexto() })))
+        }
+    }
+
+    fun sairDaConta() {
+        viewModelScope.launch { auth.sair() }
+    }
+
+    companion object {
+        const val EXTRA_PAPEL = "papel"
+        // Cadastro aberto com a conta já logada: esconde e-mail/senha.
+        const val EXTRA_COMPLETAR_CADASTRO = "completarCadastro"
+    }
+}

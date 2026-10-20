@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/topo"
+        layout="@layout/include_topo" />
+
+    <ScrollView
+        android:id="@+id/scrollRoot"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                style="@style/RotuloCampo"
+                android:text="@string/editar_tipo" />
+
+            <RadioGroup
+                android:id="@+id/rgTipo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbPessoal"
+                    style="@style/Opcao"
+                    android:text="@string/editar_tipo_pessoal" />
+
+                <RadioButton
+                    android:id="@+id/rbSalao"
+                    style="@style/Opcao"
+                    android:text="@string/editar_tipo_salao" />
+            </RadioGroup>
+
+            <EditText
+                android:id="@+id/etNomeExibicao"
+                style="@style/Campo"
+                android:hint="@string/editar_nome_pessoal"
+                android:inputType="textPersonName|textCapWords" />
+
+            <EditText
+                android:id="@+id/etNomeResponsavel"
+                style="@style/Campo"
+                android:hint="@string/editar_nome_responsavel"
+                android:inputType="textPersonName|textCapWords"
+                android:visibility="gone" />
+
+            <TextView
+                style="@style/RotuloCampo"
+                android:text="@string/editar_apresentacao" />
+
+            <EditText
+                android:id="@+id/etApresentacao"
+                style="@style/CampoLongo"
+                android:hint="@string/editar_apresentacao_dica"
+                android:maxLength="600" />
+
+            <TextView
+                style="@style/RotuloCampo"
+                android:text="@string/editar_sobre_trabalho" />
+
+            <EditText
+                android:id="@+id/etSobreTrabalho"
+                style="@style/CampoLongo"
+                android:hint="@string/editar_sobre_trabalho_dica"
+                android:maxLength="1500" />
+
+            <TextView
+                style="@style/TituloSecao"
+                android:text="@string/editar_contatos" />
+
+            <EditText
+                android:id="@+id/etWhatsapp"
+                style="@style/Campo"
+                android:hint="@string/editar_whatsapp"
+                android:inputType="phone" />
+
+            <EditText
+                android:id="@+id/etTelefone"
+                style="@style/Campo"
+                android:hint="@string/editar_telefone"
+                android:inputType="phone" />
+
+            <EditText
+                android:id="@+id/etInstagram"
+                style="@style/Campo"
+                android:hint="@string/editar_instagram"
+                android:inputType="textNoSuggestions" />
+
+            <TextView
+                style="@style/TituloSecao"
+                android:text="@string/editar_local" />
+
+            <EditText
+                android:id="@+id/etCidade"
+                style="@style/Campo"
+                android:hint="@string/editar_cidade"
+                android:inputType="textCapWords" />
+
+            <EditText
+                android:id="@+id/etBairro"
+                style="@style/Campo"
+                android:hint="@string/editar_bairro"
+                android:inputType="textCapWords" />
+
+            <EditText
+                android:id="@+id/etEndereco"
+                style="@style/Campo"
+                android:hint="@string/editar_endereco"
+                android:inputType="textPostalAddress|textCapWords" />
+
+            <EditText
+                android:id="@+id/etHorario"
+                style="@style/Campo"
+                android:hint="@string/editar_horario"
+                android:inputType="textCapSentences" />
+
+            <TextView
+                style="@style/RotuloCampo"
+                android:text="@string/editar_atendimento" />
+
+            <RadioGroup
+                android:id="@+id/rgAtendimento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp">
+
+                <RadioButton
+                    android:id="@+id/rbNoSalao"
+                    style="@style/Opcao"
+                    android:layout_width="match_parent"
+                    android:text="@string/atendimento_salao_opcao" />
+
+                <RadioButton
+                    android:id="@+id/rbDomicilio"
+                    style="@style/Opcao"
+                    android:layout_width="match_parent"
+                    android:text="@string/atendimento_domicilio_opcao" />
+
+                <RadioButton
+                    android:id="@+id/rbAmbos"
+                    style="@style/Opcao"
+                    android:layout_width="match_parent"
+                    android:text="@string/atendimento_ambos_opcao" />
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/btnSalvar"
+                style="@style/BotaoPrimario"
+                android:text="@string/salvar" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:indeterminateTint="@color/rosa"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

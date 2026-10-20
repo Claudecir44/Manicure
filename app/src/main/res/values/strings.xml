@@ -1,0 +1,224 @@
+<resources>
+    <!-- app_name vem de cada flavor (build.gradle.kts). -->
+    <string name="ok">OK</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="salvar">Salvar</string>
+    <string name="remover">Remover</string>
+    <string name="buscar">Buscar</string>
+    <string name="sair">Sair</string>
+    <string name="voltar">Voltar</string>
+    <string name="entrar">Entrar</string>
+    <string name="email">E-mail</string>
+    <string name="senha">Senha</string>
+    <string name="senha_nova">Crie uma senha (mínimo 6 caracteres)</string>
+    <string name="senha_confirmar">Confirme a senha</string>
+    <string name="confirmar_senha">Confirmar senha</string>
+    <string name="telefone">Celular com DDD</string>
+    <string name="cpf">CPF</string>
+    <string name="nome_completo">Nome completo</string>
+
+    <!-- Erros -->
+    <string name="erro_generico">Algo deu errado: %1$s</string>
+    <string name="erro_email_nao_verificado">Confirme seu e-mail antes de entrar.</string>
+    <string name="erro_perfil_nao_encontrado">Esta conta ainda não tem cadastro neste app.</string>
+    <string name="erro_conta_bloqueada">Sua conta está bloqueada. Fale com o suporte: cjstudiotechnology@gmail.com</string>
+    <string name="erro_acesso_restrito_admin">Acesso restrito a administradores.</string>
+    <string name="erro_cpf_ja_cadastrado">Já existe um cadastro com este CPF.</string>
+    <string name="erro_email_ja_cadastrado">Este e-mail já tem conta no Manicure. Para usar a mesma conta, digite a senha dela. Esqueceu? Toque em \"Esqueci minha senha\" no login.</string>
+    <string name="erro_perfil_ja_existe">Esta conta já tem este cadastro. Entre pela tela de login.</string>
+    <string name="erro_login_invalido">E-mail ou senha incorretos.</string>
+    <string name="erro_sem_internet">Sem conexão com a internet.</string>
+    <string name="erro_firebase_nao_configurado">O servidor do app ainda não foi configurado.</string>
+    <string name="erro_limite_fotos">Sua galeria já tem %1$d fotos, o máximo. Remova uma (segure em cima dela) para publicar outra.</string>
+
+    <!-- Escolha de perfil -->
+    <string name="escolha_titulo">Como você quer usar o app?</string>
+    <string name="escolha_profissional">Sou profissional</string>
+    <string name="escolha_profissional_texto">Manicure, nail designer ou salão: crie seu perfil, mostre seu trabalho com até 20 fotos e divulgue para suas clientes.</string>
+    <string name="escolha_cliente">Sou cliente</string>
+    <string name="escolha_cliente_texto">Encontre profissionais perto de você, veja fotos dos trabalhos, serviços, preços e fale direto com elas.</string>
+
+    <!-- Login -->
+    <string name="login_subtitulo_profissional">Entrar como profissional</string>
+    <string name="login_subtitulo_cliente">Entrar como cliente</string>
+    <string name="login_subtitulo_admin">Painel administrativo</string>
+    <string name="login_trocar_papel">Trocar (profissional / cliente)</string>
+    <string name="login_criar_conta">Não tem conta? <b>Cadastre-se</b></string>
+    <string name="login_esqueci_senha">Esqueci minha senha</string>
+    <string name="login_erro_campos">Informe um e-mail válido e a senha.</string>
+    <string name="login_erro_email_recuperar">Digite seu e-mail no campo acima para receber o link de nova senha.</string>
+    <string name="login_redefinicao_enviada">Enviamos um link para criar uma nova senha em %1$s.</string>
+    <string name="login_completar_titulo">Complete seu cadastro</string>
+    <string name="login_completar_profissional">Sua conta ainda não tem perfil de profissional. Quer criar agora, usando o mesmo e-mail?</string>
+    <string name="login_completar_cliente">Sua conta ainda não tem cadastro de cliente. Quer completar agora, usando o mesmo e-mail?</string>
+    <string name="login_completar_sim">Completar</string>
+    <string name="verificar_email_titulo">Confirme seu e-mail</string>
+    <string name="verificar_email_cadastro">Cadastro feito! Enviamos um link de confirmação para %1$s.\n\nAbra o e-mail (olhe também o spam), toque no link e depois entre no app.</string>
+    <string name="verificar_email_login">Seu e-mail %1$s ainda não foi confirmado. Enviamos um link NOVO agora (os anteriores deixaram de valer): abra o e-mail mais recente (olhe também o spam), toque no link e entre de novo.</string>
+    <string name="verificar_email_login_ja_enviado">Seu e-mail %1$s ainda não foi confirmado. Já enviamos o link há pouco: abra o e-mail MAIS RECENTE do Manicure (olhe também o spam e Promoções), toque no link e entre de novo. Links de e-mails mais antigos não funcionam.</string>
+
+    <!-- Cadastro -->
+    <string name="cadastro_titulo_profissional">Cadastro de profissional</string>
+    <string name="cadastro_titulo_cliente">Cadastro de cliente</string>
+    <string name="cadastro_explicacao_profissional">Crie seu acesso. Depois você monta seu perfil: apresentação, serviços com preços, contatos e até 20 fotos do seu trabalho. Cada profissional tem o seu perfil, separado das outras.</string>
+    <string name="cadastro_explicacao_cliente">Crie seu acesso para encontrar profissionais, ver os trabalhos e falar direto com elas.</string>
+    <string name="cadastro_nome_profissional">Seu nome ou o nome do seu salão</string>
+    <string name="cadastro_escolher_foto">Toque para escolher sua foto</string>
+    <string name="cadastro_aceito_termos">Li e aceito os Termos de Uso e Privacidade</string>
+    <string name="cadastro_criar">Criar conta</string>
+    <string name="cadastro_erro_nome">Informe o nome.</string>
+    <string name="cadastro_erro_telefone">Informe um celular válido com DDD.</string>
+    <string name="cadastro_erro_email">Informe um e-mail válido.</string>
+    <string name="cadastro_erro_senha">A senha precisa ter pelo menos 6 caracteres.</string>
+    <string name="cadastro_erro_senhas_diferentes">As senhas não são iguais.</string>
+    <string name="cadastro_erro_termos">Aceite os Termos de Uso para continuar.</string>
+    <string name="cadastro_erro_cpf">CPF inválido.</string>
+
+    <!-- Painel da profissional -->
+    <string name="painel_trocar_foto">Trocar foto de perfil</string>
+    <string name="painel_editar_perfil">Editar meu perfil</string>
+    <string name="painel_ver_como_cliente">Ver como cliente</string>
+    <string name="painel_compartilhar">Divulgar perfil</string>
+    <string name="painel_apresentacao">Apresentação</string>
+    <string name="painel_sobre_trabalho">Sobre o meu trabalho</string>
+    <string name="painel_servicos">Serviços e preços</string>
+    <string name="painel_adicionar_servico">+ Serviço</string>
+    <string name="painel_adicionar_foto">+ Foto</string>
+    <string name="painel_sem_servicos">Nenhum serviço ainda. Toque em \"+ Serviço\" (ex.: Mão simples, R$ 30,00). Toque num serviço para editar e segure para remover.</string>
+    <string name="painel_galeria">Galeria (%1$d de %2$d fotos)</string>
+    <string name="painel_galeria_dica">Toque em \"+ Foto\" para publicar. Segure uma foto para remover.</string>
+    <string name="painel_codigo">Seu código: %1$s</string>
+    <string name="painel_situacao_publicado">● Perfil visível para as clientes</string>
+    <string name="painel_situacao_incompleto">● Perfil incompleto: preencha nome, cidade e pelo menos 1 serviço para aparecer nas buscas</string>
+    <string name="painel_situacao_bloqueado">● Perfil bloqueado pela administração</string>
+    <string name="painel_sem_apresentacao">Toque em \"Editar meu perfil\" e escreva uma apresentação para suas clientes.</string>
+    <string name="painel_sem_sobre">Conte sobre seu trabalho: técnicas, especialidades, materiais que usa.</string>
+    <string name="painel_foto_perfil_salva">Foto de perfil atualizada.</string>
+    <string name="painel_foto_adicionada">Foto publicada na galeria.</string>
+    <string name="painel_foto_removida">Foto removida.</string>
+    <string name="painel_servico_salvo">Serviço salvo.</string>
+    <string name="painel_servico_removido">Serviço removido.</string>
+    <string name="painel_compartilhar_texto">Agende comigo! Me encontre no app Manicure: %1$s. Na tela inicial, toque em \"Tenho um código\" e digite %2$s.</string>
+    <string name="perfil_tipo_salao">Salão</string>
+    <string name="perfil_tipo_pessoal">Profissional</string>
+
+    <!-- Serviços e fotos -->
+    <string name="servico_novo">Novo serviço</string>
+    <string name="servico_editar">Editar serviço</string>
+    <string name="servico_nome">Nome (ex.: Pé e mão)</string>
+    <string name="servico_preco">Preço (R$)</string>
+    <string name="servico_duracao">Duração em minutos (opcional)</string>
+    <string name="servico_descricao">Descrição (opcional)</string>
+    <string name="servico_erro">Informe o nome e o preço do serviço.</string>
+    <string name="servico_remover">Remover serviço</string>
+    <string name="servico_remover_msg">Remover este serviço do seu perfil?</string>
+    <string name="foto_remover">Remover foto</string>
+    <string name="foto_remover_msg">Remover esta foto da sua galeria?</string>
+
+    <!-- Resumo do perfil -->
+    <string name="atendimento_salao">Atende no salão</string>
+    <string name="atendimento_domicilio">Atende em domicílio</string>
+    <string name="atendimento_ambos">Atende no salão e em domicílio</string>
+    <string name="resumo_endereco">Endereço: %1$s</string>
+    <string name="resumo_local">Local: %1$s</string>
+    <string name="resumo_atendimento">%1$s</string>
+    <string name="resumo_horario">Horário: %1$s</string>
+    <string name="resumo_whatsapp">WhatsApp: %1$s</string>
+    <string name="resumo_instagram">Instagram: @%1$s</string>
+
+    <!-- Editar perfil -->
+    <string name="editar_titulo">Meu perfil</string>
+    <string name="editar_tipo">Como você quer aparecer?</string>
+    <string name="editar_tipo_pessoal">Com meu nome</string>
+    <string name="editar_tipo_salao">Como salão</string>
+    <string name="editar_nome_pessoal">Seu nome</string>
+    <string name="editar_nome_salao">Nome do salão</string>
+    <string name="editar_nome_responsavel">Nome da responsável (opcional)</string>
+    <string name="editar_apresentacao">Apresentação pessoal</string>
+    <string name="editar_apresentacao_dica">Quem é você, há quanto tempo trabalha, o que suas clientes podem esperar…</string>
+    <string name="editar_sobre_trabalho">Descrição do seu trabalho</string>
+    <string name="editar_sobre_trabalho_dica">Técnicas (gel, fibra, esmaltação em gel, nail art…), especialidades, cuidados com higiene e esterilização…</string>
+    <string name="editar_contatos">Contatos</string>
+    <string name="editar_whatsapp">WhatsApp com DDD</string>
+    <string name="editar_telefone">Telefone (opcional)</string>
+    <string name="editar_instagram">Instagram (sem o @)</string>
+    <string name="editar_local">Local e atendimento</string>
+    <string name="editar_cidade">Cidade</string>
+    <string name="editar_bairro">Bairro</string>
+    <string name="editar_endereco">Endereço do salão (opcional)</string>
+    <string name="editar_horario">Horário (ex.: Ter a Sáb, 9h às 19h)</string>
+    <string name="editar_atendimento">Onde você atende?</string>
+    <string name="atendimento_salao_opcao">No salão / espaço</string>
+    <string name="atendimento_domicilio_opcao">Em domicílio</string>
+    <string name="atendimento_ambos_opcao">Nos dois</string>
+    <string name="editar_erro_nome">Informe o nome que as clientes vão ver.</string>
+    <string name="editar_erro_cidade">Informe a cidade.</string>
+    <string name="editar_erro_whatsapp">WhatsApp inválido. Use o número com DDD.</string>
+    <string name="editar_salvo">Perfil salvo.</string>
+
+    <!-- Perfil público -->
+    <string name="perfil_nao_encontrado">Perfil não encontrado.</string>
+    <string name="perfil_whatsapp">WhatsApp</string>
+    <string name="perfil_ligar">Ligar</string>
+    <string name="perfil_instagram">Instagram</string>
+    <string name="perfil_mapa">Mapa</string>
+    <string name="perfil_whatsapp_msg">Olá! Vi seu perfil no app Manicure e gostaria de agendar um horário.</string>
+    <string name="perfil_apresentacao">Apresentação</string>
+    <string name="perfil_servicos">Serviços e preços</string>
+    <string name="perfil_galeria">Trabalhos</string>
+    <string name="perfil_sobre_trabalho">Sobre o trabalho</string>
+    <string name="perfil_contatos">Informações</string>
+
+    <!-- Cliente -->
+    <string name="home_ola">Olá, %1$s!</string>
+    <string name="cliente_busca_dica">Buscar por nome, cidade ou bairro</string>
+    <string name="cliente_tenho_codigo">Tenho um código</string>
+    <string name="cliente_codigo_titulo">Código da profissional</string>
+    <string name="cliente_codigo_hint">Ex.: ABC123</string>
+    <string name="cliente_codigo_nao_achado">Nenhuma profissional com este código.</string>
+    <string name="cliente_vazio">Nenhuma profissional encontrada. Tente outra cidade ou bairro.</string>
+    <string name="cliente_n_servicos">%1$d serviços</string>
+    <string name="cliente_a_partir">a partir de %1$s</string>
+    <string name="cliente_n_fotos">%1$d fotos</string>
+
+    <!-- Admin -->
+    <string name="admin_cadastrar">Cadastrar administrador</string>
+    <string name="admin_novo_titulo">Novo administrador</string>
+    <string name="admin_nome">Nome</string>
+    <string name="admin_sobrenome">Sobrenome</string>
+    <string name="admin_papel">Tipo de acesso</string>
+    <string name="admin_papel_admin">Administrador (acesso total)</string>
+    <string name="admin_papel_colaborador">Colaborador (escolher permissões)</string>
+    <string name="admin_senha_master">Senha do administrador master</string>
+    <string name="admin_senha_master_dica">Só o administrador master tem esta senha. Ela autoriza a criação de novos administradores.</string>
+    <string name="admin_erro_permissoes">Marque pelo menos uma permissão para o colaborador.</string>
+    <string name="admin_erro_senha_master">Informe a senha do administrador master.</string>
+    <string name="admin_cadastrado">Administrador cadastrado. Ele já pode entrar com o e-mail e a senha criados.</string>
+    <string name="admin_selo_master">Master</string>
+    <string name="admin_selo_admin">Administrador</string>
+    <string name="admin_selo_colaborador">Colaborador</string>
+    <string name="admin_profissionais">Profissionais</string>
+    <string name="admin_clientes">Clientes</string>
+    <string name="admin_administradores">Administradores</string>
+    <string name="admin_dica">Escolha uma seção acima.\n\nToque numa profissional para ver o perfil dela ou bloquear. Perfis bloqueados somem das buscas das clientes.</string>
+    <string name="admin_nenhum">Nada por aqui.</string>
+    <string name="admin_novo_admin">+ Novo administrador</string>
+    <string name="admin_ver_perfil">Ver perfil</string>
+    <string name="admin_bloquear">Bloquear</string>
+    <string name="admin_desbloquear">Desbloquear</string>
+    <string name="admin_bloquear_msg">Bloquear %1$s? A conta não consegue mais usar o app (e o perfil some das buscas) até ser desbloqueada.</string>
+    <string name="admin_desbloquear_msg">Desbloquear %1$s? A conta volta a poder usar o app.</string>
+    <string name="admin_bloqueado">Conta bloqueada.</string>
+    <string name="admin_desbloqueado">Conta desbloqueada.</string>
+    <string name="status_bloqueado">Bloqueada</string>
+    <string name="status_publicado">Publicado</string>
+    <string name="status_incompleto">Incompleto</string>
+    <plurals name="admin_contador">
+        <item quantity="one">%d registro</item>
+        <item quantity="other">%d registros</item>
+    </plurals>
+
+    <!-- Termos -->
+    <string name="termos_titulo">Termos de Uso e Privacidade</string>
+    <string name="termos_texto">O Manicure é um aplicativo da CJ Studio Technology que aproxima profissionais de unhas (manicures, nail designers e salões) das suas clientes.\n\n1. Cadastro\nVocê precisa informar dados verdadeiros: nome, celular e e-mail. Cada profissional cria o próprio acesso e cuida do próprio perfil; uma profissional não vê nem altera o perfil de outra.\n\n2. Perfil da profissional\nO que a profissional publica (nome ou nome do salão, apresentação, descrição do trabalho, serviços, preços, contatos, endereço e até 20 fotos) fica visível para as clientes do app. Publique apenas fotos de trabalhos seus e com autorização de quem aparece nelas.\n\n3. Uso dos dados\nSeus dados são usados para criar e proteger sua conta, mostrar os perfis às clientes, prevenir fraudes e cumprir obrigações legais. Não vendemos seus dados.\n\n4. Contato e pagamento\nO agendamento e o pagamento dos serviços são combinados diretamente entre cliente e profissional. O app não cobra nem intermedeia esses pagamentos.\n\n5. Conduta\nÉ proibido publicar conteúdo falso, ofensivo, de terceiros sem autorização ou que não seja relacionado ao trabalho. Também é proibido discriminar, assediar ou ameaçar qualquer pessoa. Contas que descumprirem estas regras podem ser bloqueadas.\n\n6. Seus direitos (LGPD)\nVocê pode pedir acesso, correção ou exclusão dos seus dados pelo e-mail cjstudiotechnology@gmail.com.\n\n7. Contato\nCJ Studio Technology, cjstudiotechnology@gmail.com</string>
+</resources>

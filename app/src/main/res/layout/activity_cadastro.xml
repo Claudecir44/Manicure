@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/topo"
+        layout="@layout/include_topo" />
+
+    <ScrollView
+        android:id="@+id/scrollRoot"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/tvExplicacao"
+                style="@style/TextoCorpo"
+                android:layout_marginBottom="20dp" />
+
+            <EditText
+                android:id="@+id/etNome"
+                style="@style/Campo"
+                android:inputType="textPersonName|textCapWords" />
+
+            <EditText
+                android:id="@+id/etTelefone"
+                style="@style/Campo"
+                android:hint="@string/telefone"
+                android:inputType="phone" />
+
+            <EditText
+                android:id="@+id/etEmail"
+                style="@style/Campo"
+                android:autofillHints="emailAddress"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress" />
+
+            <LinearLayout
+                android:id="@+id/blocoConta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/etSenha"
+                    style="@style/Campo"
+                    android:hint="@string/senha_nova"
+                    android:inputType="textPassword" />
+
+                <EditText
+                    android:id="@+id/etConfirmarSenha"
+                    style="@style/Campo"
+                    android:hint="@string/senha_confirmar"
+                    android:inputType="textPassword" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="20dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/cbTermos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/rosa" />
+
+                <TextView
+                    android:id="@+id/tvTermos"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="4dp"
+                    android:text="@string/cadastro_aceito_termos"
+                    android:textColor="@color/rosa"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnCadastrar"
+                style="@style/BotaoPrimario"
+                android:text="@string/cadastro_criar" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:indeterminateTint="@color/rosa"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -1,0 +1,48 @@
+package com.cjstudio.manicure.di
+
+import com.cjstudio.manicure.data.repository.AdminRepository
+import com.cjstudio.manicure.data.repository.ArquivoRepository
+import com.cjstudio.manicure.data.repository.AuthRepository
+import com.cjstudio.manicure.data.repository.ClienteRepository
+import com.cjstudio.manicure.data.repository.FalhasRepository
+import com.cjstudio.manicure.data.repository.IAdminRepository
+import com.cjstudio.manicure.data.repository.IArquivoRepository
+import com.cjstudio.manicure.data.repository.IAuthRepository
+import com.cjstudio.manicure.data.repository.IClienteRepository
+import com.cjstudio.manicure.data.repository.IFalhasRepository
+import com.cjstudio.manicure.data.repository.IProfissionalRepository
+import com.cjstudio.manicure.data.repository.ProfissionalRepository
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRepository(impl: AuthRepository): IAuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindArquivoRepository(impl: ArquivoRepository): IArquivoRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindFalhasRepository(impl: FalhasRepository): IFalhasRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAdminRepository(impl: AdminRepository): IAdminRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindProfissionalRepository(impl: ProfissionalRepository): IProfissionalRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindClienteRepository(impl: ClienteRepository): IClienteRepository
+}

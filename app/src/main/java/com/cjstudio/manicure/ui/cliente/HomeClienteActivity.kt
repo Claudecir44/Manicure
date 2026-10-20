@@ -1,0 +1,118 @@
+package com.cjstudio.manicure.ui.cliente
+
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.EditText
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.cjstudio.manicure.R
+import com.cjstudio.manicure.data.model.Profissional
+import com.cjstudio.manicure.databinding.ActivityHomeClienteBinding
+import com.cjstudio.manicure.databinding.ItemProfissionalBinding
+import com.cjstudio.manicure.ui.common.Navegacao
+import com.cjstudio.manicure.ui.common.coletar
+import com.cjstudio.manicure.ui.common.mostrarMensagem
+import com.cjstudio.manicure.ui.perfil.PerfilProfissionalActivity
+import com.cjstudio.manicure.ui.profissional.ResumoPerfil
+import com.cjstudio.manicure.util.Formato
+import com.cjstudio.manicure.util.carregarFotoRedonda
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class HomeClienteActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityHomeClienteBinding
+    private val viewModel: HomeClienteViewModel by viewModels()
+    private val adapter = ProfissionaisAdapter { abrirPerfil(it) }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityHomeClienteBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.rvProfissionais.layoutManager = LinearLayoutManager(this)
+        binding.rvProfissionais.adapter = adapter
+        binding.btnSair.setOnClickListener { viewModel.sair() }
+        binding.etBusca.doAfterTextChanged { viewModel.digitar(it.toString()) }
+        binding.tvCodigo.setOnClickListener { pedirCodigo() }
+
+        coletar(viewModel.cliente) { c ->
+            binding.tvOla.text = getString(R.string.home_ola, c?.nome.orEmpty().substringBefore(" "))
+        }
+        coletar(viewModel.lista) { lista ->
+            adapter.lista = lista
+            binding.tvVazio.visibility = if (lista.isEmpty() && !viewModel.carregando.value) View.VISIBLE else View.GONE
+        }
+        coletar(viewModel.carregando) { binding.progressBar.visibility = if (it) View.VISIBLE else View.GONE }
+        coletar(viewModel.eventos) { evento ->
+            when (evento) {
+                HomeClienteViewModel.Evento.Saiu -> Navegacao.irLimpando(this, Navegacao.telaLogin())
+                is HomeClienteViewModel.Evento.AbrirPerfil -> abrirPerfil(evento.id)
+                is HomeClienteViewModel.Evento.Mensagem -> mostrarMensagem(evento.texto)
+            }
+        }
+    }
+
+    private fun abrirPerfil(id: String) {
+        startActivity(Intent(this, PerfilProfissionalActivity::class.java).putExtra(PerfilProfissionalActivity.EXTRA_ID, id))
+    }
+
+    private fun pedirCodigo() {
+        val campo = EditText(this).apply {
+            setHint(R.string.cliente_codigo_hint)
+            filters = arrayOf(android.text.InputFilter.AllCaps(), android.text.InputFilter.LengthFilter(10))
+        }
+        val margem = (20 * resources.displayMetrics.density).toInt()
+        val container = android.widget.FrameLayout(this).apply {
+            setPadding(margem, margem / 2, margem, 0)
+            addView(campo)
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.cliente_codigo_titulo)
+            .setView(container)
+            .setPositiveButton(R.string.buscar) { _, _ -> viewModel.buscarCodigo(campo.text.toString()) }
+            .setNegativeButton(R.string.cancelar, null)
+            .show()
+    }
+
+    private class ProfissionaisAdapter(private val aoTocar: (String) -> Unit) :
+        RecyclerView.Adapter<ProfissionaisAdapter.Holder>() {
+
+        var lista: List<Profissional> = emptyList()
+            set(valor) {
+                field = valor
+                @Suppress("NotifyDataSetChanged")
+                notifyDataSetChanged()
+            }
+
+        class Holder(val binding: ItemProfissionalBinding) : RecyclerView.ViewHolder(binding.root)
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+            Holder(ItemProfissionalBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+
+        override fun getItemCount() = lista.size
+
+        override fun onBindViewHolder(holder: Holder, position: Int) {
+            val p = lista[position]
+            val b = holder.binding
+            val contexto = b.root.context
+            b.ivFoto.carregarFotoRedonda(p.fotoPerfilUrl)
+            b.tvNome.text = p.nomeExibicao
+            b.tvLocal.text = ResumoPerfil.local(p)
+            val menor = p.servicos.minOfOrNull { it.preco }
+            b.tvResumo.text = listOfNotNull(
+                contexto.getString(R.string.cliente_n_servicos, p.servicos.size),
+                menor?.let { contexto.getString(R.string.cliente_a_partir, Formato.valor(it)) },
+                contexto.getString(R.string.cliente_n_fotos, p.fotos.size)
+            ).joinToString("  ·  ")
+            b.root.setOnClickListener { p.id?.let(aoTocar) }
+        }
+    }
+}

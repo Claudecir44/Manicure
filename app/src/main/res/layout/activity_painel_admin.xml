@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo"
+    android:orientation="vertical">
+
+    <!-- Admin logado (tocar na foto troca a foto). -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="20dp">
+
+        <ImageView
+            android:id="@+id/ivFoto"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_foto_redonda"
+            android:contentDescription="@null"
+            android:padding="2dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_pessoa" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvNome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/texto"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPapel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/rosa"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btnSair"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:padding="10dp"
+            android:text="@string/sair"
+            android:textColor="@color/rosa"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Seções (abrem logo abaixo, na mesma tela). -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <TextView
+            android:id="@+id/btnProfissionais"
+            style="@style/BotaoPainel"
+            android:layout_marginEnd="8dp"
+            android:text="@string/admin_profissionais" />
+
+        <TextView
+            android:id="@+id/btnClientes"
+            style="@style/BotaoPainel"
+            android:layout_marginEnd="8dp"
+            android:text="@string/admin_clientes" />
+
+        <TextView
+            android:id="@+id/btnAdministradores"
+            style="@style/BotaoPainel"
+            android:text="@string/admin_administradores" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvDica"
+        style="@style/TextoCorpo"
+        android:padding="24dp"
+        android:text="@string/admin_dica" />
+
+    <LinearLayout
+        android:id="@+id/areaSecao"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvTituloSecao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/rosa"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvContador"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/texto_secundario"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:indeterminateTint="@color/rosa" />
+
+        <TextView
+            android:id="@+id/tvVazio"
+            style="@style/TextoCorpo"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:text="@string/admin_nenhum" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvItens"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnNovoAdmin"
+            style="@style/BotaoContorno"
+            android:layout_height="46dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/admin_novo_admin" />
+    </LinearLayout>
+</LinearLayout>
