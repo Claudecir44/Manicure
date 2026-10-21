@@ -1,7 +1,6 @@
 package com.cjstudio.manicure.ui.agenda
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -109,15 +108,24 @@ class AgendaProfissionalActivity : AppCompatActivity() {
             .show()
     }
 
-    // Horário marcado: chamar a cliente no WhatsApp ou cancelar.
+    private fun abrirChat(m: Agendamento) {
+        val clienteId = m.clienteId ?: return
+        startActivity(
+            Intent(this, com.cjstudio.manicure.ui.chat.ChatActivity::class.java)
+                .putExtra(com.cjstudio.manicure.ui.chat.ChatActivity.EXTRA_PROFISSIONAL_ID, m.profissionalId)
+                .putExtra(com.cjstudio.manicure.ui.chat.ChatActivity.EXTRA_PROFISSIONAL_NOME, m.profissionalNome.orEmpty())
+                .putExtra(com.cjstudio.manicure.ui.chat.ChatActivity.EXTRA_CLIENTE_ID, clienteId)
+                .putExtra(com.cjstudio.manicure.ui.chat.ChatActivity.EXTRA_CLIENTE_NOME, m.clienteNome.orEmpty())
+                .putExtra(com.cjstudio.manicure.ui.chat.ChatActivity.EXTRA_COMO_PROFISSIONAL, true)
+        )
+    }
+
+    // Horário marcado: conversar com a cliente no chat ou cancelar.
     private fun opcoesAgendamento(m: Agendamento) {
-        val telefone = m.clienteTelefone?.filter { it.isDigit() }.orEmpty()
         MaterialAlertDialogBuilder(this)
             .setTitle(AgendaUtil.descrever(m.horario))
             .setMessage("${m.clienteNome.orEmpty()}\n${m.clienteTelefone.orEmpty()}\n${Categorias.nome(m.categoria)} · ${m.atendente.orEmpty()}")
-            .setPositiveButton(R.string.perfil_whatsapp) { _, _ ->
-                if (telefone.length >= 10) runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/55$telefone"))) }
-            }
+            .setPositiveButton(R.string.perfil_chat) { _, _ -> abrirChat(m) }
             .setNegativeButton(R.string.agenda_cancelar_horario) { _, _ ->
                 MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.agenda_cancelar_horario)

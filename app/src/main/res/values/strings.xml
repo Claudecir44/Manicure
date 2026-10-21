@@ -299,6 +299,35 @@
     <string name="meus_horarios_link">Meus horários</string>
     <string name="meus_horarios_vazio">Você ainda não marcou nenhum horário.</string>
 
+    <!-- Cancelar e lembrete (cliente) -->
+    <string name="perfil_lembrete_titulo">🔔 Seu horário aqui</string>
+    <string name="perfil_lembrete_item">%1$s · %2$s com %3$s</string>
+    <string name="agendar_cancelar_titulo">Desmarcar horário</string>
+    <string name="agendar_cancelar_msg">Desmarcar %1$s? O horário fica livre para outra pessoa marcar.</string>
+    <string name="agendar_cancelar_sim">Desmarcar</string>
+    <string name="agendar_qual_cancelar">Qual horário desmarcar?</string>
+    <string name="agendar_cancelado">Horário desmarcado. Ele já está livre de novo.</string>
+
+    <!-- Chat -->
+    <string name="perfil_chat">Chat</string>
+    <string name="chat_titulo">Chat</string>
+    <string name="chat_conversas">Conversas</string>
+    <string name="chat_vazio">Nenhuma mensagem ainda. Escreva a primeira!</string>
+    <string name="chat_sem_conversas">Nenhuma conversa ainda.</string>
+    <string name="chat_dica">Mensagem</string>
+    <string name="chat_enviar">Enviar</string>
+    <string name="chat_enviada">%1$s · Enviada</string>
+    <string name="chat_lida">%1$s · Lida</string>
+    <string name="chat_voce">Você: </string>
+    <plurals name="chat_nao_lidas">
+        <item quantity="one">%d nova</item>
+        <item quantity="other">%d novas</item>
+    </plurals>
+    <string name="notificacao_canal_mensagens">Mensagens do chat</string>
+    <string name="notificacao_canal_agenda">Horários marcados</string>
+    <string name="notificacao_titulo_mensagem">Nova mensagem</string>
+    <string name="notificacao_titulo_horario">Novo horário marcado</string>
+
     <!-- Termos -->
     <string name="termos_titulo">Termos de Uso e Privacidade</string>
     <string name="termos_texto">O Manicure é um aplicativo da CJ Studio Technology que aproxima profissionais de unhas (manicures, nail designers e salões) das suas clientes.\n\n1. Cadastro\nVocê precisa informar dados verdadeiros: nome, celular e e-mail. Cada profissional cria o próprio acesso e cuida do próprio perfil; uma profissional não vê nem altera o perfil de outra.\n\n2. Perfil da profissional\nO que a profissional publica (nome ou nome do salão, apresentação, descrição do trabalho, serviços, preços, contatos, endereço e até 20 fotos) fica visível para as clientes do app. Publique apenas fotos de trabalhos seus e com autorização de quem aparece nelas.\n\n3. Uso dos dados\nSeus dados são usados para criar e proteger sua conta, mostrar os perfis às clientes, prevenir fraudes e cumprir obrigações legais. Não vendemos seus dados.\n\n4. Contato e pagamento\nO agendamento e o pagamento dos serviços são combinados diretamente entre cliente e profissional. O app não cobra nem intermedeia esses pagamentos.\n\n5. Conduta\nÉ proibido publicar conteúdo falso, ofensivo, de terceiros sem autorização ou que não seja relacionado ao trabalho. Também é proibido discriminar, assediar ou ameaçar qualquer pessoa. Contas que descumprirem estas regras podem ser bloqueadas.\n\n6. Seus direitos (LGPD)\nVocê pode pedir acesso, correção ou exclusão dos seus dados pelo e-mail cjstudiotechnology@gmail.com.\n\n7. Contato\nCJ Studio Technology, cjstudiotechnology@gmail.com</string>

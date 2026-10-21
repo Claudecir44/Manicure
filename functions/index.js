@@ -187,3 +187,59 @@ exports.cadastrarAdmin = onCall(async (request) => {
     return { uid };
 });
 
+
+// ============================================================
+// Notificações (push). Sempre só "data": quem monta a notificação é o
+// ManicureMessagingService no app, pelo campo "tipo". Token em
+// dispositivos/{uid}.fcmToken (a mesma pessoa pode ser profissional e
+// cliente, então o token fica num lugar só).
+// ============================================================
+const { onDocumentCreated } = require('firebase-functions/v2/firestore');
+
+async function enviarPush(uid, dados) {
+    if (!uid) return;
+    const db = admin.firestore();
+    const doc = await db.collection('dispositivos').doc(uid).get();
+    const token = doc.exists ? doc.data().fcmToken : null;
+    if (!token) return;
+    try {
+        await admin.messaging().send({ token, data: dados, android: { priority: 'high' } });
+    } catch (error) {
+        console.warn('Erro ao enviar push:', error.message);
+        if (error.code === 'messaging/registration-token-not-registered') {
+            await db.collection('dispositivos').doc(uid).update({ fcmToken: admin.firestore.FieldValue.delete() });
+        }
+    }
+}
+
+// Mensagem nova no chat -> avisa quem recebeu (com um trecho da mensagem,
+// como nos apps de conversa) e abre direto a conversa ao tocar.
+exports.notificarMensagem = onDocumentCreated('conversas/{conversaId}/mensagens/{mensagemId}', async (event) => {
+    const dados = event.data?.data();
+    if (!dados || !dados.destinatarioId) return;
+    const conversa = (await admin.firestore().collection('conversas').doc(event.params.conversaId).get()).data() || {};
+    const texto = String(dados.conteudo || '');
+    const trecho = texto.length > 120 ? texto.slice(0, 117) + '...' : texto;
+    await enviarPush(dados.destinatarioId, {
+        tipo: 'mensagem',
+        id: event.params.mensagemId,
+        conversaId: event.params.conversaId,
+        paraProfissional: String(conversa.profissionalId === dados.destinatarioId),
+        titulo: dados.remetenteNome || 'Nova mensagem',
+        corpo: trecho,
+    });
+});
+
+// Cliente marcou horário -> avisa a profissional.
+exports.notificarHorarioMarcado = onDocumentCreated('profissionais/{profissionalId}/agendamentos/{id}', async (event) => {
+    const d = event.data?.data();
+    if (!d) return;
+    const h = String(d.horario || '');
+    // "20261105-0900" -> "05/11 às 09:00"
+    const quando = h.length === 13 ? `${h.slice(6, 8)}/${h.slice(4, 6)} às ${h.slice(9, 11)}:${h.slice(11, 13)}` : h;
+    await enviarPush(event.params.profissionalId, {
+        tipo: 'horarioMarcado',
+        id: event.params.id,
+        corpo: `${d.clienteNome || 'Uma cliente'} marcou ${quando} (${d.atendente || ''}).`,
+    });
+});

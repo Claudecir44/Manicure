@@ -50,6 +50,8 @@ data class Agenda(
     var ocupados: List<String> = emptyList(),
     // Última chave reservada por uma cliente (as regras conferem a reserva).
     var ultimoReservado: String? = null,
+    // Último horário que uma cliente desmarcou (as regras conferem).
+    var ultimoLiberado: String? = null,
 
     @ServerTimestamp
     var criadoEm: Date? = null

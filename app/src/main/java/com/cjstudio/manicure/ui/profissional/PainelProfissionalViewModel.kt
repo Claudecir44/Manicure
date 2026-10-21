@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 // Painel da manicure: o perfil dela em tempo real e as ações de galeria,
@@ -31,8 +32,14 @@ import javax.inject.Inject
 class PainelProfissionalViewModel @Inject constructor(
     private val auth: IAuthRepository,
     private val profissionais: IProfissionalRepository,
-    private val falhas: IFalhasRepository
+    private val falhas: IFalhasRepository,
+    chat: com.cjstudio.manicure.data.repository.IChatRepository,
+    private val notificacoes: com.cjstudio.manicure.data.repository.INotificacaoRepository
 ) : ViewModel() {
+
+    // Mensagens não lidas (ícone de chat do painel e número no ícone do app).
+    val naoLidas: kotlinx.coroutines.flow.StateFlow<com.cjstudio.manicure.data.repository.NaoLidas> = chat.escutarNaoLidas()
+        .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), com.cjstudio.manicure.data.repository.NaoLidas())
 
     sealed interface Evento {
         data object Saiu : Evento
@@ -53,6 +60,7 @@ class PainelProfissionalViewModel @Inject constructor(
     init {
         falhas.definirUsuario(auth.uidLogado())
         viewModelScope.launch { profissionais.atualizarPerfilAntigo() }
+        viewModelScope.launch { notificacoes.registrarToken() }
     }
 
     fun trocarFotoPerfil(uri: Uri) = executar(R.string.painel_foto_perfil_salva) { profissionais.trocarFotoPerfil(uri) }

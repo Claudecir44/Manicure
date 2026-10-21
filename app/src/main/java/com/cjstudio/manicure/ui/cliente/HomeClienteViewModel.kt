@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 // Tela da cliente: busca de manicures por nome/cidade/bairro ou pelo código
@@ -37,7 +38,9 @@ class HomeClienteViewModel @Inject constructor(
     private val profissionais: IProfissionalRepository,
     private val localizacao: ILocalizacaoRepository,
     private val preferencias: IPreferenciasRepository,
-    private val falhas: IFalhasRepository
+    private val falhas: IFalhasRepository,
+    chat: com.cjstudio.manicure.data.repository.IChatRepository,
+    private val notificacoes: com.cjstudio.manicure.data.repository.INotificacaoRepository
 ) : ViewModel() {
 
     // Profissional na lista, com a distância até a cliente (null = sem
@@ -64,12 +67,17 @@ class HomeClienteViewModel @Inject constructor(
     private val _eventos = Channel<Evento>(Channel.BUFFERED)
     val eventos: Flow<Evento> = _eventos.receiveAsFlow()
 
+    // Mensagens não lidas (ícone de chat e número no ícone do app).
+    val naoLidas: StateFlow<com.cjstudio.manicure.data.repository.NaoLidas> = chat.escutarNaoLidas()
+        .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), com.cjstudio.manicure.data.repository.NaoLidas())
+
     private val textoBusca = MutableStateFlow("")
     private var posicao: Coordenadas? = null
     private var preferido: String? = null
 
     init {
         falhas.definirUsuario(auth.uidLogado())
+        viewModelScope.launch { notificacoes.registrarToken() }
         viewModelScope.launch { clientes.buscarLogada().onSuccess { _cliente.value = it } }
         viewModelScope.launch {
             // Uma vez por abertura do app: vai direto pro perfil preferido.

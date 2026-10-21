@@ -14,17 +14,30 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <TextView
-                android:id="@+id/btnSair"
+            <!-- Chat (com mensagens não lidas) e Sair. -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:background="?attr/selectableItemBackground"
-                android:padding="8dp"
-                android:text="@string/sair"
-                android:textColor="?attr/corDestaque"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <include
+                    android:id="@+id/chat"
+                    layout="@layout/include_botao_chat" />
+
+                <TextView
+                    android:id="@+id/btnSair"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="8dp"
+                    android:text="@string/sair"
+                    android:textColor="?attr/corDestaque"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <!-- Cabeçalho: foto (tocar troca), nome, tipo, código e situação. -->
             <LinearLayout

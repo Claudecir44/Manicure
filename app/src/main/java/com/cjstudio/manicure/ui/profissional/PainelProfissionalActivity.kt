@@ -21,6 +21,7 @@ import com.cjstudio.manicure.data.model.TipoPerfil
 import com.cjstudio.manicure.databinding.ActivityPainelProfissionalBinding
 import com.cjstudio.manicure.ui.common.FotosAdapter
 import com.cjstudio.manicure.ui.common.Navegacao
+import com.cjstudio.manicure.ui.common.PermissaoNotificacao
 import com.cjstudio.manicure.ui.common.ServicosAdapter
 import com.cjstudio.manicure.ui.common.VisualizadorFoto
 import com.cjstudio.manicure.ui.common.coletar
@@ -85,6 +86,16 @@ class PainelProfissionalActivity : AppCompatActivity() {
         }
         binding.btnCompartilhar.setOnClickListener { compartilhar() }
         binding.btnCategorias.setOnClickListener { escolherCategorias() }
+        binding.chat.btnChat.setOnClickListener {
+            startActivity(Intent(this, com.cjstudio.manicure.ui.chat.ConversasActivity::class.java)
+                .putExtra(com.cjstudio.manicure.ui.chat.ConversasActivity.EXTRA_COMO_PROFISSIONAL, true))
+        }
+        coletar(viewModel.naoLidas) { n ->
+            binding.chat.tvBadgeChat.visibility = if (n.comoProfissional > 0) View.VISIBLE else View.GONE
+            binding.chat.tvBadgeChat.text = if (n.comoProfissional > 99) "99+" else n.comoProfissional.toString()
+            com.cjstudio.manicure.util.BadgeIcone.atualizar(this, n.total)
+        }
+        PermissaoNotificacao.pedir(this)
         binding.btnAgenda.setOnClickListener { startActivity(Intent(this, com.cjstudio.manicure.ui.agenda.AgendaProfissionalActivity::class.java)) }
 
         coletar(viewModel.perfil) { p -> if (p != null) mostrar(p) }

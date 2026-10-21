@@ -55,6 +55,15 @@ class MeusHorariosViewModel @Inject constructor(
                 }
         }
     }
+
+    fun cancelar(agendamento: Agendamento) {
+        viewModelScope.launch {
+            agendas.cancelarMeuHorario(agendamento)
+                .onSuccess { _mensagens.send(com.cjstudio.manicure.ui.common.texto(R.string.agendar_cancelado)) }
+                .onFailure { _mensagens.send(it.paraUiTexto()) }
+            atualizar()
+        }
+    }
 }
 
 @AndroidEntryPoint
@@ -62,7 +71,16 @@ class MeusHorariosActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMeusHorariosBinding
     private val viewModel: MeusHorariosViewModel by viewModels()
-    private val adapter = LinhaAdapter { }
+    private val adapter = LinhaAdapter { linha ->
+        viewModel.lista.value?.firstOrNull { it.id == linha.id }?.let { m ->
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle(AgendaUtil.descrever(m.horario))
+                .setMessage(getString(R.string.agendar_cancelar_msg, AgendaUtil.descrever(m.horario)))
+                .setPositiveButton(R.string.agendar_cancelar_sim) { _, _ -> viewModel.cancelar(m) }
+                .setNegativeButton(R.string.voltar, null)
+                .show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -6,4 +6,6 @@
     <attr name="corDestaqueEscuro" format="color" />
     <!-- Texto em cima do botão de destaque (branco no rosa, preto no verde). -->
     <attr name="corTextoBotao" format="color" />
+    <!-- Fundo do balão das minhas mensagens no chat. -->
+    <attr name="corBalao" format="color" />
 </resources>

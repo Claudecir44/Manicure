@@ -9,7 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cjstudio.manicure.R
+import com.cjstudio.manicure.data.model.Agendamento
 import com.cjstudio.manicure.data.model.Categorias
+import com.cjstudio.manicure.ui.chat.ChatActivity
+import com.cjstudio.manicure.util.AgendaUtil
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.cjstudio.manicure.data.model.Profissional
 import com.cjstudio.manicure.ui.agenda.AgendarActivity
 import com.cjstudio.manicure.ui.common.adicionarChip
@@ -52,6 +56,7 @@ class PerfilProfissionalActivity : AppCompatActivity() {
         coletar(viewModel.preferido) { binding.tvPreferido.visibility = if (it) View.VISIBLE else View.GONE }
         binding.tvPreferido.setOnClickListener { viewModel.deixarDePreferir() }
         coletar(viewModel.categoriasComAgenda) { mostrarCategorias(it) }
+        coletar(viewModel.meusHorarios) { mostrarLembrete(it) }
     }
 
     private fun mostrar(p: Profissional) {
@@ -76,9 +81,9 @@ class PerfilProfissionalActivity : AppCompatActivity() {
 
         binding.tvContatos.text = ResumoPerfil.contatos(this, p)
 
-        val whatsapp = p.whatsapp?.filter { it.isDigit() }.orEmpty()
-        binding.btnWhatsapp.visibility = if (whatsapp.length >= 10) View.VISIBLE else View.GONE
-        binding.btnWhatsapp.setOnClickListener { abrir("https://wa.me/55$whatsapp?text=" + Uri.encode(getString(R.string.perfil_whatsapp_msg))) }
+        // Chat dentro do app (a própria profissional olhando o perfil não conversa consigo).
+        binding.btnChat.visibility = if (p.id == viewModel.meuId) View.GONE else View.VISIBLE
+        binding.btnChat.setOnClickListener { abrirChat(p) }
         val telefone = p.telefone?.filter { it.isDigit() }.orEmpty()
         binding.btnLigar.visibility = if (telefone.length >= 10) View.VISIBLE else View.GONE
         binding.btnLigar.setOnClickListener { startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$telefone"))) }
@@ -91,7 +96,7 @@ class PerfilProfissionalActivity : AppCompatActivity() {
 
     // Um botão por categoria com horário livre -> tela de agendar.
     private fun mostrarCategorias(categorias: List<String>) {
-        binding.blocoAgendar.visibility = if (categorias.isEmpty()) View.GONE else View.VISIBLE
+        atualizarBlocoAgendar()
         binding.cgCategorias.removeAllViews()
         categorias.forEach { c ->
             val chip = binding.cgCategorias.adicionarChip(Categorias.nome(c), c)
@@ -105,6 +110,53 @@ class PerfilProfissionalActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    // Lembrete do(s) horário(s) que a cliente marcou aqui, com "Cancelar".
+    private fun mostrarLembrete(lista: List<Agendamento>) {
+        binding.blocoLembrete.visibility = if (lista.isEmpty()) View.GONE else View.VISIBLE
+        binding.tvLembrete.text = lista.joinToString("\n") {
+            getString(R.string.perfil_lembrete_item, AgendaUtil.descrever(it.horario), Categorias.nome(it.categoria), it.atendente.orEmpty())
+        }
+        binding.tvCancelarHorario.setOnClickListener { escolherCancelamento(lista) }
+        atualizarBlocoAgendar()
+    }
+
+    private fun atualizarBlocoAgendar() {
+        val tem = viewModel.categoriasComAgenda.value.isNotEmpty() || viewModel.meusHorarios.value.isNotEmpty()
+        binding.blocoAgendar.visibility = if (tem) View.VISIBLE else View.GONE
+    }
+
+    private fun escolherCancelamento(lista: List<Agendamento>) {
+        if (lista.size == 1) {
+            confirmarCancelamento(lista.first())
+            return
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.agendar_qual_cancelar)
+            .setItems(lista.map { AgendaUtil.descrever(it.horario) }.toTypedArray()) { _, i -> confirmarCancelamento(lista[i]) }
+            .show()
+    }
+
+    private fun confirmarCancelamento(m: Agendamento) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.agendar_cancelar_titulo)
+            .setMessage(getString(R.string.agendar_cancelar_msg, AgendaUtil.descrever(m.horario)))
+            .setPositiveButton(R.string.agendar_cancelar_sim) { _, _ -> viewModel.cancelarHorario(m) }
+            .setNegativeButton(R.string.voltar, null)
+            .show()
+    }
+
+    private fun abrirChat(p: Profissional) {
+        val meuId = viewModel.meuId ?: return
+        startActivity(
+            Intent(this, ChatActivity::class.java)
+                .putExtra(ChatActivity.EXTRA_PROFISSIONAL_ID, p.id)
+                .putExtra(ChatActivity.EXTRA_PROFISSIONAL_NOME, p.nomeExibicao.orEmpty())
+                .putExtra(ChatActivity.EXTRA_PROFISSIONAL_FOTO, p.fotoPerfilUrl)
+                .putExtra(ChatActivity.EXTRA_CLIENTE_ID, meuId)
+                .putExtra(ChatActivity.EXTRA_CLIENTE_NOME, viewModel.nomeParaChat())
+        )
     }
 
     override fun onResume() {

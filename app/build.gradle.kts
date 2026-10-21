@@ -138,6 +138,7 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.firebase.functions)
     implementation(libs.firebase.messaging)
+    implementation(libs.shortcutbadger)
     implementation(libs.firebase.crashlytics)
 
     implementation(libs.androidx.appcompat)

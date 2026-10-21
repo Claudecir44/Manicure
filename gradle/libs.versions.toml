@@ -1,4 +1,5 @@
 [versions]
+shortcutbadger = "6d4ce808b0"
 agp = "9.3.2"
 kotlin = "2.3.20"
 googleServices = "4.4.2"
@@ -29,6 +30,7 @@ places = "4.1.0"
 mapsUtils = "3.8.2"
 
 [libraries]
+shortcutbadger = { group = "com.github.leolin310148", name = "ShortcutBadger", version.ref = "shortcutbadger" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }

@@ -69,7 +69,16 @@ service cloud.firestore {
           && request.resource.data.ultimoReservado is string
           && !(request.resource.data.ultimoReservado in resource.data.ocupados)
           && request.resource.data.ocupados == resource.data.ocupados.concat([request.resource.data.ultimoReservado])
-          && existsAfter(/databases/$(database)/documents/profissionais/$(uid)/agendamentos/$(agendaId + '_' + request.resource.data.ultimoReservado)));
+          && existsAfter(/databases/$(database)/documents/profissionais/$(uid)/agendamentos/$(agendaId + '_' + request.resource.data.ultimoReservado)))
+        // Cliente desmarcando: tira UM horário dos ocupados, que era dela,
+        // e a marcação é apagada no mesmo lote.
+        || (logado() && !dono(uid)
+          && alterados().hasOnly(['ocupados', 'ultimoLiberado'])
+          && request.resource.data.ultimoLiberado is string
+          && request.resource.data.ultimoLiberado in resource.data.ocupados
+          && request.resource.data.ocupados == resource.data.ocupados.removeAll([request.resource.data.ultimoLiberado])
+          && get(/databases/$(database)/documents/profissionais/$(uid)/agendamentos/$(agendaId + '_' + request.resource.data.ultimoLiberado)).data.clienteId == request.auth.uid
+          && !existsAfter(/databases/$(database)/documents/profissionais/$(uid)/agendamentos/$(agendaId + '_' + request.resource.data.ultimoLiberado)));
     }
 
     // ===== Horários marcados =====
@@ -82,7 +91,8 @@ service cloud.firestore {
         && id == request.resource.data.agendaId + '_' + request.resource.data.horario
         && getAfter(/databases/$(database)/documents/profissionais/$(uid)/agendas/$(request.resource.data.agendaId)).data.ultimoReservado == request.resource.data.horario;
       allow update: if false;
-      allow delete: if dono(uid);
+      // A profissional cancela; a cliente desmarca o próprio horário.
+      allow delete: if dono(uid) || (logado() && resource.data.clienteId == request.auth.uid);
     }
 
     // Cópia dos horários da cliente ("Meus horários").
@@ -90,6 +100,51 @@ service cloud.firestore {
       allow read, create: if dono(cid);
       allow delete: if dono(cid) || (logado() && resource.data.profissionalId == request.auth.uid);
       allow update: if false;
+    }
+
+    // ===== Chat profissional <-> cliente =====
+    function participante(dados) {
+      return logado() && request.auth.uid in dados.participantes;
+    }
+
+    match /conversas/{conversaId} {
+      allow read: if participante(resource.data);
+      // Id fixo profissionalId_clienteId; ninguém conversa consigo mesmo.
+      allow create: if participante(request.resource.data)
+        && request.resource.data.participantes == [request.resource.data.profissionalId, request.resource.data.clienteId]
+        && request.resource.data.profissionalId != request.resource.data.clienteId
+        && conversaId == request.resource.data.profissionalId + '_' + request.resource.data.clienteId
+        && exists(/databases/$(database)/documents/profissionais/$(request.resource.data.profissionalId));
+      // Só o resumo muda (última mensagem, contadores, nomes/foto).
+      allow update: if participante(resource.data)
+        && alterados().hasOnly(['ultimaMensagem', 'ultimoTimestamp', 'ultimoRemetenteId',
+                                'naoLidasProfissional', 'naoLidasCliente',
+                                'profissionalNome', 'profissionalFotoUrl', 'clienteNome']);
+      allow delete: if false;
+
+      match /mensagens/{mensagemId} {
+        function conversa() {
+          return get(/databases/$(database)/documents/conversas/$(conversaId)).data;
+        }
+        allow read: if participante(conversa());
+        allow create: if participante(conversa())
+          && request.resource.data.remetenteId == request.auth.uid
+          && request.resource.data.destinatarioId in conversa().participantes
+          && request.resource.data.destinatarioId != request.auth.uid
+          && request.resource.data.conteudo is string
+          && request.resource.data.conteudo.size() > 0
+          && request.resource.data.conteudo.size() <= 2000
+          && request.resource.data.lida == false;
+        // Só quem recebeu marca como lida.
+        allow update: if logado() && resource.data.destinatarioId == request.auth.uid
+          && alterados().hasOnly(['lida']);
+        allow delete: if false;
+      }
+    }
+
+    // Token de push do aparelho (uma pessoa pode ser profissional e cliente).
+    match /dispositivos/{uid} {
+      allow read, write: if dono(uid);
     }
 
     // ===== Clientes =====

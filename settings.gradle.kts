@@ -19,6 +19,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // ShortcutBadger (número no ícone do app em launchers como o MIUI).
+        maven { url = uri("https://jitpack.io") }
     }
 }
 

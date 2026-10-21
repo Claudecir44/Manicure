@@ -4,6 +4,7 @@
         <item name="corDestaqueClaro">@color/rosa_claro</item>
         <item name="corDestaqueEscuro">@color/rosa_escuro</item>
         <item name="corTextoBotao">@color/branco</item>
+        <item name="corBalao">#5A1236</item>
         <item name="colorPrimary">@color/rosa</item>
         <item name="colorPrimaryVariant">@color/rosa_escuro</item>
         <item name="colorOnPrimary">@color/branco</item>
@@ -28,6 +29,7 @@
         <item name="corDestaqueClaro">@color/verde_neon_claro</item>
         <item name="corDestaqueEscuro">@color/verde_neon_escuro</item>
         <item name="corTextoBotao">@color/preto</item>
+        <item name="corBalao">#14420F</item>
         <item name="colorPrimary">@color/verde_neon</item>
         <item name="colorPrimaryVariant">@color/verde_neon_escuro</item>
         <item name="colorOnPrimary">@color/preto</item>

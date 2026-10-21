@@ -30,6 +30,10 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
+        <include
+            android:id="@+id/chat"
+            layout="@layout/include_botao_chat" />
+
         <TextView
             android:id="@+id/btnSair"
             android:layout_width="wrap_content"

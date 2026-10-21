@@ -24,6 +24,7 @@ interface IAgendaRepository {
     suspend fun agendasDaProfissional(profissionalId: String): Result<List<Agenda>>
     suspend fun reservar(agendamento: Agendamento): Result<Unit>
     suspend fun horariosDaCliente(): Result<List<Agendamento>>
+    suspend fun cancelarMeuHorario(agendamento: Agendamento): Result<Unit>
 }
 
 @Singleton
@@ -120,5 +121,24 @@ class AgendaRepository @Inject constructor(
         etapa("ler meus horários") { copiasDaCliente(uid()).get().await() }
             .documents.mapNotNull { d -> d.toObject(Agendamento::class.java)?.also { it.id = d.id } }
             .sortedBy { it.horario }
+    }
+
+    // A cliente desmarca: apaga a marcação (e a cópia dela) e devolve o
+    // horário pra agenda, livre pra outra pessoa. Se a profissional já
+    // excluiu a agenda, só apaga as marcações.
+    override suspend fun cancelarMeuHorario(agendamento: Agendamento): Result<Unit> = runCatching {
+        val id = agendamento.id ?: return@runCatching
+        val profissionalId = agendamento.profissionalId ?: throw IllegalStateException("Profissional não informada.")
+        val chave = agendamento.horario ?: throw IllegalStateException("Horário não informado.")
+        val agendaRef = agendamento.agendaId?.let { agendas(profissionalId).document(it) }
+        val agendaExiste = agendaRef?.let { etapa("ler agenda") { it.get().await() }.exists() } ?: false
+        val lote = db.get().batch()
+        lote.delete(agendamentos(profissionalId).document(id))
+        lote.delete(copiasDaCliente(uid()).document(id))
+        if (agendaExiste && agendaRef != null) {
+            lote.update(agendaRef, mapOf("ocupados" to FieldValue.arrayRemove(chave), "ultimoLiberado" to chave))
+        }
+        etapa("desmarcar horário") { lote.commit().await() }
+        Unit
     }
 }

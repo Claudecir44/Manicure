@@ -52,6 +52,13 @@ class HomeClienteActivity : AppCompatActivity() {
         binding.btnSair.setOnClickListener { viewModel.sair() }
         binding.etBusca.doAfterTextChanged { viewModel.digitar(it.toString()) }
         binding.tvCodigo.setOnClickListener { pedirCodigo() }
+        binding.chat.btnChat.setOnClickListener { startActivity(Intent(this, com.cjstudio.manicure.ui.chat.ConversasActivity::class.java)) }
+        coletar(viewModel.naoLidas) { n ->
+            binding.chat.tvBadgeChat.visibility = if (n.comoCliente > 0) View.VISIBLE else View.GONE
+            binding.chat.tvBadgeChat.text = if (n.comoCliente > 99) "99+" else n.comoCliente.toString()
+            com.cjstudio.manicure.util.BadgeIcone.atualizar(this, n.total)
+        }
+        com.cjstudio.manicure.ui.common.PermissaoNotificacao.pedir(this)
         binding.tvMeusHorarios.setOnClickListener { startActivity(Intent(this, com.cjstudio.manicure.ui.agenda.MeusHorariosActivity::class.java)) }
 
         pedirLocalizacao.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))

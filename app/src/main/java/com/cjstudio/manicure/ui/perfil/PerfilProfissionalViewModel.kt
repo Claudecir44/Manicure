@@ -5,7 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cjstudio.manicure.R
 import com.cjstudio.manicure.data.model.Profissional
+import com.cjstudio.manicure.data.model.Agendamento
 import com.cjstudio.manicure.data.repository.IAgendaRepository
+import com.cjstudio.manicure.data.repository.IAuthRepository
+import com.cjstudio.manicure.data.repository.IClienteRepository
 import com.cjstudio.manicure.data.repository.IPreferenciasRepository
 import com.cjstudio.manicure.util.AgendaUtil
 import com.cjstudio.manicure.data.repository.IProfissionalRepository
@@ -28,6 +31,8 @@ class PerfilProfissionalViewModel @Inject constructor(
     private val profissionais: IProfissionalRepository,
     private val preferencias: IPreferenciasRepository,
     private val agendas: IAgendaRepository,
+    private val clientes: IClienteRepository,
+    auth: IAuthRepository,
     estado: SavedStateHandle
 ) : ViewModel() {
 
@@ -44,12 +49,22 @@ class PerfilProfissionalViewModel @Inject constructor(
     private val _categoriasComAgenda = MutableStateFlow<List<String>>(emptyList())
     val categoriasComAgenda: StateFlow<List<String>> = _categoriasComAgenda
 
+    val meuId: String? = auth.uidLogado()
+
+    // Lembrete: os próximos horários que EU marquei com esta profissional.
+    private val _meusHorarios = MutableStateFlow<List<Agendamento>>(emptyList())
+    val meusHorarios: StateFlow<List<Agendamento>> = _meusHorarios
+
+    // Meu nome de cliente (vai na conversa do chat).
+    private var meuNome: String = ""
+
     private val _mensagens = Channel<UiTexto>(Channel.BUFFERED)
     val mensagens: Flow<UiTexto> = _mensagens.receiveAsFlow()
 
     init {
         viewModelScope.launch { _preferido.value = preferencias.perfilFavorito() == id }
         atualizarAgendas()
+        viewModelScope.launch { meuNome = clientes.buscarLogada().getOrNull()?.nome.orEmpty() }
         viewModelScope.launch {
             profissionais.buscar(id)
                 .onSuccess { p ->
@@ -62,6 +77,12 @@ class PerfilProfissionalViewModel @Inject constructor(
     // Também no onResume: depois de marcar, um horário a menos.
     fun atualizarAgendas() {
         viewModelScope.launch {
+            val agora = java.text.SimpleDateFormat("yyyyMMdd-HHmm", java.util.Locale.US).format(java.util.Date())
+            agendas.horariosDaCliente().onSuccess { lista ->
+                _meusHorarios.value = lista.filter { it.profissionalId == id && (it.horario ?: "") >= agora }
+            }
+        }
+        viewModelScope.launch {
             agendas.agendasDaProfissional(id).onSuccess { lista ->
                 _categoriasComAgenda.value = lista
                     .filter { !AgendaUtil.mesPassado(it.mes) && AgendaUtil.diasLivres(it).isNotEmpty() }
@@ -70,6 +91,17 @@ class PerfilProfissionalViewModel @Inject constructor(
             }
         }
     }
+
+    fun cancelarHorario(agendamento: Agendamento) {
+        viewModelScope.launch {
+            agendas.cancelarMeuHorario(agendamento)
+                .onSuccess { _mensagens.send(texto(R.string.agendar_cancelado)) }
+                .onFailure { _mensagens.send(it.paraUiTexto()) }
+            atualizarAgendas()
+        }
+    }
+
+    fun nomeParaChat(): String = meuNome
 
     fun deixarDePreferir() {
         viewModelScope.launch {

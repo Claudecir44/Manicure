@@ -6,6 +6,8 @@
     <!-- Cliente: profissionais mais perto no topo da lista. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- Mensagem nova no chat e horário marcado (pedida em tempo de execução no Android 13+). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- Perfil público abre WhatsApp, discador, Instagram e mapa. -->
     <queries>
@@ -32,6 +34,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Manicure">
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notificacao" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/rosa" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="mensagens" />
+
+        <service
+            android:name=".ManicureMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <activity
             android:name=".ui.common.SplashActivity"
@@ -81,6 +101,13 @@
             android:exported="false" />
         <activity
             android:name=".ui.agenda.MeusHorariosActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.chat.ChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.chat.ConversasActivity"
             android:exported="false" />
         <activity
             android:name=".ui.perfil.PerfilProfissionalActivity"
