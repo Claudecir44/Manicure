@@ -11,6 +11,7 @@ import com.cjstudio.manicure.data.model.EmailNaoVerificadoException
 import com.cjstudio.manicure.data.model.PerfilJaExisteException
 import com.cjstudio.manicure.data.model.PerfilNaoEncontradoException
 import com.cjstudio.manicure.data.model.LimiteFotosException
+import com.cjstudio.manicure.data.model.HorarioOcupadoException
 import com.cjstudio.manicure.data.model.Profissional
 import com.cjstudio.manicure.data.repository.TempoEsgotadoException
 import com.google.firebase.FirebaseNetworkException
@@ -40,6 +41,7 @@ fun Throwable.paraUiTexto(): UiTexto = when (this) {
     is CpfJaCadastradoException -> texto(R.string.erro_cpf_ja_cadastrado)
     is EmailJaCadastradoException -> texto(R.string.erro_email_ja_cadastrado)
     is PerfilJaExisteException -> texto(R.string.erro_perfil_ja_existe)
+    is HorarioOcupadoException -> texto(R.string.erro_horario_ocupado)
     is LimiteFotosException -> texto(R.string.erro_limite_fotos, Profissional.MAX_FOTOS)
     is FirebaseAuthInvalidCredentialsException, is FirebaseAuthInvalidUserException -> texto(R.string.erro_login_invalido)
     is FirebaseNetworkException -> texto(R.string.erro_sem_internet)

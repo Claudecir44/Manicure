@@ -22,6 +22,7 @@ interface IProfissionalRepository {
     suspend fun trocarFotoPerfil(uri: Uri): Result<Unit>
     suspend fun salvarServicos(servicos: List<Servico>): Result<Unit>
     suspend fun atualizarPerfilAntigo(): Result<Unit>
+    suspend fun salvarCategorias(categorias: List<String>): Result<Unit>
 
     // Galeria (até Profissional.MAX_FOTOS).
     suspend fun adicionarFoto(uri: Uri): Result<Unit>

@@ -52,6 +52,7 @@ class HomeClienteActivity : AppCompatActivity() {
         binding.btnSair.setOnClickListener { viewModel.sair() }
         binding.etBusca.doAfterTextChanged { viewModel.digitar(it.toString()) }
         binding.tvCodigo.setOnClickListener { pedirCodigo() }
+        binding.tvMeusHorarios.setOnClickListener { startActivity(Intent(this, com.cjstudio.manicure.ui.agenda.MeusHorariosActivity::class.java)) }
 
         pedirLocalizacao.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
 

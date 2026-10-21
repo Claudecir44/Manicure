@@ -9,7 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cjstudio.manicure.R
+import com.cjstudio.manicure.data.model.Categorias
 import com.cjstudio.manicure.data.model.Profissional
+import com.cjstudio.manicure.ui.agenda.AgendarActivity
+import com.cjstudio.manicure.ui.common.adicionarChip
 import com.cjstudio.manicure.data.model.TipoPerfil
 import com.cjstudio.manicure.databinding.ActivityPerfilProfissionalBinding
 import com.cjstudio.manicure.ui.common.FotosAdapter
@@ -48,6 +51,7 @@ class PerfilProfissionalActivity : AppCompatActivity() {
         coletar(viewModel.mensagens) { mostrarMensagem(it) }
         coletar(viewModel.preferido) { binding.tvPreferido.visibility = if (it) View.VISIBLE else View.GONE }
         binding.tvPreferido.setOnClickListener { viewModel.deixarDePreferir() }
+        coletar(viewModel.categoriasComAgenda) { mostrarCategorias(it) }
     }
 
     private fun mostrar(p: Profissional) {
@@ -83,6 +87,29 @@ class PerfilProfissionalActivity : AppCompatActivity() {
         val enderecoMapa = listOf(p.endereco, p.bairro, p.cidade).filter { !it.isNullOrBlank() }.joinToString(", ")
         binding.btnMapa.visibility = if (p.endereco.isNullOrBlank()) View.GONE else View.VISIBLE
         binding.btnMapa.setOnClickListener { abrir("geo:0,0?q=" + Uri.encode(enderecoMapa)) }
+    }
+
+    // Um botão por categoria com horário livre -> tela de agendar.
+    private fun mostrarCategorias(categorias: List<String>) {
+        binding.blocoAgendar.visibility = if (categorias.isEmpty()) View.GONE else View.VISIBLE
+        binding.cgCategorias.removeAllViews()
+        categorias.forEach { c ->
+            val chip = binding.cgCategorias.adicionarChip(Categorias.nome(c), c)
+            chip.isCheckable = false
+            chip.setOnClickListener {
+                startActivity(
+                    Intent(this, AgendarActivity::class.java)
+                        .putExtra(AgendarActivity.EXTRA_PROFISSIONAL, intent.getStringExtra(EXTRA_ID))
+                        .putExtra(AgendarActivity.EXTRA_NOME, viewModel.perfil.value?.nomeExibicao.orEmpty())
+                        .putExtra(AgendarActivity.EXTRA_CATEGORIA, c)
+                )
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.atualizarAgendas()
     }
 
     private fun mostrarTexto(bloco: View, campo: android.widget.TextView, texto: String?) {

@@ -1,5 +1,9 @@
 <resources>
     <style name="Theme.Manicure" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="corDestaque">@color/rosa</item>
+        <item name="corDestaqueClaro">@color/rosa_claro</item>
+        <item name="corDestaqueEscuro">@color/rosa_escuro</item>
+        <item name="corTextoBotao">@color/branco</item>
         <item name="colorPrimary">@color/rosa</item>
         <item name="colorPrimaryVariant">@color/rosa_escuro</item>
         <item name="colorOnPrimary">@color/branco</item>
@@ -18,8 +22,22 @@
         <item name="materialAlertDialogTheme">@style/Theme.Manicure.Dialogo</item>
     </style>
 
+    <!-- Telas da profissional (painel, perfil, agenda): verde neon. -->
+    <style name="Theme.Manicure.Profissional">
+        <item name="corDestaque">@color/verde_neon</item>
+        <item name="corDestaqueClaro">@color/verde_neon_claro</item>
+        <item name="corDestaqueEscuro">@color/verde_neon_escuro</item>
+        <item name="corTextoBotao">@color/preto</item>
+        <item name="colorPrimary">@color/verde_neon</item>
+        <item name="colorPrimaryVariant">@color/verde_neon_escuro</item>
+        <item name="colorOnPrimary">@color/preto</item>
+        <item name="colorSecondary">@color/verde_neon</item>
+        <item name="colorSecondaryVariant">@color/verde_neon_escuro</item>
+        <item name="colorOnSecondary">@color/preto</item>
+    </style>
+
     <style name="Theme.Manicure.Dialogo" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <item name="colorPrimary">@color/rosa</item>
+        <item name="colorPrimary">?attr/corDestaque</item>
         <item name="colorSurface">@color/superficie_alta</item>
         <item name="colorOnSurface">@color/texto</item>
         <item name="android:textColorPrimary">@color/texto</item>
@@ -44,7 +62,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">54dp</item>
         <item name="android:background">@drawable/bg_botao_primario</item>
-        <item name="android:textColor">@color/branco</item>
+        <item name="android:textColor">?attr/corTextoBotao</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">false</item>
@@ -55,7 +73,7 @@
 
     <style name="BotaoContorno" parent="BotaoPrimario">
         <item name="android:background">@drawable/bg_botao_contorno</item>
-        <item name="android:textColor">@color/rosa</item>
+        <item name="android:textColor">?attr/corDestaque</item>
     </style>
 
     <style name="TituloSecao">
@@ -63,7 +81,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">20dp</item>
         <item name="android:layout_marginBottom">10dp</item>
-        <item name="android:textColor">@color/rosa</item>
+        <item name="android:textColor">?attr/corDestaque</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
     </style>
@@ -97,7 +115,7 @@
     <style name="LinhaDivisoria">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
-        <item name="android:background">@color/rosa</item>
+        <item name="android:background">?attr/corDestaque</item>
         <item name="android:alpha">0.6</item>
     </style>
 
@@ -126,7 +144,7 @@
     <style name="CartaoEscolhaTitulo">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/rosa</item>
+        <item name="android:textColor">?attr/corDestaque</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
     </style>
@@ -139,7 +157,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:buttonTint">@color/rosa</item>
+        <item name="android:buttonTint">?attr/corDestaque</item>
         <item name="android:textColor">@color/texto</item>
         <item name="android:textSize">14sp</item>
     </style>
@@ -164,7 +182,7 @@
         <item name="android:layout_marginEnd">3dp</item>
         <item name="android:background">@drawable/bg_botao_contorno</item>
         <item name="android:gravity">center</item>
-        <item name="android:textColor">@color/rosa</item>
+        <item name="android:textColor">?attr/corDestaque</item>
         <item name="android:textSize">12sp</item>
         <item name="android:textStyle">bold</item>
     </style>

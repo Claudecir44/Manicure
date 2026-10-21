@@ -14,6 +14,10 @@
     <color name="preto">#08070A</color>
     <color name="branco">#FFFFFF</color>
     <color name="verde">#2ECC71</color>
+    <!-- Destaque das telas da profissional. -->
+    <color name="verde_neon">#39FF14</color>
+    <color name="verde_neon_claro">#9DFF85</color>
+    <color name="verde_neon_escuro">#16C400</color>
     <color name="vermelho">#FF5A5A</color>
     <color name="ic_launcher_background">#000000</color>
 </resources>

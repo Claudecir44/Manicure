@@ -36,6 +36,9 @@ data class Profissional(
     // Atende só no salão, em domicílio ou os dois (TipoAtendimento).
     var atendimento: String = TipoAtendimento.SALAO,
 
+    // Chaves de Categorias.TODAS (manicure, pedicure...): cada uma pode ter agenda.
+    var categorias: List<String> = emptyList(),
+
     var servicos: List<Servico> = emptyList(),
     // No máximo MAX_FOTOS (firestore.rules confere o mesmo limite).
     var fotos: List<FotoPortfolio> = emptyList(),

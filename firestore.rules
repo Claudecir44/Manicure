@@ -55,6 +55,43 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ===== Agendas mensais da profissional =====
+    // Qualquer usuário logado lê (a cliente vê os horários livres; os
+    // "ocupados" são só chaves de horário, sem nome de quem marcou).
+    match /profissionais/{uid}/agendas/{agendaId} {
+      allow read: if logado();
+      allow create, delete: if dono(uid);
+      allow update: if dono(uid)
+        // Cliente reservando: só acrescenta UM horário livre aos ocupados,
+        // e a marcação correspondente é criada no mesmo lote.
+        || (logado() && !dono(uid)
+          && alterados().hasOnly(['ocupados', 'ultimoReservado'])
+          && request.resource.data.ultimoReservado is string
+          && !(request.resource.data.ultimoReservado in resource.data.ocupados)
+          && request.resource.data.ocupados == resource.data.ocupados.concat([request.resource.data.ultimoReservado])
+          && existsAfter(/databases/$(database)/documents/profissionais/$(uid)/agendamentos/$(agendaId + '_' + request.resource.data.ultimoReservado)));
+    }
+
+    // ===== Horários marcados =====
+    // A profissional vê todos; a cliente só o próprio.
+    match /profissionais/{uid}/agendamentos/{id} {
+      allow read: if dono(uid) || (logado() && resource.data.clienteId == request.auth.uid);
+      allow create: if logado()
+        && request.resource.data.clienteId == request.auth.uid
+        && request.resource.data.profissionalId == uid
+        && id == request.resource.data.agendaId + '_' + request.resource.data.horario
+        && getAfter(/databases/$(database)/documents/profissionais/$(uid)/agendas/$(request.resource.data.agendaId)).data.ultimoReservado == request.resource.data.horario;
+      allow update: if false;
+      allow delete: if dono(uid);
+    }
+
+    // Cópia dos horários da cliente ("Meus horários").
+    match /clientes/{cid}/agendamentos/{id} {
+      allow read, create: if dono(cid);
+      allow delete: if dono(cid) || (logado() && resource.data.profissionalId == request.auth.uid);
+      allow update: if false;
+    }
+
     // ===== Clientes =====
     match /clientes/{uid} {
       allow read: if dono(uid) || (ehAdmin() && permissaoAdmin('clientes'));

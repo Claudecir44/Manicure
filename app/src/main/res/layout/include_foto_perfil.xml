@@ -22,6 +22,6 @@
         android:layout_marginTop="8dp"
         android:padding="4dp"
         android:text="@string/cadastro_escolher_foto"
-        android:textColor="@color/rosa"
+        android:textColor="?attr/corDestaque"
         android:textSize="14sp" />
 </LinearLayout>

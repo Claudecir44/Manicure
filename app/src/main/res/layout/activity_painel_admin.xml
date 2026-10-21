@@ -42,7 +42,7 @@
                 android:id="@+id/tvPapel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/rosa"
+                android:textColor="?attr/corDestaque"
                 android:textSize="13sp" />
         </LinearLayout>
 
@@ -53,7 +53,7 @@
             android:background="?attr/selectableItemBackground"
             android:padding="10dp"
             android:text="@string/sair"
-            android:textColor="@color/rosa"
+            android:textColor="?attr/corDestaque"
             android:textSize="15sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -112,7 +112,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textColor="@color/rosa"
+                android:textColor="?attr/corDestaque"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -130,7 +130,7 @@
             android:layout_height="32dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="24dp"
-            android:indeterminateTint="@color/rosa" />
+            android:indeterminateTint="?attr/corDestaque" />
 
         <TextView
             android:id="@+id/tvVazio"

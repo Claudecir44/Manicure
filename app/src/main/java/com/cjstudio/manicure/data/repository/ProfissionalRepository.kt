@@ -130,6 +130,11 @@ class ProfissionalRepository @Inject constructor(
         if (dados.isNotEmpty()) colecao().document(uid()).update(dados).await()
     }
 
+    override suspend fun salvarCategorias(categorias: List<String>): Result<Unit> = runCatching {
+        etapa("salvar categorias") { colecao().document(uid()).update("categorias", categorias).await() }
+        Unit
+    }
+
     override suspend fun trocarFotoPerfil(uri: Uri): Result<Unit> = runCatching {
         val url = arquivos.enviarImagem("perfis/${uid()}", uri).getOrThrow()
         colecao().document(uid()).update("fotoPerfilUrl", url).await()
@@ -161,20 +166,24 @@ class ProfissionalRepository @Inject constructor(
 
     override suspend fun listarPublicadas(texto: String): Result<List<Profissional>> = runCatching {
         val termo = TextoUtil.normalizar(texto)
+        // A barra de busca também aceita o código ("CJS101", "cjs 101").
+        val codigo = codigoLimpo(texto)
         etapa("listar profissionais") {
             colecao().whereEqualTo("publicado", true).whereEqualTo("bloqueado", false).get().await()
         }.documents
             .mapNotNull { doc -> doc.toObject(Profissional::class.java)?.also { it.id = doc.id } }
-            .filter { termo.isBlank() || it.busca.orEmpty().contains(termo) }
+            .filter { termo.isBlank() || it.busca.orEmpty().contains(termo) || (codigo.length >= 4 && it.codigo == codigo) }
             .sortedBy { it.nomeExibicao.orEmpty().lowercase() }
     }
 
     override suspend fun buscarPorCodigo(codigo: String): Result<Profissional?> = runCatching {
         etapa("buscar código") {
-            colecao().whereEqualTo("codigo", codigo.trim().uppercase())
+            colecao().whereEqualTo("codigo", codigoLimpo(codigo))
                 .whereEqualTo("publicado", true).whereEqualTo("bloqueado", false).limit(1).get().await()
         }.documents.firstOrNull()?.let { doc -> doc.toObject(Profissional::class.java)?.also { it.id = doc.id } }
     }
+
+    private fun codigoLimpo(texto: String) = texto.filter { it.isLetterOrDigit() }.uppercase()
 
     override suspend fun listarTodas(): Result<List<Profissional>> = runCatching {
         colecao().orderBy("criadoEm", Query.Direction.DESCENDING).get().await()

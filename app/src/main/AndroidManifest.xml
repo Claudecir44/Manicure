@@ -57,13 +57,31 @@
             android:name=".ui.auth.CadastroActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <!-- Telas da profissional: tema verde neon. -->
         <activity
             android:name=".ui.profissional.PainelProfissionalActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Manicure.Profissional" />
         <activity
             android:name=".ui.profissional.EditarPerfilActivity"
             android:exported="false"
+            android:theme="@style/Theme.Manicure.Profissional"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.agenda.AgendaProfissionalActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Manicure.Profissional" />
+        <activity
+            android:name=".ui.agenda.EditarAgendaActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Manicure.Profissional"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.agenda.AgendarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.agenda.MeusHorariosActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.perfil.PerfilProfissionalActivity"
             android:exported="false" />

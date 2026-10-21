@@ -166,7 +166,7 @@
                 android:layout_height="32dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
-                android:indeterminateTint="@color/rosa"
+                android:indeterminateTint="?attr/corDestaque"
                 android:visibility="gone" />
         </LinearLayout>
     </ScrollView>

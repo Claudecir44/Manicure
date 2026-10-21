@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Cor de destaque da tela: rosa (cliente/admin) ou verde neon (profissional). -->
+    <attr name="corDestaque" format="color" />
+    <attr name="corDestaqueClaro" format="color" />
+    <attr name="corDestaqueEscuro" format="color" />
+    <!-- Texto em cima do botão de destaque (branco no rosa, preto no verde). -->
+    <attr name="corTextoBotao" format="color" />
+</resources>

@@ -1,6 +1,8 @@
 package com.cjstudio.manicure.di
 
 import com.cjstudio.manicure.data.repository.AdminRepository
+import com.cjstudio.manicure.data.repository.AgendaRepository
+import com.cjstudio.manicure.data.repository.IAgendaRepository
 import com.cjstudio.manicure.data.repository.ArquivoRepository
 import com.cjstudio.manicure.data.repository.AuthRepository
 import com.cjstudio.manicure.data.repository.ClienteRepository
@@ -57,4 +59,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindPreferenciasRepository(impl: PreferenciasRepository): IPreferenciasRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAgendaRepository(impl: AgendaRepository): IAgendaRepository
 }

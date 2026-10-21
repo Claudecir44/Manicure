@@ -22,7 +22,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:padding="8dp"
                 android:text="@string/sair"
-                android:textColor="@color/rosa"
+                android:textColor="?attr/corDestaque"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -70,7 +70,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:textColor="@color/rosa"
+                        android:textColor="?attr/corDestaque"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -90,7 +90,7 @@
                 android:layout_marginTop="4dp"
                 android:padding="4dp"
                 android:text="@string/painel_editar_perfil"
-                android:textColor="@color/rosa"
+                android:textColor="?attr/corDestaque"
                 android:textSize="12sp" />
 
             <LinearLayout
@@ -118,6 +118,42 @@
                     android:text="@string/painel_compartilhar"
                     android:textSize="14sp" />
             </LinearLayout>
+
+            <!-- Categorias de serviço e agenda mensal de cada uma. -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TituloSecao"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/painel_categorias" />
+
+                <TextView
+                    android:id="@+id/btnCategorias"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:padding="6dp"
+                    android:text="@string/painel_editar_categorias"
+                    android:textColor="?attr/corDestaque"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvCategorias"
+                style="@style/TextoCorpo" />
+
+            <Button
+                android:id="@+id/btnAgenda"
+                style="@style/BotaoPrimario"
+                android:layout_height="48dp"
+                android:layout_marginTop="12dp"
+                android:text="@string/painel_minha_agenda" />
 
             <TextView
                 style="@style/TituloSecao"
@@ -160,7 +196,7 @@
                     android:layout_marginTop="10dp"
                     android:padding="6dp"
                     android:text="@string/painel_adicionar_servico"
-                    android:textColor="@color/rosa"
+                    android:textColor="?attr/corDestaque"
                     android:textSize="14sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -198,6 +234,6 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:indeterminateTint="@color/rosa"
+        android:indeterminateTint="?attr/corDestaque"
         android:visibility="gone" />
 </FrameLayout>

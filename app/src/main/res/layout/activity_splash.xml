@@ -16,5 +16,5 @@
         android:layout_height="28dp"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="48dp"
-        android:indeterminateTint="@color/rosa" />
+        android:indeterminateTint="?attr/corDestaque" />
 </FrameLayout>

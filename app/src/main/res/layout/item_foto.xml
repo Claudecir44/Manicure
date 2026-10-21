@@ -24,7 +24,7 @@
         android:layout_height="0dp"
         android:gravity="center"
         android:text="@string/painel_adicionar_foto"
-        android:textColor="@color/rosa"
+        android:textColor="?attr/corDestaque"
         android:textSize="14sp"
         android:textStyle="bold"
         android:visibility="gone"

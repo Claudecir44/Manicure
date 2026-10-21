@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/topo"
+            layout="@layout/include_topo" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    style="@style/TextoCorpo"
+                    android:text="@string/agenda_explicacao" />
+
+                <Button
+                    android:id="@+id/btnNovaAgenda"
+                    style="@style/BotaoPrimario"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/agenda_nova" />
+
+                <TextView
+                    style="@style/TituloSecao"
+                    android:text="@string/agenda_minhas" />
+
+                <TextView
+                    android:id="@+id/tvSemAgendas"
+                    style="@style/TextoCorpo"
+                    android:text="@string/agenda_sem_agendas"
+                    android:visibility="gone" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvAgendas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    style="@style/TituloSecao"
+                    android:text="@string/agenda_marcados" />
+
+                <TextView
+                    android:id="@+id/tvSemAgendamentos"
+                    style="@style/TextoCorpo"
+                    android:text="@string/agenda_sem_marcados"
+                    android:visibility="gone" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvAgendamentos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="?attr/corDestaque"
+        android:visibility="gone" />
+</FrameLayout>

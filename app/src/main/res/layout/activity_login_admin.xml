@@ -26,7 +26,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="32dp"
             android:text="@string/login_subtitulo_admin"
-            android:textColor="@color/rosa"
+            android:textColor="?attr/corDestaque"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -55,7 +55,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="16dp"
-            android:indeterminateTint="@color/rosa"
+            android:indeterminateTint="?attr/corDestaque"
             android:visibility="gone" />
 
         <TextView

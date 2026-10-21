@@ -37,7 +37,7 @@
             android:layout_marginBottom="24dp"
             android:padding="6dp"
             android:text="@string/login_trocar_papel"
-            android:textColor="@color/rosa"
+            android:textColor="?attr/corDestaque"
             android:textSize="13sp" />
 
         <EditText
@@ -62,7 +62,7 @@
             android:layout_marginBottom="20dp"
             android:padding="6dp"
             android:text="@string/login_esqueci_senha"
-            android:textColor="@color/rosa"
+            android:textColor="?attr/corDestaque"
             android:textSize="14sp" />
 
         <Button
@@ -75,7 +75,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="16dp"
-            android:indeterminateTint="@color/rosa"
+            android:indeterminateTint="?attr/corDestaque"
             android:visibility="gone" />
 
         <TextView

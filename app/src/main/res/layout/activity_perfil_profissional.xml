@@ -46,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textColor="@color/rosa"
+                android:textColor="?attr/corDestaque"
                 android:textSize="14sp" />
 
             <TextView
@@ -66,7 +66,7 @@
                 android:gravity="center"
                 android:padding="4dp"
                 android:text="@string/perfil_preferido"
-                android:textColor="@color/rosa_claro"
+                android:textColor="?attr/corDestaqueClaro"
                 android:textSize="12sp"
                 android:visibility="gone" />
 
@@ -96,6 +96,24 @@
                     android:id="@+id/btnMapa"
                     style="@style/BotaoContato"
                     android:text="@string/perfil_mapa" />
+            </LinearLayout>
+
+            <!-- Agendar: uma opção por categoria com horário livre. -->
+            <LinearLayout
+                android:id="@+id/blocoAgendar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    style="@style/TituloSecao"
+                    android:text="@string/perfil_agendar" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/cgCategorias"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <LinearLayout

@@ -76,7 +76,7 @@
                     android:id="@+id/cbTermos"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:buttonTint="@color/rosa" />
+                    android:buttonTint="?attr/corDestaque" />
 
                 <TextView
                     android:id="@+id/tvTermos"
@@ -85,7 +85,7 @@
                     android:layout_weight="1"
                     android:padding="4dp"
                     android:text="@string/cadastro_aceito_termos"
-                    android:textColor="@color/rosa"
+                    android:textColor="?attr/corDestaque"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -102,7 +102,7 @@
                 android:layout_marginTop="12dp"
                 android:padding="8dp"
                 android:text="@string/cadastro_limpar"
-                android:textColor="@color/rosa"
+                android:textColor="?attr/corDestaque"
                 android:textSize="14sp" />
 
             <ProgressBar
@@ -111,7 +111,7 @@
                 android:layout_height="32dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
-                android:indeterminateTint="@color/rosa"
+                android:indeterminateTint="?attr/corDestaque"
                 android:visibility="gone" />
         </LinearLayout>
     </ScrollView>

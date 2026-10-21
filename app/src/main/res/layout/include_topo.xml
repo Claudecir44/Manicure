@@ -16,7 +16,7 @@
         android:contentDescription="@string/voltar"
         android:gravity="center"
         android:text="←"
-        android:textColor="@color/rosa"
+        android:textColor="?attr/corDestaque"
         android:textSize="26sp" />
 
     <TextView

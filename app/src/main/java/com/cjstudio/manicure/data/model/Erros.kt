@@ -11,3 +11,4 @@ class CpfJaCadastradoException : Exception("Já existe um cadastro com este CPF.
 class EmailJaCadastradoException : Exception("Este e-mail já tem conta.")
 class LimiteFotosException : Exception("A galeria já tem o máximo de fotos.")
 class PerfilJaExisteException : Exception("Esta conta já tem este cadastro.")
+class HorarioOcupadoException : Exception("Este horário acabou de ser reservado.")

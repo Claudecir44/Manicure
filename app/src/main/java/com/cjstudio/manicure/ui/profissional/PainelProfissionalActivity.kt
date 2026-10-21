@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cjstudio.manicure.R
+import com.cjstudio.manicure.data.model.Categorias
 import com.cjstudio.manicure.data.model.FotoPortfolio
 import com.cjstudio.manicure.data.model.Profissional
 import com.cjstudio.manicure.data.model.Servico
@@ -83,6 +84,8 @@ class PainelProfissionalActivity : AppCompatActivity() {
             }
         }
         binding.btnCompartilhar.setOnClickListener { compartilhar() }
+        binding.btnCategorias.setOnClickListener { escolherCategorias() }
+        binding.btnAgenda.setOnClickListener { startActivity(Intent(this, com.cjstudio.manicure.ui.agenda.AgendaProfissionalActivity::class.java)) }
 
         coletar(viewModel.perfil) { p -> if (p != null) mostrar(p) }
         coletar(viewModel.enviando) { binding.progressBar.visibility = if (it) View.VISIBLE else View.GONE }
@@ -104,7 +107,7 @@ class PainelProfissionalActivity : AppCompatActivity() {
         val (situacao, cor) = when {
             p.bloqueado -> R.string.painel_situacao_bloqueado to R.color.vermelho
             p.publicado -> R.string.painel_situacao_publicado to R.color.verde
-            else -> R.string.painel_situacao_incompleto to R.color.rosa_claro
+            else -> R.string.painel_situacao_incompleto to R.color.verde_neon_claro
         }
         binding.tvSituacao.setText(situacao)
         binding.tvSituacao.setTextColor(ContextCompat.getColor(this, cor))
@@ -113,11 +116,32 @@ class PainelProfissionalActivity : AppCompatActivity() {
         binding.tvSobreTrabalho.text = p.sobreTrabalho?.takeIf { it.isNotBlank() } ?: getString(R.string.painel_sem_sobre)
         binding.tvContatos.text = ResumoPerfil.contatos(this, p)
 
+        binding.tvCategorias.text = if (p.categorias.isEmpty()) {
+            getString(R.string.painel_sem_categorias)
+        } else {
+            p.categorias.joinToString("  ·  ") { Categorias.nome(it) }
+        }
+
         servicosAdapter.atualizar(p.servicos)
         binding.tvSemServicos.visibility = if (p.servicos.isEmpty()) View.VISIBLE else View.GONE
 
         binding.tvTituloGaleria.text = getString(R.string.painel_galeria, p.fotos.size, Profissional.MAX_FOTOS)
         fotosAdapter.atualizar(p.fotos, podeAdicionar = p.fotos.size < Profissional.MAX_FOTOS)
+    }
+
+    // Marcar/desmarcar as categorias de serviço que ela oferece.
+    private fun escolherCategorias() {
+        val atuais = viewModel.perfil.value?.categorias.orEmpty()
+        val nomes = Categorias.TODAS.map { it.second }.toTypedArray()
+        val marcadas = Categorias.TODAS.map { it.first in atuais }.toBooleanArray()
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.painel_categorias)
+            .setMultiChoiceItems(nomes, marcadas) { _, i, marcada -> marcadas[i] = marcada }
+            .setPositiveButton(R.string.salvar) { _, _ ->
+                viewModel.salvarCategorias(Categorias.TODAS.filterIndexed { i, _ -> marcadas[i] }.map { it.first })
+            }
+            .setNegativeButton(R.string.cancelar, null)
+            .show()
     }
 
     private fun escolherFotoGaleria() {

@@ -225,6 +225,80 @@
         <item quantity="other">%d registros</item>
     </plurals>
 
+    <!-- Categorias e agenda (profissional) -->
+    <string name="painel_categorias">Categorias de serviço</string>
+    <string name="painel_editar_categorias">Escolher</string>
+    <string name="painel_sem_categorias">Toque em \"Escolher\" e marque o que você faz (manicure, pedicure, cabeleireira…). Cada categoria pode ter sua agenda.</string>
+    <string name="painel_categorias_salvas">Categorias salvas.</string>
+    <string name="painel_minha_agenda">Minha agenda</string>
+    <string-array name="dias_semana_curto">
+        <item>Dom</item>
+        <item>Seg</item>
+        <item>Ter</item>
+        <item>Qua</item>
+        <item>Qui</item>
+        <item>Sex</item>
+        <item>Sáb</item>
+    </string-array>
+    <string name="agenda_titulo">Minha agenda</string>
+    <string name="agenda_explicacao">Crie uma agenda por mês para cada categoria: escolha os dias da semana, os horários e quem atende. As clientes veem só os horários livres e marcam pelo app. Só você vê quem marcou.</string>
+    <string name="agenda_nova">+ Nova agenda do mês</string>
+    <string name="agenda_minhas">Agendas</string>
+    <string name="agenda_sem_agendas">Nenhuma agenda ainda.</string>
+    <string name="agenda_marcados">Horários marcados</string>
+    <string name="agenda_sem_marcados">Nenhum horário marcado ainda.</string>
+    <string name="agenda_linha_atendente">Atende: %1$s</string>
+    <string name="agenda_ocupados">%1$d/%2$d\nmarcados</string>
+    <string name="agenda_horarios_dia">%1$d horários por dia</string>
+    <string name="agenda_editar">Editar agenda</string>
+    <string name="agenda_excluir">Excluir agenda</string>
+    <string name="agenda_excluir_msg">Excluir esta agenda? As clientes não vão mais ver estes horários. Os horários já marcados continuam na sua lista.</string>
+    <string name="agenda_excluida">Agenda excluída.</string>
+    <string name="agenda_cancelar_horario">Cancelar horário</string>
+    <string name="agenda_cancelar_msg">Cancelar este horário? Ele volta a ficar livre para outras clientes. Avise a cliente pelo WhatsApp.</string>
+    <string name="agenda_agendamento_cancelado">Horário cancelado e liberado.</string>
+    <string name="agenda_categoria">Categoria</string>
+    <string name="agenda_mes">Mês</string>
+    <string name="agenda_atendente">Profissional que atende</string>
+    <string name="agenda_atendente_dica">Nome de quem vai atender</string>
+    <string name="agenda_dias">Dias da semana</string>
+    <string name="agenda_horarios">Horários de cada dia</string>
+    <string name="agenda_inicio">Início</string>
+    <string name="agenda_fim">Fim</string>
+    <string name="agenda_intervalo">A cada (min)</string>
+    <string name="agenda_horarios_dica">Ex.: das 09:00 às 18:00 a cada 60 min. Depois toque no x para tirar um horário (almoço, por exemplo).</string>
+    <string name="agenda_gerar">Gerar horários</string>
+    <string name="agenda_sem_horarios">Nenhum horário ainda.</string>
+    <string name="agenda_adicionar_horario">+ Adicionar horário</string>
+    <string name="agenda_hora_hint">Ex.: 14:30</string>
+    <string name="agenda_salvar">Salvar agenda</string>
+    <string name="agenda_salva">Agenda salva.</string>
+    <string name="agenda_erro_gerar">Confira início, fim e intervalo (mínimo 10 minutos).</string>
+    <string name="agenda_erro_hora">Hora inválida. Use o formato 14:30.</string>
+    <string name="agenda_erro_categoria">Escolha a categoria.</string>
+    <string name="agenda_erro_mes">Escolha o mês.</string>
+    <string name="agenda_erro_atendente">Informe quem vai atender.</string>
+    <string name="agenda_erro_dias">Marque pelo menos um dia da semana.</string>
+    <string name="agenda_erro_horarios">Gere ou adicione pelo menos um horário.</string>
+
+    <!-- Agendar (cliente) -->
+    <string name="perfil_agendar">Agendar horário</string>
+    <string name="agendar_vazio">Nenhum horário livre nesta categoria no momento.</string>
+    <string name="agendar_com_quem">Com quem</string>
+    <string name="agendar_dia">Dia</string>
+    <string name="agendar_horario">Horário</string>
+    <string name="agendar_resumo">%1$s com %2$s</string>
+    <string name="agendar_confirmar">Marcar horário</string>
+    <string name="agendar_confirmar_titulo">Confirmar horário</string>
+    <string name="agendar_confirmar_msg">%1$s\n%2$s\nCom %3$s (%4$s)</string>
+    <string name="agendar_erro_horario">Escolha um horário.</string>
+    <string name="agendar_marcado_titulo">Horário marcado!</string>
+    <string name="agendar_marcado_msg">Pronto, seu horário está reservado. Você encontra ele em \"Meus horários\" na tela inicial.</string>
+    <string name="erro_horario_ocupado">Esse horário acabou de ser reservado por outra pessoa. Escolha outro.</string>
+    <string name="meus_horarios">Meus horários</string>
+    <string name="meus_horarios_link">Meus horários</string>
+    <string name="meus_horarios_vazio">Você ainda não marcou nenhum horário.</string>
+
     <!-- Termos -->
     <string name="termos_titulo">Termos de Uso e Privacidade</string>
     <string name="termos_texto">O Manicure é um aplicativo da CJ Studio Technology que aproxima profissionais de unhas (manicures, nail designers e salões) das suas clientes.\n\n1. Cadastro\nVocê precisa informar dados verdadeiros: nome, celular e e-mail. Cada profissional cria o próprio acesso e cuida do próprio perfil; uma profissional não vê nem altera o perfil de outra.\n\n2. Perfil da profissional\nO que a profissional publica (nome ou nome do salão, apresentação, descrição do trabalho, serviços, preços, contatos, endereço e até 20 fotos) fica visível para as clientes do app. Publique apenas fotos de trabalhos seus e com autorização de quem aparece nelas.\n\n3. Uso dos dados\nSeus dados são usados para criar e proteger sua conta, mostrar os perfis às clientes, prevenir fraudes e cumprir obrigações legais. Não vendemos seus dados.\n\n4. Contato e pagamento\nO agendamento e o pagamento dos serviços são combinados diretamente entre cliente e profissional. O app não cobra nem intermedeia esses pagamentos.\n\n5. Conduta\nÉ proibido publicar conteúdo falso, ofensivo, de terceiros sem autorização ou que não seja relacionado ao trabalho. Também é proibido discriminar, assediar ou ameaçar qualquer pessoa. Contas que descumprirem estas regras podem ser bloqueadas.\n\n6. Seus direitos (LGPD)\nVocê pode pedir acesso, correção ou exclusão dos seus dados pelo e-mail cjstudiotechnology@gmail.com.\n\n7. Contato\nCJ Studio Technology, cjstudiotechnology@gmail.com</string>

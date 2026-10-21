@@ -74,6 +74,9 @@ class PainelProfissionalViewModel @Inject constructor(
         executar(R.string.painel_servico_salvo) { profissionais.salvarServicos(lista) }
     }
 
+    fun salvarCategorias(categorias: List<String>) =
+        executar(R.string.painel_categorias_salvas) { profissionais.salvarCategorias(categorias) }
+
     fun removerServico(posicao: Int) {
         val lista = perfil.value?.servicos.orEmpty().toMutableList()
         if (posicao !in lista.indices) return
