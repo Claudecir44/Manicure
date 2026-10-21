@@ -1,10 +1,9 @@
 package com.cjstudio.manicure.ui.agenda
 
 import android.os.Bundle
-import android.text.InputType
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.cjstudio.manicure.R
@@ -15,7 +14,6 @@ import com.cjstudio.manicure.ui.common.coletar
 import com.cjstudio.manicure.ui.common.mostrarMensagem
 import com.cjstudio.manicure.util.AgendaUtil
 import com.cjstudio.manicure.util.ajustarPaddingParaTeclado
-import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -36,20 +34,19 @@ class EditarAgendaActivity : AppCompatActivity() {
 
         binding.topo.tvTitulo.setText(if (viewModel.editando) R.string.agenda_editar else R.string.agenda_nova)
         binding.topo.btnVoltar.setOnClickListener { finish() }
-
-        // Dom..Sáb, com seg a sex marcados numa agenda nova.
-        resources.getStringArray(R.array.dias_semana_curto).forEachIndexed { i, nome ->
-            binding.cgDias.adicionarChip(nome, (i + 1).toString(), marcado = i in 1..5)
-        }
-
         binding.btnGerar.setOnClickListener {
             viewModel.gerarHorarios(binding.etInicio.text.toString(), binding.etFim.text.toString(), binding.etIntervalo.text.toString())
         }
-        binding.tvAdicionarHorario.setOnClickListener { pedirHorario() }
-        binding.btnSalvar.setOnClickListener { salvar() }
+        binding.btnAjustarDia.setOnClickListener { escolherDiaParaAjustar() }
+        binding.btnSalvar.setOnClickListener {
+            viewModel.salvar(
+                categoria = categorias.getOrNull(binding.spCategoria.selectedItemPosition)?.first,
+                atendente = binding.etAtendente.text.toString()
+            )
+        }
 
         coletar(viewModel.inicio) { inicio -> if (inicio != null) preencher(inicio) }
-        coletar(viewModel.horarios) { mostrarHorarios(it) }
+        coletar(viewModel.montagem) { mostrar(it) }
         coletar(viewModel.salvando) {
             binding.progressBar.visibility = if (it) View.VISIBLE else View.GONE
             binding.btnSalvar.isEnabled = !it
@@ -70,57 +67,76 @@ class EditarAgendaActivity : AppCompatActivity() {
         binding.spCategoria.adapter = adaptador(categorias.map { it.second })
         binding.spMes.adapter = adaptador(meses.map { AgendaUtil.nomeMes(it) })
         val a = inicio.agenda
-        if (a == null) {
-            binding.etAtendente.setText(inicio.nomeProfissional)
-            return
+        binding.etAtendente.setText(a?.atendente ?: inicio.nomeProfissional)
+        if (a != null) {
+            binding.spCategoria.setSelection(categorias.indexOfFirst { it.first == a.categoria }.coerceAtLeast(0))
+            binding.spMes.setSelection(meses.indexOf(a.mes).coerceAtLeast(0))
+            // Horários da agenda nos campos de início/fim.
+            a.horarios.sortedBy { AgendaUtil.minutos(it) }.let { h ->
+                if (h.isNotEmpty()) binding.etInicio.setText(h.first())
+            }
         }
-        binding.spCategoria.setSelection(categorias.indexOfFirst { it.first == a.categoria }.coerceAtLeast(0))
-        binding.spMes.setSelection(meses.indexOf(a.mes).coerceAtLeast(0))
-        binding.etAtendente.setText(a.atendente)
-        for (i in 0 until binding.cgDias.childCount) {
-            val chip = binding.cgDias.getChildAt(i) as Chip
-            chip.isChecked = (chip.tag as String).toInt() in a.diasSemana
+        binding.spMes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p: AdapterView<*>?, v: View?, posicao: Int, id: Long) {
+                meses.getOrNull(posicao)?.let { viewModel.escolherMes(it) }
+            }
+            override fun onNothingSelected(p: AdapterView<*>?) = Unit
         }
     }
 
     private fun adaptador(itens: List<String>) =
         ArrayAdapter(this, R.layout.item_spinner, itens).apply { setDropDownViewResource(R.layout.item_spinner_dropdown) }
 
-    private fun mostrarHorarios(lista: List<String>) {
+    // Todos os dias do mês: marcado = atende. ✎ = dia com horário ajustado.
+    private fun mostrar(m: EditarAgendaViewModel.Montagem) {
+        binding.cgDias.removeAllViews()
+        AgendaUtil.diasDoMes(m.mes).forEach { d ->
+            val texto = if (d.data in m.diasAjustados && d.data in m.dias) "${d.titulo} ✎" else d.titulo
+            val chip = binding.cgDias.adicionarChip(texto, d.data, d.data in m.dias && !d.passado)
+            chip.isEnabled = !d.passado
+            chip.setOnClickListener { viewModel.alternarDia(d.data) }
+            chip.setOnLongClickListener {
+                if (d.data in m.dias) ajustarDia(d.data)
+                true
+            }
+        }
+        binding.tvContadorDias.text = getString(R.string.agenda_dias_marcados, m.dias.size)
+
         binding.cgHorarios.removeAllViews()
-        lista.forEach { hora -> binding.cgHorarios.adicionarChipRemovivel(hora) { viewModel.removerHorario(hora) } }
-        binding.tvSemHorarios.visibility = if (lista.isEmpty()) View.VISIBLE else View.GONE
+        m.horarios.sortedBy { AgendaUtil.minutos(it) }.forEach { hora ->
+            binding.cgHorarios.adicionarChipRemovivel(hora) { viewModel.removerHorario(hora) }
+        }
+        binding.tvSemHorarios.visibility = if (m.horarios.isEmpty()) View.VISIBLE else View.GONE
     }
 
-    private fun pedirHorario() {
-        val campo = EditText(this).apply {
-            setHint(R.string.agenda_hora_hint)
-            inputType = InputType.TYPE_CLASS_DATETIME or InputType.TYPE_DATETIME_VARIATION_TIME
-        }
-        val margem = (20 * resources.displayMetrics.density).toInt()
-        val container = android.widget.FrameLayout(this).apply {
-            setPadding(margem, margem / 2, margem, 0)
-            addView(campo)
+    private fun escolherDiaParaAjustar() {
+        val dias = viewModel.montagem.value.dias.sorted()
+        if (dias.isEmpty()) {
+            mostrarMensagem(com.cjstudio.manicure.ui.common.texto(R.string.agenda_erro_dias))
+            return
         }
         MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.agenda_adicionar_horario)
-            .setView(container)
-            .setPositiveButton(R.string.salvar) { _, _ -> viewModel.adicionarHorario(campo.text.toString()) }
-            .setNegativeButton(R.string.cancelar, null)
+            .setTitle(R.string.agenda_ajustar_dia)
+            .setItems(dias.map { AgendaUtil.descreverDia(it) }.toTypedArray()) { _, i -> ajustarDia(dias[i]) }
             .show()
     }
 
-    private fun salvar() {
-        val dias = (0 until binding.cgDias.childCount)
-            .map { binding.cgDias.getChildAt(it) as Chip }
-            .filter { it.isChecked }
-            .map { (it.tag as String).toInt() }
-        viewModel.salvar(
-            categoria = categorias.getOrNull(binding.spCategoria.selectedItemPosition)?.first,
-            mes = meses.getOrNull(binding.spMes.selectedItemPosition),
-            atendente = binding.etAtendente.text.toString(),
-            dias = dias
-        )
+    // Horários de um dia: desmarcar = indisponível só nesse dia.
+    private fun ajustarDia(data: String) {
+        val horarios = viewModel.horariosDoDia(data)
+        if (horarios.isEmpty()) {
+            mostrarMensagem(com.cjstudio.manicure.ui.common.texto(R.string.agenda_erro_horarios))
+            return
+        }
+        val marcados = horarios.map { it.second }.toBooleanArray()
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.agenda_horarios_do_dia, AgendaUtil.descreverDia(data)))
+            .setMultiChoiceItems(horarios.map { it.first }.toTypedArray(), marcados) { _, i, marcado -> marcados[i] = marcado }
+            .setPositiveButton(R.string.salvar) { _, _ ->
+                viewModel.definirDisponiveisDoDia(data, horarios.filterIndexed { i, _ -> marcados[i] }.map { it.first }.toSet())
+            }
+            .setNegativeButton(R.string.cancelar, null)
+            .show()
     }
 
     companion object {

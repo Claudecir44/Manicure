@@ -55,40 +55,63 @@ object AgendaUtil {
         return SimpleDateFormat("EEE, dd/MM 'às' HH:mm", BR).format(c.time).replaceFirstChar { it.uppercase() }
     }
 
-    // Dias do mês com horário livre, a partir de agora.
-    fun diasLivres(agenda: Agenda, agora: Long = System.currentTimeMillis()): List<Dia> {
-        val (ano, m) = anoMes(agenda.mes) ?: return emptyList()
-        val ocupados = agenda.ocupados.toSet()
+    // Um dia do calendário do mês (tela de criar agenda).
+    data class DiaDoMes(val data: String, val titulo: String, val diaSemana: Int, val passado: Boolean)
+
+    // Todos os dias do mês: "Seg 03", "Ter 04"...
+    fun diasDoMes(mes: String?): List<DiaDoMes> {
+        val (ano, m) = anoMes(mes) ?: return emptyList()
+        val hoje = chaveData(Calendar.getInstance())
         val c = Calendar.getInstance().apply { clear(); set(ano, m - 1, 1) }
-        val dias = mutableListOf<Dia>()
+        val lista = mutableListOf<DiaDoMes>()
         while (c.get(Calendar.MONTH) == m - 1) {
-            if (c.get(Calendar.DAY_OF_WEEK) in agenda.diasSemana) {
-                val data = "%04d%02d%02d".format(ano, m, c.get(Calendar.DAY_OF_MONTH))
-                val livres = agenda.horarios.sortedBy { minutos(it) ?: 0 }.mapNotNull { hora ->
-                    val chave = "$data-${hora.replace(":", "")}"
-                    val quando = calendario(chave)?.timeInMillis ?: return@mapNotNull null
-                    if (chave in ocupados || quando <= agora) null else Horario(chave, hora)
-                }
-                if (livres.isNotEmpty()) {
-                    dias += Dia(data, SimpleDateFormat("EEE dd/MM", BR).format(c.time).replaceFirstChar { it.uppercase() }, livres)
-                }
-            }
+            val data = chaveData(c)
+            lista += DiaDoMes(data, SimpleDateFormat("EEE dd", BR).format(c.time).replaceFirstChar { it.uppercase() }, c.get(Calendar.DAY_OF_WEEK), data < hoje)
             c.add(Calendar.DAY_OF_MONTH, 1)
         }
-        return dias
+        return lista
     }
 
-    // Total de horários do mês (pra mostrar "12 de 80 ocupados").
-    fun totalHorarios(agenda: Agenda): Int {
-        val (ano, m) = anoMes(agenda.mes) ?: return 0
-        val c = Calendar.getInstance().apply { clear(); set(ano, m - 1, 1) }
-        var dias = 0
-        while (c.get(Calendar.MONTH) == m - 1) {
-            if (c.get(Calendar.DAY_OF_WEEK) in agenda.diasSemana) dias++
-            c.add(Calendar.DAY_OF_MONTH, 1)
-        }
-        return dias * agenda.horarios.size
+    // Agenda nova: segunda a sexta já marcados (sem os dias que já passaram).
+    fun diasPadrao(mes: String?): List<String> =
+        diasDoMes(mes).filter { !it.passado && it.diaSemana in Calendar.MONDAY..Calendar.FRIDAY }.map { it.data }
+
+    // Dias marcados da agenda (agendas antigas guardavam dias da semana).
+    fun diasAtivos(agenda: Agenda): List<String> =
+        if (agenda.dias.isNotEmpty()) agenda.dias
+        else diasDoMes(agenda.mes).filter { it.diaSemana in agenda.diasSemana }.map { it.data }
+
+    fun chaveHorario(data: String, hora: String) = "$data-${hora.replace(":", "")}"
+
+    // "20261105" -> "Qui, 05/11".
+    fun descreverDia(data: String): String {
+        val c = calendario("$data-0000") ?: return data
+        return SimpleDateFormat("EEE, dd/MM", BR).format(c.time).replaceFirstChar { it.uppercase() }
     }
+
+    // Dias do mês com horário livre, a partir de agora.
+    fun diasLivres(agenda: Agenda, agora: Long = System.currentTimeMillis()): List<Dia> {
+        val indisponiveis = (agenda.ocupados + agenda.bloqueados).toSet()
+        val horas = agenda.horarios.sortedBy { minutos(it) ?: 0 }
+        return diasAtivos(agenda).sorted().mapNotNull { data ->
+            val livres = horas.mapNotNull { hora ->
+                val chave = chaveHorario(data, hora)
+                val quando = calendario(chave)?.timeInMillis ?: return@mapNotNull null
+                if (chave in indisponiveis || quando <= agora) null else Horario(chave, hora)
+            }
+            if (livres.isEmpty()) null
+            else Dia(data, SimpleDateFormat("EEE dd/MM", BR).format(calendario("$data-0000")!!.time).replaceFirstChar { it.uppercase() }, livres)
+        }
+    }
+
+    // Total de horários do mês (pra mostrar "12 de 80 marcados").
+    fun totalHorarios(agenda: Agenda): Int {
+        val bloqueados = agenda.bloqueados.toSet()
+        return diasAtivos(agenda).sumOf { data -> agenda.horarios.count { chaveHorario(data, it) !in bloqueados } }
+    }
+
+    private fun chaveData(c: Calendar) =
+        "%04d%02d%02d".format(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH))
 
     // Mês já terminou (some da lista da cliente).
     fun mesPassado(mes: String?): Boolean = mes != null && mes < proximosMeses(1).first()

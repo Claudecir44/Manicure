@@ -261,12 +261,19 @@
     <string name="agenda_mes">Mês</string>
     <string name="agenda_atendente">Profissional que atende</string>
     <string name="agenda_atendente_dica">Nome de quem vai atender</string>
-    <string name="agenda_dias">Dias da semana</string>
+    <string name="agenda_dias">Dias do mês</string>
+    <string name="agenda_dias_dica">Todos os dias do mês aparecem. Toque para desmarcar os dias em que você não atende. Segure um dia para tirar horários só dele.</string>
+    <string name="agenda_dias_marcados">%1$d dias marcados</string>
+    <string name="agenda_n_dias">%1$d dias</string>
+    <string name="agenda_lembrete_ajuste">Ajuste seus horários</string>
+    <string name="agenda_aplicar">Aplicar horários</string>
+    <string name="agenda_ajustar_dia">Horários indisponíveis num dia</string>
+    <string name="agenda_horarios_do_dia">Horários de %1$s (desmarque os indisponíveis)</string>
     <string name="agenda_horarios">Horários de cada dia</string>
     <string name="agenda_inicio">Início</string>
     <string name="agenda_fim">Fim</string>
     <string name="agenda_intervalo">A cada (min)</string>
-    <string name="agenda_horarios_dica">Ex.: das 09:00 às 18:00 a cada 60 min. Depois toque no x para tirar um horário (almoço, por exemplo).</string>
+    <string name="agenda_horarios_dica">Digite o início e o término do atendimento e o intervalo entre os horários, e toque em Aplicar. Toque no x para tirar um horário de todos os dias (almoço, por exemplo).</string>
     <string name="agenda_gerar">Gerar horários</string>
     <string name="agenda_sem_horarios">Nenhum horário ainda.</string>
     <string name="agenda_adicionar_horario">+ Adicionar horário</string>
@@ -278,7 +285,7 @@
     <string name="agenda_erro_categoria">Escolha a categoria.</string>
     <string name="agenda_erro_mes">Escolha o mês.</string>
     <string name="agenda_erro_atendente">Informe quem vai atender.</string>
-    <string name="agenda_erro_dias">Marque pelo menos um dia da semana.</string>
+    <string name="agenda_erro_dias">Marque pelo menos um dia do mês.</string>
     <string name="agenda_erro_horarios">Gere ou adicione pelo menos um horário.</string>
 
     <!-- Agendar (cliente) -->

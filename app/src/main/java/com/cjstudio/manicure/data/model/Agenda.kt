@@ -29,8 +29,8 @@ object Categorias {
 }
 
 // Agenda mensal de uma categoria — profissionais/{uid}/agendas/{id}.
-// Os horários livres são: cada dia do mês cujo dia da semana está em
-// diasSemana × cada horário de "horarios", menos os "ocupados". Os ocupados
+// Os horários livres são: cada dia marcado em "dias" × cada horário de
+// "horarios", menos os "bloqueados" daquele dia e os "ocupados". Os ocupados
 // guardam só a chave do horário (sem nome de cliente): a cliente vê o que
 // está livre, mas não quem marcou.
 data class Agenda(
@@ -42,10 +42,16 @@ data class Agenda(
     var mes: String? = null,
     // Quem atende nesta agenda (a própria profissional ou alguém da equipe).
     var atendente: String? = null,
-    // Calendar.SUNDAY (1) .. Calendar.SATURDAY (7).
+    // Dias do mês que atendem, "20261105" (a profissional marca/desmarca cada um).
+    var dias: List<String> = emptyList(),
+    // Agendas antigas: dias da semana, Calendar.SUNDAY (1) .. SATURDAY (7).
+    // Só usado quando "dias" está vazio.
     var diasSemana: List<Int> = emptyList(),
     // "09:00", "10:00"...
     var horarios: List<String> = emptyList(),
+    // Horários indisponíveis num dia específico ("20261105-1200"), mesmo
+    // estando em "horarios" — ex.: almoço mais longo, compromisso.
+    var bloqueados: List<String> = emptyList(),
     // Chaves "20261105-0900" já reservadas.
     var ocupados: List<String> = emptyList(),
     // Última chave reservada por uma cliente (as regras conferem a reserva).

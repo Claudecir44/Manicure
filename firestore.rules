@@ -108,7 +108,9 @@ service cloud.firestore {
     }
 
     match /conversas/{conversaId} {
-      allow read: if participante(resource.data);
+      // resource == null: conversa ainda não existe (o app confere antes de
+      // criar). Sem isso, abrir o chat pela primeira vez dava PERMISSION_DENIED.
+      allow read: if logado() && (resource == null || request.auth.uid in resource.data.participantes);
       // Id fixo profissionalId_clienteId; ninguém conversa consigo mesmo.
       allow create: if participante(request.resource.data)
         && request.resource.data.participantes == [request.resource.data.profissionalId, request.resource.data.clienteId]

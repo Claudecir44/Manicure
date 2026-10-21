@@ -86,10 +86,12 @@ class PainelProfissionalActivity : AppCompatActivity() {
         }
         binding.btnCompartilhar.setOnClickListener { compartilhar() }
         binding.btnCategorias.setOnClickListener { escolherCategorias() }
-        binding.chat.btnChat.setOnClickListener {
+        val abrirConversas = View.OnClickListener {
             startActivity(Intent(this, com.cjstudio.manicure.ui.chat.ConversasActivity::class.java)
                 .putExtra(com.cjstudio.manicure.ui.chat.ConversasActivity.EXTRA_COMO_PROFISSIONAL, true))
         }
+        binding.btnAbrirChat.setOnClickListener(abrirConversas)
+        binding.chat.btnChat.setOnClickListener(abrirConversas)
         coletar(viewModel.naoLidas) { n ->
             binding.chat.tvBadgeChat.visibility = if (n.comoProfissional > 0) View.VISIBLE else View.GONE
             binding.chat.tvBadgeChat.text = if (n.comoProfissional > 99) "99+" else n.comoProfissional.toString()

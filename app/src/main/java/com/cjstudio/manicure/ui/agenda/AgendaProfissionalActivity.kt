@@ -58,7 +58,7 @@ class AgendaProfissionalActivity : AppCompatActivity() {
                 id = a.id.orEmpty(),
                 titulo = "${Categorias.nome(a.categoria)} · ${AgendaUtil.nomeMes(a.mes)}",
                 linha2 = getString(R.string.agenda_linha_atendente, a.atendente.orEmpty()),
-                linha3 = "${diasDaSemana(a.diasSemana)}  ·  ${getString(R.string.agenda_horarios_dia, a.horarios.size)}",
+                linha3 = "${getString(R.string.agenda_n_dias, AgendaUtil.diasAtivos(a).size)}  ·  ${getString(R.string.agenda_horarios_dia, a.horarios.size)}",
                 selo = getString(R.string.agenda_ocupados, a.ocupados.size, AgendaUtil.totalHorarios(a))
             )
         })
@@ -80,11 +80,6 @@ class AgendaProfissionalActivity : AppCompatActivity() {
         val c = chave ?: return true
         val agora = java.text.SimpleDateFormat("yyyyMMdd-HHmm", java.util.Locale.US).format(java.util.Date())
         return c < agora
-    }
-
-    private fun diasDaSemana(dias: List<Int>): String {
-        val nomes = resources.getStringArray(R.array.dias_semana_curto)
-        return dias.sorted().joinToString(", ") { nomes.getOrElse(it - 1) { "" } }
     }
 
     private fun agenda(id: String) = viewModel.estado.value.agendas.firstOrNull { it.id == id }

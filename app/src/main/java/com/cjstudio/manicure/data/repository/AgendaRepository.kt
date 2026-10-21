@@ -52,8 +52,11 @@ class AgendaRepository @Inject constructor(
             "categoria" to agenda.categoria,
             "mes" to agenda.mes,
             "atendente" to agenda.atendente,
-            "diasSemana" to agenda.diasSemana.sorted(),
-            "horarios" to agenda.horarios
+            "dias" to agenda.dias.sorted(),
+            // Agenda nova não usa mais dias da semana (vale a lista de dias).
+            "diasSemana" to emptyList<Int>(),
+            "horarios" to agenda.horarios,
+            "bloqueados" to agenda.bloqueados
         )
         etapa("salvar agenda") {
             val id = agenda.id
