@@ -14,11 +14,16 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
+        <!-- Foto da cliente (tocar abre o Meu perfil). -->
         <ImageView
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:contentDescription="@null"
-            android:src="@drawable/logo_manicure" />
+            android:id="@+id/ivFotoCliente"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_foto_anel"
+            android:contentDescription="@string/cliente_editar_perfil"
+            android:padding="3dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_pessoa" />
 
         <TextView
             android:id="@+id/tvOla"
@@ -67,6 +72,17 @@
             android:layout_weight="1"
             android:padding="6dp"
             android:text="@string/meus_horarios_link"
+            android:textColor="?attr/corDestaque"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvMeuPerfil"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:padding="6dp"
+            android:text="@string/cliente_editar_perfil"
             android:textColor="?attr/corDestaque"
             android:textSize="13sp"
             android:textStyle="bold" />

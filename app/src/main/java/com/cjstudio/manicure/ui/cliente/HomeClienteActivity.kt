@@ -42,6 +42,9 @@ class HomeClienteActivity : AppCompatActivity() {
         if (r.values.any { it }) viewModel.localizacaoLiberada()
     }
 
+    // Já abriu o Meu perfil pra pôr a foto (o cadastro chega duas vezes: início e onResume).
+    private var pedindoFoto = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeClienteBinding.inflate(layoutInflater)
@@ -60,11 +63,21 @@ class HomeClienteActivity : AppCompatActivity() {
         }
         com.cjstudio.manicure.ui.common.PermissaoNotificacao.pedir(this)
         binding.tvMeusHorarios.setOnClickListener { startActivity(Intent(this, com.cjstudio.manicure.ui.agenda.MeusHorariosActivity::class.java)) }
+        val abrirMeuPerfil = View.OnClickListener { startActivity(Intent(this, PerfilClienteActivity::class.java)) }
+        binding.tvMeuPerfil.setOnClickListener(abrirMeuPerfil)
+        binding.tvOla.setOnClickListener(abrirMeuPerfil)
+        binding.ivFotoCliente.setOnClickListener(abrirMeuPerfil)
 
         pedirLocalizacao.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
 
         coletar(viewModel.cliente) { c ->
             binding.tvOla.text = getString(R.string.home_ola, c?.nome.orEmpty().substringBefore(" "))
+            binding.ivFotoCliente.carregarFotoRedonda(c?.fotoUrl)
+            // Cadastro antigo sem foto: a foto agora é obrigatória, então manda pôr.
+            if (c != null && c.fotoUrl.isNullOrBlank() && !pedindoFoto) {
+                pedindoFoto = true
+                startActivity(Intent(this, PerfilClienteActivity::class.java).putExtra(PerfilClienteActivity.EXTRA_FOTO_OBRIGATORIA, true))
+            }
         }
         coletar(viewModel.lista) { lista ->
             adapter.lista = lista
@@ -79,6 +92,12 @@ class HomeClienteActivity : AppCompatActivity() {
                 is HomeClienteViewModel.Evento.Mensagem -> mostrarMensagem(evento.texto)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.atualizarCliente()
+        viewModel.recarregarLista()
     }
 
     private fun abrirPerfil(id: String) {

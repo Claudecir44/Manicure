@@ -78,13 +78,23 @@ class HomeClienteViewModel @Inject constructor(
     init {
         falhas.definirUsuario(auth.uidLogado())
         viewModelScope.launch { notificacoes.registrarToken() }
-        viewModelScope.launch { clientes.buscarLogada().onSuccess { _cliente.value = it } }
+        atualizarCliente()
         viewModelScope.launch {
             // Uma vez por abertura do app: vai direto pro perfil preferido.
             preferido = preferencias.perfilFavorito()
             preferido?.let { _eventos.send(Evento.AbrirPerfil(it)) }
         }
         buscarQuandoParar()
+    }
+
+    // Também ao voltar pra tela inicial: nome/foto dela e fotos das
+    // profissionais podem ter mudado.
+    fun atualizarCliente() {
+        viewModelScope.launch { clientes.buscarLogada().onSuccess { _cliente.value = it } }
+    }
+
+    fun recarregarLista() {
+        viewModelScope.launch { buscar(textoBusca.value) }
     }
 
     @OptIn(FlowPreview::class)

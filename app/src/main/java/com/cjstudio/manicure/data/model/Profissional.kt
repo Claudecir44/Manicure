@@ -97,6 +97,8 @@ data class Cliente(
     var nome: String? = null,
     var email: String? = null,
     var telefone: String? = null,
+    // Foto obrigatória no cadastro (perfis/{uid}/ no Storage).
+    var fotoUrl: String? = null,
     var bloqueado: Boolean = false,
     @ServerTimestamp
     var criadoEm: Date? = null

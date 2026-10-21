@@ -415,4 +415,15 @@
     <string name="suporte_corpo_login">Olá! Preciso de ajuda para entrar no app.\n\nE-mail da conta: %1$s\nSou: %2$s\n\nO que aconteceu:\n</string>
     <string name="suporte_sou_profissional">profissional</string>
     <string name="suporte_sou_cliente">cliente</string>
+    <!-- Foto e perfil da cliente. -->
+    <string name="cadastro_foto_dica">Toque para pôr sua foto (obrigatória)</string>
+    <string name="cadastro_foto_trocar">Toque para trocar a foto</string>
+    <string name="cadastro_erro_foto">Coloque uma foto sua para criar o cadastro.</string>
+    <string name="cliente_editar_perfil">Meu perfil</string>
+    <string name="cliente_perfil_titulo">Meu perfil</string>
+    <string name="cliente_perfil_email">E-mail de acesso: %1$s</string>
+    <string name="cliente_perfil_salvo">Perfil salvo.</string>
+    <string name="cliente_foto_salva">Foto atualizada.</string>
+    <string name="cliente_perfil_dica">Seu nome e telefone aparecem para a profissional quando você marca um horário ou conversa no chat.</string>
+    <string name="cliente_foto_obrigatoria">Para continuar usando o app, coloque uma foto sua. Toque na foto acima.</string>
 </resources>

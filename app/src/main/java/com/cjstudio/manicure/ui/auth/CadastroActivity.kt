@@ -3,6 +3,8 @@ package com.cjstudio.manicure.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.cjstudio.manicure.R
@@ -11,7 +13,9 @@ import com.cjstudio.manicure.ui.common.Navegacao
 import com.cjstudio.manicure.ui.common.TermosActivity
 import com.cjstudio.manicure.ui.common.coletar
 import com.cjstudio.manicure.ui.common.mostrarMensagem
+import com.cjstudio.manicure.util.FotoUtil
 import com.cjstudio.manicure.util.Papel
+import com.cjstudio.manicure.util.carregarFotoRedonda
 import com.cjstudio.manicure.util.ajustarPaddingParaTeclado
 import com.cjstudio.manicure.util.habilitarToggleSenha
 import com.cjstudio.manicure.util.mascaraTelefone
@@ -23,6 +27,10 @@ class CadastroActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCadastroBinding
     private val viewModel: CadastroViewModel by viewModels()
+
+    private val seletorFoto = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) viewModel.escolherFoto(FotoUtil.prepararParaEnvio(this, uri) ?: uri)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +47,15 @@ class CadastroActivity : AppCompatActivity() {
         binding.tvExplicacao.setText(if (profissional) R.string.cadastro_explicacao_profissional else R.string.cadastro_explicacao_cliente)
         binding.etNome.setHint(if (profissional) R.string.cadastro_nome_profissional else R.string.nome_completo)
         binding.blocoConta.visibility = if (viewModel.completando) View.GONE else View.VISIBLE
+        // Cliente: foto obrigatória no topo do formulário.
+        binding.blocoFoto.visibility = if (profissional) View.GONE else View.VISIBLE
+        binding.btnFoto.setOnClickListener {
+            seletorFoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+        coletar(viewModel.foto) { foto ->
+            binding.ivFoto.carregarFotoRedonda(foto)
+            binding.tvFotoDica.setText(if (foto == null) R.string.cadastro_foto_dica else R.string.cadastro_foto_trocar)
+        }
         binding.tvTermos.setOnClickListener { startActivity(Intent(this, TermosActivity::class.java)) }
         binding.btnCadastrar.setOnClickListener {
             viewModel.cadastrar(
@@ -79,6 +96,7 @@ class CadastroActivity : AppCompatActivity() {
     private fun limparCampos() {
         listOf(binding.etNome, binding.etTelefone, binding.etEmail, binding.etSenha, binding.etConfirmarSenha).forEach { it.text?.clear() }
         binding.cbTermos.isChecked = false
+        viewModel.limparFoto()
         binding.etNome.requestFocus()
     }
 }

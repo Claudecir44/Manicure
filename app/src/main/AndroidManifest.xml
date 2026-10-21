@@ -123,6 +123,10 @@
             android:name=".ui.perfil.PerfilProfissionalActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.cliente.PerfilClienteActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".ui.cliente.HomeClienteActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />

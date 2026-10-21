@@ -165,7 +165,7 @@ class PainelAdminViewModel @Inject constructor(
         nome = nome.orEmpty(),
         linha2 = listOfNotNull(telefone, email).joinToString("  ·  "),
         linha3 = "",
-        fotoUrl = null,
+        fotoUrl = fotoUrl,
         selo = if (bloqueado) R.string.status_bloqueado else null,
         corSelo = if (bloqueado) R.color.vermelho else null
     )
