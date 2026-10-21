@@ -48,7 +48,14 @@
                 android:id="@+id/etAtendente"
                 style="@style/Campo"
                 android:hint="@string/agenda_atendente_dica"
+                android:layout_marginBottom="4dp"
                 android:inputType="textPersonName|textCapWords" />
+
+            <TextView
+                style="@style/TextoCorpo"
+                android:layout_marginBottom="12dp"
+                android:text="@string/agenda_atendente_regra"
+                android:textSize="12sp" />
 
             <TextView
                 style="@style/RotuloCampo"

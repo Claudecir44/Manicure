@@ -103,6 +103,20 @@ class PerfilProfissionalViewModel @Inject constructor(
 
     fun nomeParaChat(): String = meuNome
 
+    // Só a dona do perfil: a cor que as clientes veem.
+    fun salvarCor(chave: String) {
+        val atual = _perfil.value ?: return
+        if (atual.id != meuId) return
+        viewModelScope.launch {
+            profissionais.salvarCorPerfil(chave)
+                .onSuccess {
+                    _perfil.value = atual.copy(corPerfil = chave)
+                    _mensagens.send(texto(R.string.aparencia_perfil_salva))
+                }
+                .onFailure { _mensagens.send(it.paraUiTexto()) }
+        }
+    }
+
     fun deixarDePreferir() {
         viewModelScope.launch {
             preferencias.definirPerfilFavorito(null)

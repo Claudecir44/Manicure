@@ -18,6 +18,11 @@
     <color name="verde_neon">#39FF14</color>
     <color name="verde_neon_claro">#9DFF85</color>
     <color name="verde_neon_escuro">#16C400</color>
+    <!-- Brilho translúcido do verde neon (topo e ícones do painel). -->
+    <color name="destaque_brilho">#2E39FF14</color>
+    <color name="destaque_brilho_fraco">#1239FF14</color>
     <color name="vermelho">#FF5A5A</color>
+    <!-- Dia que já passou no calendário da agenda. -->
+    <color name="cinza_dia">#4A4452</color>
     <color name="ic_launcher_background">#000000</color>
 </resources>

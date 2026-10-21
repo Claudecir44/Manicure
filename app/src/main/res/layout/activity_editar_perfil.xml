@@ -1,173 +1,398 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Meu perfil: abre só para ver; "Editar" libera os campos e "Salvar" grava. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/fundo"
-    android:orientation="vertical">
+    android:background="@color/fundo">
 
-    <include
-        android:id="@+id/topo"
-        layout="@layout/include_topo" />
-
-    <ScrollView
-        android:id="@+id/scrollRoot"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingEnd="12dp">
 
-            <TextView
-                style="@style/RotuloCampo"
-                android:text="@string/editar_tipo" />
+            <include
+                android:id="@+id/topo"
+                layout="@layout/include_topo"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1" />
 
-            <RadioGroup
-                android:id="@+id/rgTipo"
+            <LinearLayout
+                android:id="@+id/btnEditar"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:background="@drawable/bg_pilula_destaque"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="14dp">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_editar" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="@string/editar_botao"
+                    android:textColor="?attr/corDestaque"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ScrollView
+            android:id="@+id/scrollRoot"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="24dp">
 
-                <RadioButton
-                    android:id="@+id/rbPessoal"
-                    style="@style/Opcao"
-                    android:text="@string/editar_tipo_pessoal" />
+                <!-- Foto (troca só no modo edição). -->
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp">
 
-                <RadioButton
-                    android:id="@+id/rbSalao"
-                    style="@style/Opcao"
-                    android:text="@string/editar_tipo_salao" />
-            </RadioGroup>
+                    <ImageView
+                        android:id="@+id/ivFoto"
+                        android:layout_width="108dp"
+                        android:layout_height="108dp"
+                        android:background="@drawable/bg_foto_anel"
+                        android:contentDescription="@string/painel_trocar_foto"
+                        android:padding="5dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_pessoa" />
 
-            <EditText
-                android:id="@+id/etNomeExibicao"
-                style="@style/Campo"
-                android:hint="@string/editar_nome_pessoal"
-                android:inputType="textPersonName|textCapWords" />
+                    <ImageView
+                        android:id="@+id/ivSeloCamera"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="bottom|end"
+                        android:background="@drawable/bg_selo_camera"
+                        android:importantForAccessibility="no"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_camera"
+                        android:visibility="gone"
+                        app:tint="?attr/corTextoBotao" />
+                </FrameLayout>
 
-            <EditText
-                android:id="@+id/etNomeResponsavel"
-                style="@style/Campo"
-                android:hint="@string/editar_nome_responsavel"
-                android:inputType="textPersonName|textCapWords"
-                android:visibility="gone" />
-
-            <TextView
-                style="@style/RotuloCampo"
-                android:text="@string/editar_apresentacao" />
-
-            <EditText
-                android:id="@+id/etApresentacao"
-                style="@style/CampoLongo"
-                android:hint="@string/editar_apresentacao_dica"
-                android:maxLength="600" />
-
-            <TextView
-                style="@style/RotuloCampo"
-                android:text="@string/editar_sobre_trabalho" />
-
-            <EditText
-                android:id="@+id/etSobreTrabalho"
-                style="@style/CampoLongo"
-                android:hint="@string/editar_sobre_trabalho_dica"
-                android:maxLength="1500" />
-
-            <TextView
-                style="@style/TituloSecao"
-                android:text="@string/editar_contatos" />
-
-            <EditText
-                android:id="@+id/etWhatsapp"
-                style="@style/Campo"
-                android:hint="@string/editar_whatsapp"
-                android:inputType="phone" />
-
-            <EditText
-                android:id="@+id/etTelefone"
-                style="@style/Campo"
-                android:hint="@string/editar_telefone"
-                android:inputType="phone" />
-
-            <EditText
-                android:id="@+id/etInstagram"
-                style="@style/Campo"
-                android:hint="@string/editar_instagram"
-                android:inputType="textNoSuggestions" />
-
-            <TextView
-                style="@style/TituloSecao"
-                android:text="@string/editar_local" />
-
-            <EditText
-                android:id="@+id/etCidade"
-                style="@style/Campo"
-                android:hint="@string/editar_cidade"
-                android:inputType="textCapWords" />
-
-            <EditText
-                android:id="@+id/etBairro"
-                style="@style/Campo"
-                android:hint="@string/editar_bairro"
-                android:inputType="textCapWords" />
-
-            <EditText
-                android:id="@+id/etEndereco"
-                style="@style/Campo"
-                android:hint="@string/editar_endereco"
-                android:inputType="textPostalAddress|textCapWords" />
-
-            <EditText
-                android:id="@+id/etHorario"
-                style="@style/Campo"
-                android:hint="@string/editar_horario"
-                android:inputType="textCapSentences" />
-
-            <TextView
-                style="@style/RotuloCampo"
-                android:text="@string/editar_atendimento" />
-
-            <RadioGroup
-                android:id="@+id/rgAtendimento"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp">
-
-                <RadioButton
-                    android:id="@+id/rbNoSalao"
-                    style="@style/Opcao"
+                <TextView
+                    android:id="@+id/tvModo"
                     android:layout_width="match_parent"
-                    android:text="@string/atendimento_salao_opcao" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:textColor="@color/texto_secundario"
+                    android:textSize="12sp" />
 
-                <RadioButton
-                    android:id="@+id/rbDomicilio"
-                    style="@style/Opcao"
-                    android:layout_width="match_parent"
-                    android:text="@string/atendimento_domicilio_opcao" />
+                <!-- Identificação. -->
+                <LinearLayout style="@style/CartaoSecao">
 
-                <RadioButton
-                    android:id="@+id/rbAmbos"
-                    style="@style/Opcao"
-                    android:layout_width="match_parent"
-                    android:text="@string/atendimento_ambos_opcao" />
-            </RadioGroup>
+                    <TextView
+                        style="@style/TituloCartao"
+                        android:text="@string/editar_identificacao" />
+
+                    <TextView
+                        style="@style/RotuloCampo"
+                        android:text="@string/editar_tipo" />
+
+                    <RadioGroup
+                        android:id="@+id/rgTipo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/rbPessoal"
+                            style="@style/Opcao"
+                            android:text="@string/editar_tipo_pessoal" />
+
+                        <RadioButton
+                            android:id="@+id/rbSalao"
+                            style="@style/Opcao"
+                            android:text="@string/editar_tipo_salao" />
+                    </RadioGroup>
+
+                    <EditText
+                        android:id="@+id/etNomeExibicao"
+                        style="@style/Campo"
+                        android:hint="@string/editar_nome_pessoal"
+                        android:inputType="textPersonName|textCapWords" />
+
+                    <EditText
+                        android:id="@+id/etNomeResponsavel"
+                        style="@style/Campo"
+                        android:hint="@string/editar_nome_responsavel"
+                        android:inputType="textPersonName|textCapWords"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- Categorias de serviço (cada uma pode ter sua agenda). -->
+                <LinearLayout style="@style/CartaoSecao">
+
+                    <TextView
+                        style="@style/TituloCartao"
+                        android:text="@string/painel_categorias" />
+
+                    <TextView
+                        android:id="@+id/tvSemCategorias"
+                        style="@style/TextoCorpo"
+                        android:text="@string/painel_sem_categorias"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/cgCategorias"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:chipSpacingVertical="2dp" />
+                </LinearLayout>
+
+                <!-- Apresentação e sobre o trabalho. -->
+                <LinearLayout style="@style/CartaoSecao">
+
+                    <TextView
+                        style="@style/TituloCartao"
+                        android:text="@string/editar_apresentacao_titulo" />
+
+                    <TextView
+                        style="@style/RotuloCampo"
+                        android:text="@string/editar_apresentacao" />
+
+                    <EditText
+                        android:id="@+id/etApresentacao"
+                        style="@style/CampoLongo"
+                        android:hint="@string/editar_apresentacao_dica"
+                        android:maxLength="600" />
+
+                    <TextView
+                        style="@style/RotuloCampo"
+                        android:text="@string/editar_sobre_trabalho" />
+
+                    <EditText
+                        android:id="@+id/etSobreTrabalho"
+                        style="@style/CampoLongo"
+                        android:layout_marginBottom="0dp"
+                        android:hint="@string/editar_sobre_trabalho_dica"
+                        android:maxLength="1500" />
+                </LinearLayout>
+
+                <!-- Contatos. -->
+                <LinearLayout style="@style/CartaoSecao">
+
+                    <TextView
+                        style="@style/TituloCartao"
+                        android:text="@string/editar_contatos" />
+
+                    <EditText
+                        android:id="@+id/etWhatsapp"
+                        style="@style/Campo"
+                        android:hint="@string/editar_whatsapp"
+                        android:inputType="phone" />
+
+                    <EditText
+                        android:id="@+id/etTelefone"
+                        style="@style/Campo"
+                        android:hint="@string/editar_telefone"
+                        android:inputType="phone" />
+
+                    <EditText
+                        android:id="@+id/etInstagram"
+                        style="@style/Campo"
+                        android:layout_marginBottom="0dp"
+                        android:hint="@string/editar_instagram"
+                        android:inputType="textNoSuggestions" />
+                </LinearLayout>
+
+                <!-- Local e atendimento. -->
+                <LinearLayout style="@style/CartaoSecao">
+
+                    <TextView
+                        style="@style/TituloCartao"
+                        android:text="@string/editar_local" />
+
+                    <EditText
+                        android:id="@+id/etCidade"
+                        style="@style/Campo"
+                        android:hint="@string/editar_cidade"
+                        android:inputType="textCapWords" />
+
+                    <EditText
+                        android:id="@+id/etBairro"
+                        style="@style/Campo"
+                        android:hint="@string/editar_bairro"
+                        android:inputType="textCapWords" />
+
+                    <EditText
+                        android:id="@+id/etEndereco"
+                        style="@style/Campo"
+                        android:hint="@string/editar_endereco"
+                        android:inputType="textPostalAddress|textCapWords" />
+
+                    <EditText
+                        android:id="@+id/etHorario"
+                        style="@style/Campo"
+                        android:hint="@string/editar_horario"
+                        android:inputType="textCapSentences" />
+
+                    <TextView
+                        style="@style/RotuloCampo"
+                        android:text="@string/editar_atendimento" />
+
+                    <RadioGroup
+                        android:id="@+id/rgAtendimento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <RadioButton
+                            android:id="@+id/rbNoSalao"
+                            style="@style/Opcao"
+                            android:layout_width="match_parent"
+                            android:text="@string/atendimento_salao_opcao" />
+
+                        <RadioButton
+                            android:id="@+id/rbDomicilio"
+                            style="@style/Opcao"
+                            android:layout_width="match_parent"
+                            android:text="@string/atendimento_domicilio_opcao" />
+
+                        <RadioButton
+                            android:id="@+id/rbAmbos"
+                            style="@style/Opcao"
+                            android:layout_width="match_parent"
+                            android:text="@string/atendimento_ambos_opcao" />
+                    </RadioGroup>
+                </LinearLayout>
+
+                <!-- Serviços: no modo edição, tocar edita e segurar remove. -->
+                <LinearLayout style="@style/CartaoSecao">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TituloCartao"
+                            android:layout_width="0dp"
+                            android:layout_marginBottom="0dp"
+                            android:layout_weight="1"
+                            android:text="@string/painel_servicos" />
+
+                        <TextView
+                            android:id="@+id/btnAdicionarServico"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_pilula_destaque"
+                            android:paddingStart="12dp"
+                            android:paddingTop="5dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="5dp"
+                            android:text="@string/painel_adicionar_servico"
+                            android:textColor="?attr/corDestaque"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvSemServicos"
+                        style="@style/TextoCorpo"
+                        android:text="@string/painel_sem_servicos"
+                        android:textSize="13sp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvServicos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/tvDicaServicos"
+                        style="@style/TextoCorpo"
+                        android:text="@string/editar_servicos_dica"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- Galeria: até 20 fotos; no modo edição, segurar uma foto remove. -->
+                <LinearLayout style="@style/CartaoSecao">
+
+                    <TextView
+                        android:id="@+id/tvTituloGaleria"
+                        style="@style/TituloCartao" />
+
+                    <TextView
+                        android:id="@+id/tvDicaGaleria"
+                        style="@style/TextoCorpo"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/painel_galeria_dica"
+                        android:textSize="12sp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvFotos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- Barra do modo edição. -->
+        <LinearLayout
+            android:id="@+id/barraEdicao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/superficie"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/btnCancelar"
+                style="@style/BotaoContorno"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:text="@string/cancelar" />
 
             <Button
                 android:id="@+id/btnSalvar"
                 style="@style/BotaoPrimario"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1.4"
                 android:text="@string/salvar" />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:indeterminateTint="?attr/corDestaque"
-                android:visibility="gone" />
         </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="?attr/corDestaque"
+        android:visibility="gone" />
+</FrameLayout>

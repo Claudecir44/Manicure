@@ -25,6 +25,8 @@ import com.cjstudio.manicure.ui.common.VisualizadorFoto
 import com.cjstudio.manicure.ui.common.coletar
 import com.cjstudio.manicure.ui.common.mostrarMensagem
 import com.cjstudio.manicure.ui.profissional.ResumoPerfil
+import com.cjstudio.manicure.ui.common.DialogoCores
+import com.cjstudio.manicure.util.Aparencia
 import com.cjstudio.manicure.util.carregarFotoRedonda
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,7 +40,15 @@ class PerfilProfissionalActivity : AppCompatActivity() {
     private val servicosAdapter = ServicosAdapter()
     private val fotosAdapter = FotosAdapter(aoTocar = { VisualizadorFoto.mostrar(this, it.url) })
 
+    // Cor que esta tela abriu (Profissional.corPerfil; "" = rosa padrão).
+    private var corAplicada = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        // O tema sai antes do perfil chegar: usa a cor da última visita e, se
+        // a do banco for outra, mostrar() refaz a tela uma vez já na cor certa.
+        corAplicada = intent.getStringExtra(EXTRA_COR)
+            ?: Aparencia.corPerfilGuardada(this, intent.getStringExtra(EXTRA_ID).orEmpty()).orEmpty()
+        setTheme(Aparencia.temaPerfil(corAplicada))
         super.onCreate(savedInstanceState)
         binding = ActivityPerfilProfissionalBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -60,9 +70,22 @@ class PerfilProfissionalActivity : AppCompatActivity() {
     }
 
     private fun mostrar(p: Profissional) {
-        binding.topo.tvTitulo.text = p.nomeExibicao
+        val cor = p.corPerfil.orEmpty()
+        p.id?.let { Aparencia.guardarCorPerfil(this, it, cor) }
+        if (cor != corAplicada) {
+            intent.putExtra(EXTRA_COR, cor)
+            recreate()
+            return
+        }
+
         binding.ivFoto.carregarFotoRedonda(p.fotoPerfilUrl)
         binding.tvNome.text = p.nomeExibicao
+        // "Ver como cliente": a dona escolhe aqui a cor que as clientes veem.
+        binding.btnAparencia.visibility = if (p.id == viewModel.meuId) View.VISIBLE else View.GONE
+        binding.btnAparencia.setOnClickListener {
+            DialogoCores.mostrar(this, R.string.aparencia_perfil_titulo, R.string.aparencia_perfil_dica,
+                Aparencia.corPerfil(cor) ?: Aparencia.corPerfil("rosa")) { escolhida -> viewModel.salvarCor(escolhida.chave) }
+        }
         binding.tvTipo.text = if (p.tipoPerfil == TipoPerfil.SALAO) {
             listOfNotNull(getString(R.string.perfil_tipo_salao), p.nomeResponsavel?.takeIf { it.isNotBlank() }).joinToString(" · ")
         } else {
@@ -175,5 +198,6 @@ class PerfilProfissionalActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_ID = "profissionalId"
+        private const val EXTRA_COR = "corPerfil"
     }
 }

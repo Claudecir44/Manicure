@@ -45,6 +45,9 @@ data class Profissional(
 
     // Código curto pra divulgar ("Me procure no app: ANA123").
     var codigo: String? = null,
+    // Cor do perfil que as clientes veem (chave de util/Aparencia.CORES);
+    // vazio = rosa padrão do app.
+    var corPerfil: String? = null,
     // Texto em minúsculas sem acento pra busca (nome + cidade + bairro).
     var busca: String? = null,
 

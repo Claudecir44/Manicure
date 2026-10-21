@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cores que a profissional escolhe em "Aparência" (util/Aparencia.kt).
+     O verde neon é o próprio Theme.Manicure.Profissional. -->
+<resources>
+
+    <style name="Theme.Manicure.Profissional.Rosa">
+        <item name="corDestaque">#FF2D95</item>
+        <item name="corDestaqueClaro">#FF6FB5</item>
+        <item name="corDestaqueEscuro">#D9006C</item>
+        <item name="corTextoBotao">@color/branco</item>
+        <item name="corBalao">#5A1236</item>
+        <item name="corBrilho">#2EFF2D95</item>
+        <item name="corBrilhoFraco">#12FF2D95</item>
+        <item name="colorPrimary">#FF2D95</item>
+        <item name="colorPrimaryVariant">#D9006C</item>
+        <item name="colorOnPrimary">@color/branco</item>
+        <item name="colorSecondary">#FF2D95</item>
+        <item name="colorSecondaryVariant">#D9006C</item>
+        <item name="colorOnSecondary">@color/branco</item>
+    </style>
+
+    <style name="Theme.Manicure.Profissional.Roxo">
+        <item name="corDestaque">#B04DFF</item>
+        <item name="corDestaqueClaro">#D29BFF</item>
+        <item name="corDestaqueEscuro">#7B1FD1</item>
+        <item name="corTextoBotao">@color/branco</item>
+        <item name="corBalao">#3A1A5C</item>
+        <item name="corBrilho">#2EB04DFF</item>
+        <item name="corBrilhoFraco">#12B04DFF</item>
+        <item name="colorPrimary">#B04DFF</item>
+        <item name="colorPrimaryVariant">#7B1FD1</item>
+        <item name="colorOnPrimary">@color/branco</item>
+        <item name="colorSecondary">#B04DFF</item>
+        <item name="colorSecondaryVariant">#7B1FD1</item>
+        <item name="colorOnSecondary">@color/branco</item>
+    </style>
+
+    <style name="Theme.Manicure.Profissional.Azul">
+        <item name="corDestaque">#2D9CFF</item>
+        <item name="corDestaqueClaro">#85C6FF</item>
+        <item name="corDestaqueEscuro">#0066D6</item>
+        <item name="corTextoBotao">@color/branco</item>
+        <item name="corBalao">#0F2F55</item>
+        <item name="corBrilho">#2E2D9CFF</item>
+        <item name="corBrilhoFraco">#122D9CFF</item>
+        <item name="colorPrimary">#2D9CFF</item>
+        <item name="colorPrimaryVariant">#0066D6</item>
+        <item name="colorOnPrimary">@color/branco</item>
+        <item name="colorSecondary">#2D9CFF</item>
+        <item name="colorSecondaryVariant">#0066D6</item>
+        <item name="colorOnSecondary">@color/branco</item>
+    </style>
+
+    <style name="Theme.Manicure.Profissional.Ciano">
+        <item name="corDestaque">#00E5FF</item>
+        <item name="corDestaqueClaro">#80F2FF</item>
+        <item name="corDestaqueEscuro">#00A8C2</item>
+        <item name="corTextoBotao">@color/preto</item>
+        <item name="corBalao">#0B3F47</item>
+        <item name="corBrilho">#2E00E5FF</item>
+        <item name="corBrilhoFraco">#1200E5FF</item>
+        <item name="colorPrimary">#00E5FF</item>
+        <item name="colorPrimaryVariant">#00A8C2</item>
+        <item name="colorOnPrimary">@color/preto</item>
+        <item name="colorSecondary">#00E5FF</item>
+        <item name="colorSecondaryVariant">#00A8C2</item>
+        <item name="colorOnSecondary">@color/preto</item>
+    </style>
+
+    <style name="Theme.Manicure.Profissional.Dourado">
+        <item name="corDestaque">#FFC83D</item>
+        <item name="corDestaqueClaro">#FFE08A</item>
+        <item name="corDestaqueEscuro">#D99A00</item>
+        <item name="corTextoBotao">@color/preto</item>
+        <item name="corBalao">#4A3A0E</item>
+        <item name="corBrilho">#2EFFC83D</item>
+        <item name="corBrilhoFraco">#12FFC83D</item>
+        <item name="colorPrimary">#FFC83D</item>
+        <item name="colorPrimaryVariant">#D99A00</item>
+        <item name="colorOnPrimary">@color/preto</item>
+        <item name="colorSecondary">#FFC83D</item>
+        <item name="colorSecondaryVariant">#D99A00</item>
+        <item name="colorOnSecondary">@color/preto</item>
+    </style>
+
+    <style name="Theme.Manicure.Profissional.Laranja">
+        <item name="corDestaque">#FF7A1A</item>
+        <item name="corDestaqueClaro">#FFAE70</item>
+        <item name="corDestaqueEscuro">#D95600</item>
+        <item name="corTextoBotao">@color/preto</item>
+        <item name="corBalao">#4D2508</item>
+        <item name="corBrilho">#2EFF7A1A</item>
+        <item name="corBrilhoFraco">#12FF7A1A</item>
+        <item name="colorPrimary">#FF7A1A</item>
+        <item name="colorPrimaryVariant">#D95600</item>
+        <item name="colorOnPrimary">@color/preto</item>
+        <item name="colorSecondary">#FF7A1A</item>
+        <item name="colorSecondaryVariant">#D95600</item>
+        <item name="colorOnSecondary">@color/preto</item>
+    </style>
+
+    <style name="Theme.Manicure.Profissional.Vermelho">
+        <item name="corDestaque">#FF3B5C</item>
+        <item name="corDestaqueClaro">#FF8A9E</item>
+        <item name="corDestaqueEscuro">#D10F33</item>
+        <item name="corTextoBotao">@color/branco</item>
+        <item name="corBalao">#551220</item>
+        <item name="corBrilho">#2EFF3B5C</item>
+        <item name="corBrilhoFraco">#12FF3B5C</item>
+        <item name="colorPrimary">#FF3B5C</item>
+        <item name="colorPrimaryVariant">#D10F33</item>
+        <item name="colorOnPrimary">@color/branco</item>
+        <item name="colorSecondary">#FF3B5C</item>
+        <item name="colorSecondaryVariant">#D10F33</item>
+        <item name="colorOnSecondary">@color/branco</item>
+    </style>
+
+    <style name="Theme.Manicure.Profissional.Prata">
+        <item name="corDestaque">#E6E6E6</item>
+        <item name="corDestaqueClaro">#FFFFFF</item>
+        <item name="corDestaqueEscuro">#A8A8A8</item>
+        <item name="corTextoBotao">@color/preto</item>
+        <item name="corBalao">#3A3A3A</item>
+        <item name="corBrilho">#2EE6E6E6</item>
+        <item name="corBrilhoFraco">#12E6E6E6</item>
+        <item name="colorPrimary">#E6E6E6</item>
+        <item name="colorPrimaryVariant">#A8A8A8</item>
+        <item name="colorOnPrimary">@color/preto</item>
+        <item name="colorSecondary">#E6E6E6</item>
+        <item name="colorSecondaryVariant">#A8A8A8</item>
+        <item name="colorOnSecondary">@color/preto</item>
+    </style>
+</resources>

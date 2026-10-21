@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bolinha da legenda do calendário (a cor vem do backgroundTint). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <solid android:color="@color/branco" />
+    <stroke android:width="1dp" android:color="@color/borda" />
+    <size android:width="14dp" android:height="14dp" />
+</shape>

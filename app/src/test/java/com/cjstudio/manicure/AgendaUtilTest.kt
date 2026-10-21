@@ -15,7 +15,9 @@ class AgendaUtilTest {
 
     @Test
     fun gerarHorarios_deHoraEmHora() {
-        assertEquals(listOf("09:00", "10:00", "11:00"), AgendaUtil.gerarHorarios("09:00", "12:00", 60))
+        assertEquals(listOf("09:00", "10:00", "11:00", "12:00"), AgendaUtil.gerarHorarios("09:00", "12:00", 60))
+        // Fim fora do passo: para no último que cabe.
+        assertEquals(listOf("09:00", "10:30"), AgendaUtil.gerarHorarios("09:00", "11:00", 90))
         assertTrue(AgendaUtil.gerarHorarios("12:00", "09:00", 60).isEmpty())
     }
 

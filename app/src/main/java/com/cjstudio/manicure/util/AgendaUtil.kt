@@ -16,12 +16,13 @@ object AgendaUtil {
     // Um dia da agenda com os horários livres (já sem os passados).
     data class Dia(val data: String, val titulo: String, val livres: List<Horario>)
 
-    // "09:00" até "18:00" a cada 60 min -> 09:00, 10:00 ... 17:00.
+    // "09:00" até "18:00" a cada 60 min -> 09:00, 10:00 ... 18:00 (o último
+    // horário também fica disponível pra marcar).
     fun gerarHorarios(inicio: String, fim: String, intervaloMin: Int): List<String> {
         val ini = minutos(inicio) ?: return emptyList()
         val f = minutos(fim) ?: return emptyList()
         if (intervaloMin < 10 || f <= ini) return emptyList()
-        return (ini until f step intervaloMin).map { "%02d:%02d".format(it / 60, it % 60) }
+        return (ini..f step intervaloMin).map { "%02d:%02d".format(it / 60, it % 60) }
     }
 
     fun minutos(hora: String): Int? {
@@ -108,6 +109,39 @@ object AgendaUtil {
     fun totalHorarios(agenda: Agenda): Int {
         val bloqueados = agenda.bloqueados.toSet()
         return diasAtivos(agenda).sumOf { data -> agenda.horarios.count { chaveHorario(data, it) !in bloqueados } }
+    }
+
+    // Cor de um dia no calendário da "Minha agenda".
+    enum class SituacaoDia { PASSADO, MARCADO, ABERTO, FECHADO }
+
+    // data == null: quadro vazio antes do dia 1 (a semana começa no domingo).
+    data class DiaCalendario(val data: String?, val numero: Int, val situacao: SituacaoDia, val hoje: Boolean)
+
+    // Calendário de um mês juntando todas as agendas: já passou > tem horário
+    // marcado > aberto em alguma agenda > sem agenda.
+    fun calendarioDoMes(mes: String?, agendas: List<Agenda>, marcados: List<String>): List<DiaCalendario> {
+        val dias = diasDoMes(mes)
+        if (dias.isEmpty()) return emptyList()
+        val hoje = chaveData(Calendar.getInstance())
+        val abertos = agendas.filter { it.mes == mes }.flatMap { diasAtivos(it) }.toSet()
+        val comMarcado = marcados.map { it.take(8) }.toSet()
+        val vazios = List(dias.first().diaSemana - Calendar.SUNDAY) { DiaCalendario(null, 0, SituacaoDia.FECHADO, false) }
+        return vazios + dias.map { d ->
+            val situacao = when {
+                d.passado -> SituacaoDia.PASSADO
+                d.data in comMarcado -> SituacaoDia.MARCADO
+                d.data in abertos -> SituacaoDia.ABERTO
+                else -> SituacaoDia.FECHADO
+            }
+            DiaCalendario(d.data, d.data.takeLast(2).toInt(), situacao, d.data == hoje)
+        }
+    }
+
+    // "2026-11" + 1 -> "2026-12".
+    fun somarMes(mes: String?, meses: Int): String {
+        val (ano, m) = anoMes(mes) ?: return proximosMeses(1).first()
+        val c = Calendar.getInstance().apply { clear(); set(ano, m - 1, 1); add(Calendar.MONTH, meses) }
+        return "%04d-%02d".format(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1)
     }
 
     private fun chaveData(c: Calendar) =

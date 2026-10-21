@@ -1,33 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Perfil público. A foto fica no alto e o "←" por cima, no canto. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/fundo"
-    android:orientation="vertical">
-
-    <include
-        android:id="@+id/topo"
-        layout="@layout/include_topo" />
+    android:background="@color/fundo">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:paddingStart="20dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="20dp">
 
             <ImageView
                 android:id="@+id/ivFoto"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_gravity="center_horizontal"
-                android:background="@drawable/bg_foto_redonda"
+                android:background="@drawable/bg_foto_anel"
                 android:contentDescription="@null"
-                android:padding="3dp"
+                android:padding="5dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_pessoa" />
 
@@ -229,4 +227,46 @@
                 android:textIsSelectable="true" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-</LinearLayout>
+
+    <include
+        android:id="@+id/topo"
+        layout="@layout/include_topo"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp" />
+
+    <!-- Canto superior direito; só a dona do perfil vê: escolhe a cor que as clientes vão ver. -->
+    <LinearLayout
+        android:id="@+id/btnAparencia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="14dp"
+        android:background="@drawable/bg_pilula_destaque"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="10dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="6dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_paleta" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:text="@string/aparencia_botao"
+            android:textColor="?attr/corDestaque"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</FrameLayout>

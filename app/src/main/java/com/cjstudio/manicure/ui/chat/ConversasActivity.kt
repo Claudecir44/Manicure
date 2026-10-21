@@ -1,22 +1,29 @@
 package com.cjstudio.manicure.ui.chat
 
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.cjstudio.manicure.R
 import com.cjstudio.manicure.data.model.Conversa
 import com.cjstudio.manicure.data.repository.IAuthRepository
 import com.cjstudio.manicure.data.repository.IChatRepository
 import com.cjstudio.manicure.databinding.ActivityConversasBinding
-import com.cjstudio.manicure.ui.common.Linha
-import com.cjstudio.manicure.ui.common.LinhaAdapter
+import com.cjstudio.manicure.databinding.ItemConversaBinding
 import com.cjstudio.manicure.ui.common.coletar
+import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -52,16 +59,18 @@ class ConversasActivity : AppCompatActivity() {
     private lateinit var binding: ActivityConversasBinding
     private val viewModel: ConversasViewModel by viewModels()
     private val comoProfissional by lazy { intent.getBooleanExtra(EXTRA_COMO_PROFISSIONAL, false) }
-    private val adapter = LinhaAdapter { linha ->
-        startActivity(
-            Intent(this, ChatActivity::class.java)
-                .putExtra(ChatActivity.EXTRA_CONVERSA, linha.id)
-                .putExtra(ChatActivity.EXTRA_COMO_PROFISSIONAL, comoProfissional)
-        )
+    private val adapter by lazy {
+        ConversasAdapter(viewModel.meuId) { c ->
+            startActivity(
+                Intent(this, ChatActivity::class.java)
+                    .putExtra(ChatActivity.EXTRA_CONVERSA, c.id)
+                    .putExtra(ChatActivity.EXTRA_COMO_PROFISSIONAL, comoProfissional)
+            )
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (comoProfissional) setTheme(R.style.Theme_Manicure_Profissional)
+        if (comoProfissional) com.cjstudio.manicure.util.Aparencia.aplicar(this)
         super.onCreate(savedInstanceState)
         binding = ActivityConversasBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -73,22 +82,56 @@ class ConversasActivity : AppCompatActivity() {
         coletar(viewModel.conversas) { lista ->
             binding.progressBar.visibility = if (lista == null) View.VISIBLE else View.GONE
             binding.tvVazio.visibility = if (lista?.isEmpty() == true) View.VISIBLE else View.GONE
-            adapter.submitList(lista.orEmpty().map { c ->
-                val naoLidas = c.naoLidasParaMim(viewModel.meuId)
-                val minha = c.ultimoRemetenteId == viewModel.meuId
-                Linha(
-                    id = c.id.orEmpty(),
-                    titulo = c.nomeOutro(viewModel.meuId).orEmpty(),
-                    linha2 = (if (minha) getString(R.string.chat_voce) else "") + c.ultimaMensagem.orEmpty(),
-                    linha3 = c.ultimoTimestamp?.let { DATA.format(it) }.orEmpty(),
-                    selo = if (naoLidas > 0) resources.getQuantityString(R.plurals.chat_nao_lidas, naoLidas, naoLidas) else ""
-                )
-            })
+            adapter.submitList(lista.orEmpty())
         }
     }
 
     companion object {
         const val EXTRA_COMO_PROFISSIONAL = "comoProfissional"
+    }
+}
+
+// Não lida: nome em negrito, prévia clara, data na cor de destaque e o número
+// de mensagens novas. Lida: tudo mais apagado.
+private class ConversasAdapter(
+    private val meuId: String?,
+    private val aoTocar: (Conversa) -> Unit
+) : ListAdapter<Conversa, ConversasAdapter.Holder>(Diferenca) {
+
+    class Holder(val binding: ItemConversaBinding) : RecyclerView.ViewHolder(binding.root)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        Holder(ItemConversaBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+
+    override fun onBindViewHolder(holder: Holder, position: Int) {
+        val c = getItem(position)
+        val b = holder.binding
+        val ctx = b.root.context
+        val naoLidas = c.naoLidasParaMim(meuId)
+        val nova = naoLidas > 0
+        val nome = c.nomeOutro(meuId).orEmpty()
+        val destaque = MaterialColors.getColor(b.root, R.attr.corDestaque)
+
+        b.tvInicial.text = nome.trim().firstOrNull()?.uppercase().orEmpty()
+        b.tvNome.text = nome
+        b.tvNome.setTypeface(null, if (nova) Typeface.BOLD else Typeface.NORMAL)
+        b.tvData.text = c.ultimoTimestamp?.let { DATA.format(it) }.orEmpty()
+        b.tvData.setTextColor(if (nova) destaque else ContextCompat.getColor(ctx, R.color.dica))
+        val minha = c.ultimoRemetenteId == meuId
+        b.tvPrevia.text = (if (minha) ctx.getString(R.string.chat_voce) else "") + c.ultimaMensagem.orEmpty()
+        b.tvPrevia.setTextColor(ContextCompat.getColor(ctx, if (nova) R.color.texto else R.color.texto_secundario))
+        b.tvPrevia.setTypeface(null, if (nova) Typeface.BOLD else Typeface.NORMAL)
+        b.tvNaoLidas.visibility = if (nova) View.VISIBLE else View.GONE
+        b.tvNaoLidas.text = if (naoLidas > 99) "99+" else naoLidas.toString()
+        b.root.setOnClickListener { aoTocar(c) }
+    }
+
+    private object Diferenca : DiffUtil.ItemCallback<Conversa>() {
+        override fun areItemsTheSame(a: Conversa, b: Conversa) = a.id == b.id
+        override fun areContentsTheSame(a: Conversa, b: Conversa) = a == b
+    }
+
+    companion object {
         private val DATA = SimpleDateFormat("dd/MM HH:mm", Locale("pt", "BR"))
     }
 }

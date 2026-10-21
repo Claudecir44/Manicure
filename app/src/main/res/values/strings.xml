@@ -88,9 +88,9 @@
     <string name="painel_sem_servicos">Nenhum serviço ainda. Toque em \"+ Serviço\" (ex.: Mão simples, R$ 30,00). Toque num serviço para editar e segure para remover.</string>
     <string name="painel_galeria">Galeria (%1$d de %2$d fotos)</string>
     <string name="painel_galeria_dica">Toque em \"+ Foto\" para publicar. Segure uma foto para remover.</string>
-    <string name="painel_codigo">Seu código: %1$s</string>
+    <string name="painel_codigo">Código %1$s</string>
     <string name="painel_situacao_publicado">● Perfil visível para as clientes</string>
-    <string name="painel_situacao_incompleto">● Perfil sem nome: toque em \"Editar meu perfil\" para aparecer nas buscas</string>
+    <string name="painel_situacao_incompleto">● Perfil sem nome: toque em \"Meu perfil\" para aparecer nas buscas</string>
     <string name="painel_situacao_bloqueado">● Perfil bloqueado pela administração</string>
     <string name="painel_sem_apresentacao">Toque em \"Editar meu perfil\" e escreva uma apresentação para suas clientes.</string>
     <string name="painel_sem_sobre">Conte sobre seu trabalho: técnicas, especialidades, materiais que usa.</string>
@@ -228,7 +228,7 @@
     <!-- Categorias e agenda (profissional) -->
     <string name="painel_categorias">Categorias de serviço</string>
     <string name="painel_editar_categorias">Escolher</string>
-    <string name="painel_sem_categorias">Toque em \"Escolher\" e marque o que você faz (manicure, pedicure, cabeleireira…). Cada categoria pode ter sua agenda.</string>
+    <string name="painel_sem_categorias">Toque em \"Editar\" e marque o que você faz (manicure, pedicure, cabeleireira…). Cada categoria pode ter sua agenda.</string>
     <string name="painel_categorias_salvas">Categorias salvas.</string>
     <string name="painel_minha_agenda">Minha agenda</string>
     <string-array name="dias_semana_curto">
@@ -323,9 +323,9 @@
     <string name="chat_sem_conversas">Nenhuma conversa ainda.</string>
     <string name="chat_dica">Mensagem</string>
     <string name="chat_enviar">Enviar</string>
-    <string name="chat_enviada">%1$s · Enviada</string>
-    <string name="chat_lida">%1$s · Lida</string>
-    <string name="chat_voce">Você: </string>
+    <string name="chat_enviada">✓ Enviada</string>
+    <string name="chat_lida">✓✓ Lida</string>
+    <string name="chat_voce">"Você: "</string>
     <plurals name="chat_nao_lidas">
         <item quantity="one">%d nova</item>
         <item quantity="other">%d novas</item>
@@ -338,4 +338,81 @@
     <!-- Termos -->
     <string name="termos_titulo">Termos de Uso e Privacidade</string>
     <string name="termos_texto">O Manicure é um aplicativo da CJ Studio Technology que aproxima profissionais de unhas (manicures, nail designers e salões) das suas clientes.\n\n1. Cadastro\nVocê precisa informar dados verdadeiros: nome, celular e e-mail. Cada profissional cria o próprio acesso e cuida do próprio perfil; uma profissional não vê nem altera o perfil de outra.\n\n2. Perfil da profissional\nO que a profissional publica (nome ou nome do salão, apresentação, descrição do trabalho, serviços, preços, contatos, endereço e até 20 fotos) fica visível para as clientes do app. Publique apenas fotos de trabalhos seus e com autorização de quem aparece nelas.\n\n3. Uso dos dados\nSeus dados são usados para criar e proteger sua conta, mostrar os perfis às clientes, prevenir fraudes e cumprir obrigações legais. Não vendemos seus dados.\n\n4. Contato e pagamento\nO agendamento e o pagamento dos serviços são combinados diretamente entre cliente e profissional. O app não cobra nem intermedeia esses pagamentos.\n\n5. Conduta\nÉ proibido publicar conteúdo falso, ofensivo, de terceiros sem autorização ou que não seja relacionado ao trabalho. Também é proibido discriminar, assediar ou ameaçar qualquer pessoa. Contas que descumprirem estas regras podem ser bloqueadas.\n\n6. Seus direitos (LGPD)\nVocê pode pedir acesso, correção ou exclusão dos seus dados pelo e-mail cjstudiotechnology@gmail.com.\n\n7. Contato\nCJ Studio Technology, cjstudiotechnology@gmail.com</string>
+    <!-- Painel da profissional (visual novo) e Meu perfil com editar/salvar. -->
+    <string name="painel_ola">Olá, %1$s ✨</string>
+    <string name="painel_ola_sem_nome">Olá! ✨</string>
+    <string name="painel_qtd_servicos">Serviços</string>
+    <string name="painel_qtd_fotos">Fotos</string>
+    <string name="painel_qtd_categorias">Categorias</string>
+    <string name="painel_agenda_sub">Dias e horários que as clientes podem marcar</string>
+    <string name="painel_meu_perfil">Meu perfil</string>
+    <string name="painel_meu_perfil_sub">Dados, categorias, serviços e fotos</string>
+    <string name="painel_chat_sub">Conversas com as clientes</string>
+    <string name="painel_ver_cliente_sub">Seu perfil como elas veem</string>
+    <string name="painel_divulgar_sub">Envie seu código pras clientes</string>
+    <string name="painel_completo">Perfil %1$d%% completo</string>
+    <string name="painel_completo_dica">Complete o perfil para chamar mais atenção nas buscas. Toque aqui.</string>
+    <string name="painel_completo_ok">Tudo pronto! Seu perfil está completo.</string>
+    <string name="painel_codigo_copiado">Código copiado.</string>
+    <string name="editar_botao">Editar</string>
+    <string name="editar_modo_visualizar">Toque em \"Editar\" para alterar seu perfil.</string>
+    <string name="editar_modo_editando">Editando: altere o que quiser e toque em \"Salvar\".</string>
+    <string name="editar_identificacao">Identificação</string>
+    <string name="editar_apresentacao_titulo">Apresentação</string>
+    <string name="editar_servicos_dica">Toque num serviço para editar e segure para remover. Serviços e fotos são salvos na hora.</string>
+    <string name="editar_descartar">Descartar alterações?</string>
+    <string name="editar_descartar_msg">O que você mudou e ainda não salvou será perdido.</string>
+    <string name="editar_descartar_sim">Descartar</string>
+    <string name="editar_continuar">Continuar editando</string>
+    <!-- Calendário da Minha agenda. -->
+    <string name="agenda_nova_curto">+ Nova agenda</string>
+    <string name="agenda_calendario_dica">Toque num dia vermelho para ver quem marcou.</string>
+    <string name="agenda_legenda_aberto">Aberto</string>
+    <string name="agenda_legenda_marcado">Marcado</string>
+    <string name="agenda_legenda_fechado">Sem agenda</string>
+    <string name="agenda_legenda_passado">Já passou</string>
+    <string name="agenda_dia_sem_marcados">Nenhum horário marcado neste dia.</string>
+    <string name="agenda_mes_anterior">Mês anterior</string>
+    <string name="agenda_mes_seguinte">Próximo mês</string>
+    <string-array name="agenda_semana">
+        <item>D</item>
+        <item>S</item>
+        <item>T</item>
+        <item>Q</item>
+        <item>Q</item>
+        <item>S</item>
+        <item>S</item>
+    </string-array>
+    <!-- Aparência: cor das telas da profissional. -->
+    <string name="aparencia_botao">Aparência</string>
+    <string name="aparencia_titulo">Cor do seu app</string>
+    <string name="aparencia_dica">Escolha a cor das suas telas. Só muda pra você; as clientes continuam vendo o app normal.</string>
+    <string name="aparencia_verde">Verde neon</string>
+    <string name="aparencia_rosa">Rosa</string>
+    <string name="aparencia_roxo">Roxo</string>
+    <string name="aparencia_azul">Azul</string>
+    <string name="aparencia_ciano">Ciano</string>
+    <string name="aparencia_dourado">Dourado</string>
+    <string name="aparencia_laranja">Laranja</string>
+    <string name="aparencia_vermelho">Vermelho</string>
+    <string name="aparencia_prata">Prata</string>
+    <string name="aparencia_perfil_titulo">Cor do seu perfil</string>
+    <string name="aparencia_perfil_dica">É a cor que as clientes veem quando abrem o seu perfil.</string>
+    <string name="aparencia_perfil_salva">Pronto! As clientes vão ver seu perfil nesta cor.</string>
+    <string name="chat_autor_voce">Você</string>
+    <string name="agenda_atendente_regra">Cada agenda do mesmo mês precisa de uma profissional diferente: uma pessoa não atende duas clientes ao mesmo tempo.</string>
+    <string name="agenda_erro_atendente_repetido">%1$s já atende na agenda de %2$s de %3$s. Uma pessoa não atende duas clientes ao mesmo tempo: use o nome de outra profissional nesta agenda.</string>
+    <!-- Suporte (login e Configurações). -->
+    <string name="suporte_botao">Suporte</string>
+    <string name="suporte_sem_app">Nenhum app de e-mail encontrado. Escreva para %1$s.</string>
+    <string name="suporte_esqueci_senha">Esqueci minha senha</string>
+    <string name="suporte_reenviar_confirmacao">Reenviar e-mail de confirmação</string>
+    <string name="suporte_falar">Falar com o suporte</string>
+    <string name="suporte_esqueci_explicacao">Informe o e-mail da sua conta. Vamos mandar um link para você criar uma senha nova.</string>
+    <string name="suporte_reenviar_explicacao">Informe o e-mail e a senha da sua conta. Se ela ainda não foi confirmada, mandamos um novo e-mail de confirmação (confira também o spam).</string>
+    <string name="suporte_enviar">Enviar</string>
+    <string name="suporte_assunto_login">Manicure: ajuda para entrar no app</string>
+    <string name="suporte_corpo_login">Olá! Preciso de ajuda para entrar no app.\n\nE-mail da conta: %1$s\nSou: %2$s\n\nO que aconteceu:\n</string>
+    <string name="suporte_sou_profissional">profissional</string>
+    <string name="suporte_sou_cliente">cliente</string>
 </resources>

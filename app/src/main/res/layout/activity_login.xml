@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Login (profissional e cliente) com o botão Suporte no canto de baixo. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo">
+
+<ScrollView
     android:id="@+id/scrollRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/fundo"
     android:fillViewport="true">
 
     <LinearLayout
@@ -87,5 +92,30 @@
             android:text="@string/login_criar_conta"
             android:textColor="@color/texto"
             android:textSize="15sp" />
+
+        <!-- Espaço pro botão Suporte não cobrir o "Criar conta". -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="56dp" />
     </LinearLayout>
 </ScrollView>
+
+    <TextView
+        android:id="@+id/tvSuporte"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_botao_contorno"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+        android:text="@string/suporte_botao"
+        android:textColor="?attr/corDestaque"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+</FrameLayout>

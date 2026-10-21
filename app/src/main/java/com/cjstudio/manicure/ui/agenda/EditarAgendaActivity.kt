@@ -12,6 +12,7 @@ import com.cjstudio.manicure.ui.common.adicionarChip
 import com.cjstudio.manicure.ui.common.adicionarChipRemovivel
 import com.cjstudio.manicure.ui.common.coletar
 import com.cjstudio.manicure.ui.common.mostrarMensagem
+import com.cjstudio.manicure.util.Aparencia
 import com.cjstudio.manicure.util.AgendaUtil
 import com.cjstudio.manicure.util.ajustarPaddingParaTeclado
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -27,6 +28,7 @@ class EditarAgendaActivity : AppCompatActivity() {
     private var preenchido = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Aparencia.aplicar(this)
         super.onCreate(savedInstanceState)
         binding = ActivityEditarAgendaBinding.inflate(layoutInflater)
         setContentView(binding.root)

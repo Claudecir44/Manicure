@@ -8,4 +8,7 @@
     <attr name="corTextoBotao" format="color" />
     <!-- Fundo do balão das minhas mensagens no chat. -->
     <attr name="corBalao" format="color" />
+    <!-- Brilho translúcido da cor de destaque (topo do painel, ícones, etiquetas). -->
+    <attr name="corBrilho" format="color" />
+    <attr name="corBrilhoFraco" format="color" />
 </resources>

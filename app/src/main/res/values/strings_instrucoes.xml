@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Configurações e Instruções da profissional. Cada instrução é um cartão:
+     instrucoes_titulos[i] + instrucoes_textos[i] (mesma ordem). -->
+<resources>
+    <string name="config_titulo">Configurações</string>
+    <string name="config_sub">Instruções, termos e ajuda</string>
+    <string name="config_instrucoes">Instruções do app</string>
+    <string name="config_instrucoes_sub">Passo a passo de tudo o que você pode fazer</string>
+    <string name="config_termos">Termos de uso e privacidade</string>
+    <string name="config_ajuda">Fale com a gente</string>
+    <string name="config_ajuda_sub">cjstudiotechnology@gmail.com</string>
+    <string name="config_ajuda_assunto">Manicure: ajuda para profissional</string>
+    <string name="config_versao">Versão %1$s</string>
+    <string name="instrucoes_titulo">Instruções</string>
+    <string name="instrucoes_intro">Tudo o que você precisa para deixar seu perfil bonito, receber agendamentos e conversar com suas clientes.</string>
+
+    <string-array name="instrucoes_titulos">
+        <item>👋 Seu painel</item>
+        <item>✏️ Meu perfil</item>
+        <item>🏷️ Categorias de serviço</item>
+        <item>💅 Serviços e preços</item>
+        <item>📸 Foto de perfil e galeria</item>
+        <item>📅 Criar uma agenda</item>
+        <item>👩 Quem atende em cada agenda</item>
+        <item>🗓️ Calendário e horários marcados</item>
+        <item>💬 Chat com as clientes</item>
+        <item>🔗 Divulgar seu perfil</item>
+        <item>👀 Ver como cliente</item>
+        <item>🎨 Aparência</item>
+        <item>🔔 Notificações</item>
+        <item>🛟 Precisa de ajuda?</item>
+    </string-array>
+
+    <string-array name="instrucoes_textos">
+        <item>O painel é a sua tela inicial. No topo ficam sua foto, seu nome, o tipo do perfil (Profissional ou Salão) e o seu código.\n\n• Os números mostram quantos serviços, fotos e categorias você tem.\n• Minha agenda: crie os dias e horários que as clientes podem marcar.\n• Meu perfil: todos os seus dados.\n• Chat: conversas com as clientes (a bolinha vermelha mostra as mensagens novas).\n• Ver como cliente e Divulgar perfil.\n• A barra \"Perfil completo\" mostra o que ainda falta preencher. Toque nela para completar.</item>
+        <item>Toque em Meu perfil. A tela abre só para ver; para mudar alguma coisa, toque em Editar (no alto, à direita).\n\n• Escolha se aparece com o seu nome ou como salão.\n• Escreva uma apresentação e conte sobre o seu trabalho (técnicas, cuidados com higiene, materiais).\n• Preencha WhatsApp, telefone, Instagram, cidade, bairro, endereço e horário de atendimento.\n• Diga se atende no salão, em domicílio ou nos dois.\n\nNo fim, toque em Salvar. Se mudar de ideia, Cancelar desfaz o que não foi salvo. Seu perfil só aparece para as clientes depois que tiver um nome.</item>
+        <item>As categorias dizem o que você faz: manicure, pedicure, unhas em gel, cabeleireira, sobrancelhas e outras.\n\nEm Meu perfil, toque em Editar, marque as categorias no cartão \"Categorias de serviço\" e toque em Salvar. Cada categoria pode ter a sua própria agenda.</item>
+        <item>Em Meu perfil, toque em Editar e depois em \"+ Serviço\".\n\n• Informe o nome (ex.: Mão simples), o preço, a duração em minutos e, se quiser, uma descrição.\n• Toque num serviço para mudar.\n• Segure o dedo em cima de um serviço para apagar.\n\nOs serviços são salvos na hora e aparecem para as clientes com o preço.</item>
+        <item>Em Meu perfil, toque em Editar:\n\n• Toque na sua foto (com o ícone de câmera) para trocar a foto de perfil ou o logo do salão.\n• Na Galeria, toque em \"+ Foto\" para publicar fotos dos seus trabalhos (até 20).\n• Segure uma foto para apagar.\n\nPublique só fotos de trabalhos seus e com autorização de quem aparece nelas.</item>
+        <item>No painel, toque em Minha agenda e depois em \"+ Nova agenda\" (no canto de baixo).\n\n1. Escolha a categoria e o mês.\n2. Informe quem vai atender.\n3. Dias do mês: todos aparecem; toque nos dias em que você NÃO atende para desmarcar.\n4. Horários: digite o início, o fim e o intervalo (ex.: 09:00, 18:00, a cada 60 min) e toque em Aplicar horários. O último horário também fica disponível.\n5. Toque no x de um horário para tirar ele de todos os dias (ex.: almoço).\n6. Segure um dia para tirar horários só daquele dia.\n7. Toque em Salvar agenda.\n\nPara mudar ou excluir uma agenda, toque nela na lista \"Agendas\".</item>
+        <item>Uma pessoa não consegue atender duas clientes ao mesmo tempo. Por isso, no mesmo mês, cada agenda precisa ter uma profissional diferente no campo \"Profissional que atende\".\n\nExemplo: em novembro, a agenda de Manicure pode ser da Ana e a de Escova da Bia. Se você tentar criar outra agenda de novembro com o nome da Ana, o app avisa e não deixa salvar.\n\nSe você trabalha sozinha, use uma agenda por mês e deixe os outros serviços na lista de Serviços e preços.</item>
+        <item>Em Minha agenda, abaixo de \"Horários marcados\", fica o calendário do mês. Use as setas ‹ › para trocar de mês.\n\n• Verde: dia aberto para as clientes marcarem.\n• Vermelho: dia com horário marcado.\n• Preto: dia sem agenda (ex.: domingo).\n• Cinza: dia que já passou.\n• O dia de hoje tem um anel em volta.\n\nToque num dia para ver embaixo quem marcou: horário, nome, telefone e categoria. Toque na cliente para abrir o chat com ela ou cancelar o horário (ele volta a ficar livre).</item>
+        <item>No painel, toque em Chat para ver as conversas. As que têm mensagem nova ficam em negrito, com a bolinha vermelha mostrando quantas são.\n\nDentro da conversa, nas suas mensagens aparece:\n• ✓ Enviada: a cliente ainda não abriu.\n• ✓✓ Lida: a cliente já viu.\n\nA data e a hora de cada mensagem ficam no canto direito do balão. A cliente também pode começar uma conversa pelo seu perfil.</item>
+        <item>Toque em Divulgar perfil para mandar uma mensagem pronta pelo WhatsApp, Instagram ou outro app.\n\nSeu código (ex.: CJS101) fica no canto de cima do painel. Toque nele para copiar. A cliente abre o app, toca em \"Tenho um código\" e digita o código para achar você na hora.</item>
+        <item>Toque em Ver como cliente para ver seu perfil do jeito que as clientes veem.\n\nNo canto de cima, à direita, o botão Aparência (só você vê) escolhe a cor do seu perfil para as clientes. Todas elas passam a ver seu perfil nessa cor.</item>
+        <item>No painel, toque em Aparência (embaixo do \"Olá\") para escolher a cor das SUAS telas: painel, perfil, agenda e chat. São 9 cores.\n\nEssa cor fica só neste celular e é diferente da cor do perfil que as clientes veem (essa você escolhe em Ver como cliente).</item>
+        <item>Deixe as notificações do app ligadas para saber na hora quando:\n\n• uma cliente marcar um horário;\n• chegar uma mensagem nova no chat.\n\nSe você negou a permissão, ative em Configurações do celular → Apps → Manicure → Notificações.</item>
+        <item>Fale com a gente pelo e-mail cjstudiotechnology@gmail.com (em Configurações → Fale com a gente). Conte o que aconteceu e, se puder, mande um print da tela.</item>
+    </string-array>
+</resources>

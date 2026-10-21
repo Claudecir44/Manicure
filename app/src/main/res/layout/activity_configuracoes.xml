@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Configurações da profissional: uma linha por opção (ícone, título, ›). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/topo"
+        layout="@layout/include_topo" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:id="@+id/btnInstrucoes"
+                style="@style/LinhaConfig">
+
+                <TextView
+                    style="@style/LinhaConfigIcone"
+                    android:text="📖" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CartaoAcaoTitulo"
+                        android:text="@string/config_instrucoes" />
+
+                    <TextView
+                        style="@style/CartaoAcaoTexto"
+                        android:text="@string/config_instrucoes_sub" />
+                </LinearLayout>
+
+                <TextView style="@style/LinhaConfigSeta" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnTermos"
+                style="@style/LinhaConfig">
+
+                <TextView
+                    style="@style/LinhaConfigIcone"
+                    android:text="📄" />
+
+                <TextView
+                    style="@style/CartaoAcaoTitulo"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/config_termos" />
+
+                <TextView style="@style/LinhaConfigSeta" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnAjuda"
+                style="@style/LinhaConfig">
+
+                <TextView
+                    style="@style/LinhaConfigIcone"
+                    android:text="✉️" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CartaoAcaoTitulo"
+                        android:text="@string/config_ajuda" />
+
+                    <TextView
+                        style="@style/CartaoAcaoTexto"
+                        android:text="@string/config_ajuda_sub" />
+                </LinearLayout>
+
+                <TextView style="@style/LinhaConfigSeta" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvVersao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:textColor="@color/dica"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

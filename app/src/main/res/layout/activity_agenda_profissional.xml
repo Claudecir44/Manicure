@@ -14,26 +14,24 @@
             layout="@layout/include_topo" />
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
 
+            <!-- paddingBottom grande: o botão "+ Nova agenda" fica por cima do fim da lista. -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:paddingStart="20dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="90dp">
 
                 <TextView
                     style="@style/TextoCorpo"
                     android:text="@string/agenda_explicacao" />
-
-                <Button
-                    android:id="@+id/btnNovaAgenda"
-                    style="@style/BotaoPrimario"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="14dp"
-                    android:text="@string/agenda_nova" />
 
                 <TextView
                     style="@style/TituloSecao"
@@ -54,10 +52,102 @@
                     style="@style/TituloSecao"
                     android:text="@string/agenda_marcados" />
 
+                <!-- Calendário do mês: ‹ mês › + dias da semana + grade. -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_cartao"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/btnMesAnterior"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/agenda_mes_anterior"
+                            android:gravity="center"
+                            android:text="‹"
+                            android:textColor="?attr/corDestaque"
+                            android:textSize="28sp" />
+
+                        <TextView
+                            android:id="@+id/tvMes"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textColor="@color/texto"
+                            android:textSize="17sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/btnMesSeguinte"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/agenda_mes_seguinte"
+                            android:gravity="center"
+                            android:text="›"
+                            android:textColor="?attr/corDestaque"
+                            android:textSize="28sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/linhaSemana"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:orientation="horizontal" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvCalendario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp" />
+
+                    <!-- Legenda das cores. -->
+                    <LinearLayout
+                        android:id="@+id/legenda"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:orientation="horizontal" />
+                </LinearLayout>
+
                 <TextView
                     android:id="@+id/tvSemAgendamentos"
                     style="@style/TextoCorpo"
+                    android:layout_marginTop="10dp"
                     android:text="@string/agenda_sem_marcados"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvDicaCalendario"
+                    style="@style/TextoCorpo"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/agenda_calendario_dica"
+                    android:textSize="13sp" />
+
+                <!-- Dia tocado: quem marcou e em que horário. -->
+                <TextView
+                    android:id="@+id/tvDiaSelecionado"
+                    style="@style/TituloSecao"
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvDiaSemMarcados"
+                    style="@style/TextoCorpo"
+                    android:text="@string/agenda_dia_sem_marcados"
                     android:visibility="gone" />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -67,6 +157,25 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/btnNovaAgenda"
+        android:layout_width="wrap_content"
+        android:layout_height="46dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="18dp"
+        android:background="@drawable/bg_botao_flutuante"
+        android:clickable="true"
+        android:elevation="6dp"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:text="@string/agenda_nova_curto"
+        android:textColor="?attr/corTextoBotao"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
     <ProgressBar
         android:id="@+id/progressBar"

@@ -22,6 +22,8 @@
         <intent>
             <action android:name="android.intent.action.DIAL" />
         </intent>
+        <!-- Suporte abre direto no Gmail (util/Suporte.kt). -->
+        <package android:name="com.google.android.gm" />
     </queries>
 
     <application
@@ -87,6 +89,14 @@
             android:exported="false"
             android:theme="@style/Theme.Manicure.Profissional"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.profissional.ConfiguracoesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Manicure.Profissional" />
+        <activity
+            android:name=".ui.profissional.InstrucoesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Manicure.Profissional" />
         <activity
             android:name=".ui.agenda.AgendaProfissionalActivity"
             android:exported="false"

@@ -5,6 +5,8 @@
         <item name="corDestaqueEscuro">@color/rosa_escuro</item>
         <item name="corTextoBotao">@color/branco</item>
         <item name="corBalao">#5A1236</item>
+        <item name="corBrilho">#2EFF2D95</item>
+        <item name="corBrilhoFraco">#12FF2D95</item>
         <item name="colorPrimary">@color/rosa</item>
         <item name="colorPrimaryVariant">@color/rosa_escuro</item>
         <item name="colorOnPrimary">@color/branco</item>
@@ -30,6 +32,8 @@
         <item name="corDestaqueEscuro">@color/verde_neon_escuro</item>
         <item name="corTextoBotao">@color/preto</item>
         <item name="corBalao">#14420F</item>
+        <item name="corBrilho">@color/destaque_brilho</item>
+        <item name="corBrilhoFraco">@color/destaque_brilho_fraco</item>
         <item name="colorPrimary">@color/verde_neon</item>
         <item name="colorPrimaryVariant">@color/verde_neon_escuro</item>
         <item name="colorOnPrimary">@color/preto</item>
@@ -187,5 +191,124 @@
         <item name="android:textColor">?attr/corDestaque</item>
         <item name="android:textSize">12sp</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Cartão de seção do Meu perfil. -->
+    <style name="CartaoSecao">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">14dp</item>
+        <item name="android:background">@drawable/bg_cartao</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">16dp</item>
+    </style>
+
+    <style name="TituloCartao">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:textColor">?attr/corDestaque</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Cartão de atalho do painel (ícone, título e linha de apoio). -->
+    <style name="CartaoAcao">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:minHeight">138dp</item>
+        <item name="android:background">@drawable/bg_cartao</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="CartaoAcaoIcone">
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:background">@drawable/bg_icone_destaque</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+
+    <style name="CartaoAcaoTitulo">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/texto</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="CartaoAcaoTexto">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">3dp</item>
+        <item name="android:textColor">@color/texto_secundario</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <!-- Número + rótulo dos contadores do painel. -->
+    <style name="ContadorNumero">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?attr/corDestaque</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ContadorRotulo">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/texto_secundario</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Pilula">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/bg_pilula</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:textColor">@color/texto</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <!-- Linha clicável das Configurações (ícone, textos e ›). -->
+    <style name="LinhaConfig">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:background">@drawable/bg_cartao</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:minHeight">72dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="LinhaConfigIcone">
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:layout_marginEnd">14dp</item>
+        <item name="android:background">@drawable/bg_icone_destaque</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="LinhaConfigSeta">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:text">›</item>
+        <item name="android:textColor">?attr/corDestaque</item>
+        <item name="android:textSize">26sp</item>
     </style>
 </resources>

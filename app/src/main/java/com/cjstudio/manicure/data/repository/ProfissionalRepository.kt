@@ -135,6 +135,11 @@ class ProfissionalRepository @Inject constructor(
         Unit
     }
 
+    override suspend fun salvarCorPerfil(cor: String): Result<Unit> = runCatching {
+        etapa("salvar cor do perfil") { colecao().document(uid()).update("corPerfil", cor).await() }
+        Unit
+    }
+
     override suspend fun trocarFotoPerfil(uri: Uri): Result<Unit> = runCatching {
         val url = arquivos.enviarImagem("perfis/${uid()}", uri).getOrThrow()
         colecao().document(uid()).update("fotoPerfilUrl", url).await()

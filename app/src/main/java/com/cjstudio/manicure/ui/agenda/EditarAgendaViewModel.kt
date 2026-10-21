@@ -12,6 +12,7 @@ import com.cjstudio.manicure.ui.common.UiTexto
 import com.cjstudio.manicure.ui.common.paraUiTexto
 import com.cjstudio.manicure.ui.common.texto
 import com.cjstudio.manicure.util.AgendaUtil
+import com.cjstudio.manicure.util.TextoUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -74,7 +75,8 @@ class EditarAgendaViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val perfil = profissionais.buscarLogada().getOrNull()
-            val agenda = id?.let { agendaId -> agendas.minhasAgendas().getOrNull()?.firstOrNull { it.id == agendaId } }
+            val todas = agendas.minhasAgendas().getOrNull().orEmpty()
+            val agenda = id?.let { agendaId -> todas.firstOrNull { it.id == agendaId } }
             // Sem categoria marcada no painel, oferece todas.
             val minhas = perfil?.categorias.orEmpty()
             val categorias = Categorias.TODAS.filter { minhas.isEmpty() || it.first in minhas || it.first == agenda?.categoria }
@@ -85,7 +87,11 @@ class EditarAgendaViewModel @Inject constructor(
                 // Agenda nova já vem pré-marcada: seg a sex, das 09:00 às 18:00 de hora em hora.
                 Montagem(meses.first(), AgendaUtil.diasPadrao(meses.first()).toSet(), AgendaUtil.gerarHorarios("09:00", "18:00", 60))
             }
-            _inicio.value = Inicio(categorias, meses, perfil?.nomeResponsavel?.ifBlank { null } ?: perfil?.nomeExibicao.orEmpty(), agenda)
+            // Agenda nova: sugere o nome dela, a não ser que ela já atenda em
+            // outra agenda deste mês (aí o campo vem vazio pra pôr outra pessoa).
+            val nomeDela = perfil?.nomeResponsavel?.ifBlank { null } ?: perfil?.nomeExibicao.orEmpty()
+            val jaAtende = todas.any { it.mes == _montagem.value.mes && TextoUtil.normalizar(it.atendente.orEmpty()) == TextoUtil.normalizar(nomeDela) }
+            _inicio.value = Inicio(categorias, meses, if (jaAtende) "" else nomeDela, agenda)
         }
     }
 
@@ -159,6 +165,23 @@ class EditarAgendaViewModel @Inject constructor(
         ).also { it.id = id }
         _salvando.value = true
         viewModelScope.launch {
+            // Uma pessoa não atende duas clientes ao mesmo tempo: no mesmo mês,
+            // cada agenda tem que ser de uma profissional diferente.
+            val minhas = agendas.minhasAgendas().getOrElse {
+                _salvando.value = false
+                _eventos.send(Evento.Mensagem(it.paraUiTexto()))
+                return@launch
+            }
+            val nome = TextoUtil.normalizar(atendente)
+            val repetida = minhas.firstOrNull { it.id != id && it.mes == m.mes && TextoUtil.normalizar(it.atendente.orEmpty()) == nome }
+            if (repetida != null) {
+                _salvando.value = false
+                _eventos.send(Evento.Mensagem(texto(
+                    R.string.agenda_erro_atendente_repetido,
+                    atendente.trim(), Categorias.nome(repetida.categoria), AgendaUtil.nomeMes(m.mes)
+                )))
+                return@launch
+            }
             val r = agendas.salvarAgenda(agenda)
             _salvando.value = false
             r.onSuccess {

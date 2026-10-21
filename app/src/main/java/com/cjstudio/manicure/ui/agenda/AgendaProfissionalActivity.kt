@@ -1,10 +1,17 @@
 package com.cjstudio.manicure.ui.agenda
 
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cjstudio.manicure.R
 import com.cjstudio.manicure.data.model.Agenda
@@ -15,6 +22,7 @@ import com.cjstudio.manicure.ui.common.Linha
 import com.cjstudio.manicure.ui.common.LinhaAdapter
 import com.cjstudio.manicure.ui.common.coletar
 import com.cjstudio.manicure.ui.common.mostrarMensagem
+import com.cjstudio.manicure.util.Aparencia
 import com.cjstudio.manicure.util.AgendaUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,8 +34,14 @@ class AgendaProfissionalActivity : AppCompatActivity() {
     private val viewModel: AgendaProfissionalViewModel by viewModels()
     private val agendasAdapter = LinhaAdapter { linha -> agenda(linha.id)?.let { opcoesAgenda(it) } }
     private val marcadosAdapter = LinhaAdapter { linha -> agendamento(linha.id)?.let { opcoesAgendamento(it) } }
+    // Tocar num dia mostra embaixo quem marcou e rola a tela até lá.
+    private val calendarioAdapter = CalendarioAdapter { data ->
+        viewModel.selecionarDia(data)
+        binding.scroll.post { binding.scroll.smoothScrollTo(0, binding.tvDiaSelecionado.top) }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Aparencia.aplicar(this)
         super.onCreate(savedInstanceState)
         binding = ActivityAgendaProfissionalBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -41,6 +55,13 @@ class AgendaProfissionalActivity : AppCompatActivity() {
         binding.rvAgendamentos.adapter = marcadosAdapter
         binding.rvAgendamentos.isNestedScrollingEnabled = false
         binding.btnNovaAgenda.setOnClickListener { startActivity(Intent(this, EditarAgendaActivity::class.java)) }
+
+        binding.rvCalendario.layoutManager = GridLayoutManager(this, 7)
+        binding.rvCalendario.adapter = calendarioAdapter
+        binding.rvCalendario.isNestedScrollingEnabled = false
+        binding.btnMesAnterior.setOnClickListener { viewModel.mudarMes(-1) }
+        binding.btnMesSeguinte.setOnClickListener { viewModel.mudarMes(1) }
+        montarSemanaELegenda()
 
         coletar(viewModel.estado) { mostrar(it) }
         coletar(viewModel.mensagens) { mostrarMensagem(it) }
@@ -64,22 +85,57 @@ class AgendaProfissionalActivity : AppCompatActivity() {
         })
         binding.tvSemAgendas.visibility = if (!e.carregando && e.agendas.isEmpty()) View.VISIBLE else View.GONE
 
-        val proximos = e.agendamentos.filter { !passou(it.horario) }
-        marcadosAdapter.submitList(proximos.map { m ->
+        // Calendário do mês e, embaixo, as clientes do dia tocado.
+        binding.tvMes.text = AgendaUtil.nomeMes(e.mes)
+        calendarioAdapter.atualizar(e.calendario, e.diaSelecionado)
+        binding.tvSemAgendamentos.visibility = if (!e.carregando && e.agendamentos.isEmpty()) View.VISIBLE else View.GONE
+        binding.tvDicaCalendario.visibility = if (e.agendamentos.isEmpty()) View.GONE else View.VISIBLE
+
+        val dia = e.diaSelecionado
+        binding.tvDiaSelecionado.visibility = if (dia != null) View.VISIBLE else View.GONE
+        binding.tvDiaSelecionado.text = dia?.let { AgendaUtil.descreverDia(it) }
+        val doDia = e.marcadosDoDia
+        binding.tvDiaSemMarcados.visibility = if (dia != null && doDia.isEmpty()) View.VISIBLE else View.GONE
+        marcadosAdapter.submitList(doDia.map { m ->
             Linha(
                 id = m.id.orEmpty(),
-                titulo = AgendaUtil.descrever(m.horario),
-                linha2 = "${m.clienteNome.orEmpty()}  ·  ${m.clienteTelefone.orEmpty()}",
+                titulo = "${m.horario?.takeLast(4)?.let { "${it.take(2)}:${it.takeLast(2)}" }.orEmpty()}  ·  ${m.clienteNome.orEmpty()}",
+                linha2 = m.clienteTelefone.orEmpty(),
                 linha3 = "${Categorias.nome(m.categoria)}  ·  ${m.atendente.orEmpty()}"
             )
         })
-        binding.tvSemAgendamentos.visibility = if (!e.carregando && proximos.isEmpty()) View.VISIBLE else View.GONE
     }
 
-    private fun passou(chave: String?): Boolean {
-        val c = chave ?: return true
-        val agora = java.text.SimpleDateFormat("yyyyMMdd-HHmm", java.util.Locale.US).format(java.util.Date())
-        return c < agora
+    // Letras dos dias da semana em cima da grade e a legenda das cores embaixo.
+    private fun montarSemanaELegenda() {
+        resources.getStringArray(R.array.agenda_semana).forEach { letra ->
+            binding.linhaSemana.addView(TextView(this).apply {
+                text = letra
+                gravity = Gravity.CENTER
+                setTextColor(ContextCompat.getColor(context, R.color.texto_secundario))
+                textSize = 12f
+                setTypeface(typeface, Typeface.BOLD)
+                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+            })
+        }
+        val densidade = resources.displayMetrics.density
+        listOf(
+            R.color.verde_neon to R.string.agenda_legenda_aberto,
+            R.color.vermelho to R.string.agenda_legenda_marcado,
+            R.color.preto to R.string.agenda_legenda_fechado,
+            R.color.cinza_dia to R.string.agenda_legenda_passado
+        ).forEach { (cor, nome) ->
+            binding.legenda.addView(TextView(this).apply {
+                setText(nome)
+                setTextColor(ContextCompat.getColor(context, R.color.texto_secundario))
+                textSize = 11f
+                compoundDrawablePadding = (5 * densidade).toInt()
+                val ponto = ContextCompat.getDrawable(context, R.drawable.bg_ponto)!!.mutate()
+                ponto.setTint(ContextCompat.getColor(context, cor))
+                setCompoundDrawablesRelativeWithIntrinsicBounds(ponto, null, null, null)
+                setPadding((6 * densidade).toInt(), 0, (6 * densidade).toInt(), 0)
+            })
+        }
     }
 
     private fun agenda(id: String) = viewModel.estado.value.agendas.firstOrNull { it.id == id }

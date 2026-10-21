@@ -9,6 +9,7 @@ import com.cjstudio.manicure.data.repository.IAgendaRepository
 import com.cjstudio.manicure.ui.common.UiTexto
 import com.cjstudio.manicure.ui.common.paraUiTexto
 import com.cjstudio.manicure.ui.common.texto
+import com.cjstudio.manicure.util.AgendaUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -28,8 +29,17 @@ class AgendaProfissionalViewModel @Inject constructor(
     data class Estado(
         val agendas: List<Agenda> = emptyList(),
         val agendamentos: List<Agendamento> = emptyList(),
-        val carregando: Boolean = true
-    )
+        val carregando: Boolean = true,
+        // Mês mostrado no calendário ("2026-11") e o dia tocado ("20261105").
+        val mes: String = AgendaUtil.proximosMeses(1).first(),
+        val diaSelecionado: String? = null
+    ) {
+        val calendario: List<AgendaUtil.DiaCalendario>
+            get() = AgendaUtil.calendarioDoMes(mes, agendas, agendamentos.mapNotNull { it.horario })
+
+        val marcadosDoDia: List<Agendamento>
+            get() = diaSelecionado?.let { d -> agendamentos.filter { it.horario?.startsWith(d) == true }.sortedBy { it.horario } }.orEmpty()
+    }
 
     private val _estado = MutableStateFlow(Estado())
     val estado: StateFlow<Estado> = _estado
@@ -45,8 +55,21 @@ class AgendaProfissionalViewModel @Inject constructor(
             val m = agendas.meusAgendamentos()
             a.exceptionOrNull()?.let { _mensagens.send(it.paraUiTexto()) }
             m.exceptionOrNull()?.let { _mensagens.send(it.paraUiTexto()) }
-            _estado.value = Estado(a.getOrDefault(emptyList()), m.getOrDefault(emptyList()), carregando = false)
+            _estado.value = _estado.value.copy(
+                agendas = a.getOrDefault(emptyList()),
+                agendamentos = m.getOrDefault(emptyList()),
+                carregando = false
+            )
         }
+    }
+
+    fun mudarMes(meses: Int) {
+        _estado.value = _estado.value.copy(mes = AgendaUtil.somarMes(_estado.value.mes, meses), diaSelecionado = null)
+    }
+
+    // Tocar de novo no mesmo dia fecha os dados de baixo.
+    fun selecionarDia(data: String) {
+        _estado.value = _estado.value.copy(diaSelecionado = data.takeIf { it != _estado.value.diaSelecionado })
     }
 
     fun excluir(agenda: Agenda) {

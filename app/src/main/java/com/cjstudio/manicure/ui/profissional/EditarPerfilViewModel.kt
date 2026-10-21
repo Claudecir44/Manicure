@@ -1,9 +1,12 @@
 package com.cjstudio.manicure.ui.profissional
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cjstudio.manicure.R
+import com.cjstudio.manicure.data.model.FotoPortfolio
 import com.cjstudio.manicure.data.model.Profissional
+import com.cjstudio.manicure.data.model.Servico
 import com.cjstudio.manicure.data.repository.IProfissionalRepository
 import com.cjstudio.manicure.ui.common.UiTexto
 import com.cjstudio.manicure.ui.common.paraUiTexto
@@ -13,12 +16,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// Apresentação, contatos e localização do perfil da manicure.
+// Meu perfil da manicure: dados de texto e categorias (gravados no "Salvar"),
+// e foto, serviços e galeria (gravados na hora, como antes no painel).
 @HiltViewModel
 class EditarPerfilViewModel @Inject constructor(
     private val profissionais: IProfissionalRepository
@@ -37,7 +44,8 @@ class EditarPerfilViewModel @Inject constructor(
         val bairro: String,
         val endereco: String,
         val horarioAtendimento: String,
-        val atendimento: String
+        val atendimento: String,
+        val categorias: List<String>
     )
 
     sealed interface Evento {
@@ -45,22 +53,20 @@ class EditarPerfilViewModel @Inject constructor(
         data class Mensagem(val texto: UiTexto) : Evento
     }
 
-    private val _perfil = MutableStateFlow<Profissional?>(null)
-    val perfil: StateFlow<Profissional?> = _perfil
-
-    private val _salvando = MutableStateFlow(false)
-    val salvando: StateFlow<Boolean> = _salvando
-
+    // Declarado antes do perfil: o catch dele usa o canal.
     private val _eventos = Channel<Evento>(Channel.BUFFERED)
     val eventos: Flow<Evento> = _eventos.receiveAsFlow()
 
-    init {
-        viewModelScope.launch {
-            profissionais.buscarLogada()
-                .onSuccess { _perfil.value = it }
-                .onFailure { _eventos.send(Evento.Mensagem(it.paraUiTexto())) }
+    val perfil: StateFlow<Profissional?> = profissionais.escutarLogada()
+        .catch {
+            _eventos.send(Evento.Mensagem(it.paraUiTexto()))
+            emit(null)
         }
-    }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    // Salvando o formulário ou enviando foto/serviço.
+    private val _salvando = MutableStateFlow(false)
+    val salvando: StateFlow<Boolean> = _salvando
 
     fun salvar(f: Formulario) {
         if (_salvando.value) return
@@ -90,14 +96,53 @@ class EditarPerfilViewModel @Inject constructor(
             "horarioAtendimento" to f.horarioAtendimento.trim(),
             "atendimento" to f.atendimento
         )
+        val mudouCategorias = f.categorias.toSet() != perfil.value?.categorias.orEmpty().toSet()
         _salvando.value = true
         viewModelScope.launch {
-            val r = profissionais.salvarPerfil(dados)
+            val r = profissionais.salvarPerfil(dados).let { r ->
+                if (r.isSuccess && mudouCategorias) profissionais.salvarCategorias(f.categorias) else r
+            }
             _salvando.value = false
             r.onSuccess {
                 _eventos.send(Evento.Mensagem(texto(R.string.editar_salvo)))
                 _eventos.send(Evento.Salvo)
             }.onFailure { _eventos.send(Evento.Mensagem(it.paraUiTexto())) }
+        }
+    }
+
+    fun trocarFotoPerfil(uri: Uri) = executar(R.string.painel_foto_perfil_salva) { profissionais.trocarFotoPerfil(uri) }
+
+    fun adicionarFoto(uri: Uri) {
+        if ((perfil.value?.fotos?.size ?: 0) >= Profissional.MAX_FOTOS) {
+            _eventos.trySend(Evento.Mensagem(texto(R.string.erro_limite_fotos, Profissional.MAX_FOTOS)))
+            return
+        }
+        executar(R.string.painel_foto_adicionada) { profissionais.adicionarFoto(uri) }
+    }
+
+    fun removerFoto(foto: FotoPortfolio) = executar(R.string.painel_foto_removida) { profissionais.removerFoto(foto) }
+
+    // posicao == null: serviço novo.
+    fun salvarServico(posicao: Int?, servico: Servico) {
+        val lista = perfil.value?.servicos.orEmpty().toMutableList()
+        if (posicao != null && posicao in lista.indices) lista[posicao] = servico else lista += servico
+        executar(R.string.painel_servico_salvo) { profissionais.salvarServicos(lista) }
+    }
+
+    fun removerServico(posicao: Int) {
+        val lista = perfil.value?.servicos.orEmpty().toMutableList()
+        if (posicao !in lista.indices) return
+        lista.removeAt(posicao)
+        executar(R.string.painel_servico_removido) { profissionais.salvarServicos(lista) }
+    }
+
+    private fun executar(sucesso: Int, acao: suspend () -> Result<Unit>) {
+        if (_salvando.value) return
+        _salvando.value = true
+        viewModelScope.launch {
+            val r = acao()
+            _salvando.value = false
+            _eventos.send(Evento.Mensagem(r.fold({ texto(sucesso) }, { it.paraUiTexto() })))
         }
     }
 }
