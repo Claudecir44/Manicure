@@ -53,21 +53,32 @@ class CadastroActivity : AppCompatActivity() {
             )
         }
 
+        binding.tvLimpar.setOnClickListener { limparCampos() }
+
         coletar(viewModel.enviando) { enviando ->
             binding.progressBar.visibility = if (enviando) View.VISIBLE else View.GONE
             binding.btnCadastrar.isEnabled = !enviando
         }
         coletar(viewModel.eventos) { evento ->
             when (evento) {
-                is CadastroViewModel.Evento.ConfirmarEmail -> MaterialAlertDialogBuilder(this)
+                is CadastroViewModel.Evento.ConfirmarEmail -> {
+                    limparCampos()
+                    MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.verificar_email_titulo)
                     .setMessage(getString(R.string.verificar_email_cadastro, evento.email))
                     .setPositiveButton(R.string.ok) { _, _ -> finish() }
                     .setCancelable(false)
                     .show()
+                }
                 CadastroViewModel.Evento.IrParaInicio -> Navegacao.irLimpando(this, Navegacao.telaInicial(viewModel.papel))
                 is CadastroViewModel.Evento.Mensagem -> mostrarMensagem(evento.texto)
             }
         }
+    }
+
+    private fun limparCampos() {
+        listOf(binding.etNome, binding.etTelefone, binding.etEmail, binding.etSenha, binding.etConfirmarSenha).forEach { it.text?.clear() }
+        binding.cbTermos.isChecked = false
+        binding.etNome.requestFocus()
     }
 }

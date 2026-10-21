@@ -52,6 +52,7 @@ class PainelProfissionalViewModel @Inject constructor(
 
     init {
         falhas.definirUsuario(auth.uidLogado())
+        viewModelScope.launch { profissionais.atualizarPerfilAntigo() }
     }
 
     fun trocarFotoPerfil(uri: Uri) = executar(R.string.painel_foto_perfil_salva) { profissionais.trocarFotoPerfil(uri) }

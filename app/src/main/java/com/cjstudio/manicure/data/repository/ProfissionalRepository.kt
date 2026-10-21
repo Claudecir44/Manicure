@@ -21,7 +21,8 @@ import javax.inject.Singleton
 class ProfissionalRepository @Inject constructor(
     private val db: Provider<FirebaseFirestore>,
     private val auth: IAuthRepository,
-    private val arquivos: IArquivoRepository
+    private val arquivos: IArquivoRepository,
+    private val localizacao: ILocalizacaoRepository
 ) : IProfissionalRepository {
 
     private fun colecao() = db.get().collection(COLECAO)
@@ -41,7 +42,8 @@ class ProfissionalRepository @Inject constructor(
                 telefone = telefone,
                 whatsapp = telefone,
                 codigo = gerarCodigo(nome),
-                busca = TextoUtil.normalizar(nome)
+                busca = TextoUtil.normalizar(nome),
+                publicado = true
             )
             etapa("gravar perfil") { ref.set(perfil).await() }
             Result.success(FluxoCadastro.concluir(auth, conta))
@@ -85,22 +87,48 @@ class ProfissionalRepository @Inject constructor(
         awaitClose { registro.remove() }
     }
 
-    // Recalcula o texto de busca e a publicação (perfil com nome, cidade e
-    // pelo menos um serviço aparece pras clientes).
+    // Recalcula o texto de busca, a publicação (basta ter nome) e as
+    // coordenadas do endereço (pra cliente ver as mais perto primeiro).
     override suspend fun salvarPerfil(dados: Map<String, Any?>): Result<Unit> = runCatching {
         val atual = buscarLogada().getOrThrow() ?: throw IllegalStateException("Perfil não encontrado.")
         val nome = (dados["nomeExibicao"] as? String) ?: atual.nomeExibicao.orEmpty()
         val cidade = (dados["cidade"] as? String) ?: atual.cidade.orEmpty()
         val bairro = (dados["bairro"] as? String) ?: atual.bairro.orEmpty()
+        val endereco = (dados["endereco"] as? String) ?: atual.endereco.orEmpty()
         val completo = dados.toMutableMap()
         completo["busca"] = TextoUtil.normalizar("$nome $cidade $bairro")
-        completo["publicado"] = podePublicar(nome, cidade, atual.servicos)
+        completo["publicado"] = nome.isNotBlank()
+        coordenadas(endereco, bairro, cidade)?.let {
+            completo["latitude"] = it.latitude
+            completo["longitude"] = it.longitude
+        }
         etapa("salvar perfil") { colecao().document(uid()).update(completo).await() }
         Unit
     }
 
-    private fun podePublicar(nome: String, cidade: String, servicos: List<Servico>) =
-        nome.isNotBlank() && cidade.isNotBlank() && servicos.isNotEmpty()
+    // Endereço completo; se não achar, só bairro + cidade; depois só a cidade.
+    private suspend fun coordenadas(endereco: String, bairro: String, cidade: String): Coordenadas? {
+        if (cidade.isBlank()) return null
+        return listOf(listOf(endereco, bairro, cidade), listOf(bairro, cidade), listOf(cidade))
+            .map { partes -> partes.filter { it.isNotBlank() }.joinToString(", ") }
+            .distinct()
+            .firstNotNullOfOrNull { localizacao.coordenadasDoEndereco(it) }
+    }
+
+    // Perfis criados antes destas regras: publica (se tem nome) e calcula as
+    // coordenadas que faltam. Chamado ao abrir o painel da profissional.
+    override suspend fun atualizarPerfilAntigo(): Result<Unit> = runCatching {
+        val atual = buscarLogada().getOrThrow() ?: return@runCatching
+        val dados = mutableMapOf<String, Any?>()
+        if (!atual.publicado && !atual.nomeExibicao.isNullOrBlank()) dados["publicado"] = true
+        if (atual.latitude == null) {
+            coordenadas(atual.endereco.orEmpty(), atual.bairro.orEmpty(), atual.cidade.orEmpty())?.let {
+                dados["latitude"] = it.latitude
+                dados["longitude"] = it.longitude
+            }
+        }
+        if (dados.isNotEmpty()) colecao().document(uid()).update(dados).await()
+    }
 
     override suspend fun trocarFotoPerfil(uri: Uri): Result<Unit> = runCatching {
         val url = arquivos.enviarImagem("perfis/${uid()}", uri).getOrThrow()
@@ -109,14 +137,8 @@ class ProfissionalRepository @Inject constructor(
     }
 
     override suspend fun salvarServicos(servicos: List<Servico>): Result<Unit> = runCatching {
-        val atual = buscarLogada().getOrThrow() ?: throw IllegalStateException("Perfil não encontrado.")
         etapa("salvar serviços") {
-            colecao().document(uid()).update(
-                mapOf(
-                    "servicos" to servicos,
-                    "publicado" to podePublicar(atual.nomeExibicao.orEmpty(), atual.cidade.orEmpty(), servicos)
-                )
-            ).await()
+            colecao().document(uid()).update("servicos", servicos).await()
         }
         Unit
     }

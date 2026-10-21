@@ -46,6 +46,8 @@ class PerfilProfissionalActivity : AppCompatActivity() {
 
         coletar(viewModel.perfil) { p -> if (p != null) mostrar(p) }
         coletar(viewModel.mensagens) { mostrarMensagem(it) }
+        coletar(viewModel.preferido) { binding.tvPreferido.visibility = if (it) View.VISIBLE else View.GONE }
+        binding.tvPreferido.setOnClickListener { viewModel.deixarDePreferir() }
     }
 
     private fun mostrar(p: Profissional) {

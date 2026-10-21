@@ -58,6 +58,18 @@
                 android:textColor="@color/texto_secundario"
                 android:textSize="13sp" />
 
+            <TextView
+                android:id="@+id/tvPreferido"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:padding="4dp"
+                android:text="@string/perfil_preferido"
+                android:textColor="@color/rosa_claro"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
             <!-- Contatos: só aparecem os que ela preencheu. -->
             <LinearLayout
                 android:layout_width="match_parent"

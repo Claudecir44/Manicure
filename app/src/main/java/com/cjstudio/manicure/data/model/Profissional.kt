@@ -30,6 +30,9 @@ data class Profissional(
     var bairro: String? = null,
     var endereco: String? = null,
     var horarioAtendimento: String? = null,
+    // Coordenadas do endereço (ou do bairro/cidade), pra ordenar por distância.
+    var latitude: Double? = null,
+    var longitude: Double? = null,
     // Atende só no salão, em domicílio ou os dois (TipoAtendimento).
     var atendimento: String = TipoAtendimento.SALAO,
 
@@ -42,7 +45,7 @@ data class Profissional(
     // Texto em minúsculas sem acento pra busca (nome + cidade + bairro).
     var busca: String? = null,
 
-    // Só aparece pras clientes com o perfil completo e liberado pelo admin.
+    // Aparece pras clientes assim que tem nome; o admin pode bloquear.
     var publicado: Boolean = false,
     var bloqueado: Boolean = false,
 

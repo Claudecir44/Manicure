@@ -66,6 +66,7 @@
     <string name="cadastro_escolher_foto">Toque para escolher sua foto</string>
     <string name="cadastro_aceito_termos">Li e aceito os Termos de Uso e Privacidade</string>
     <string name="cadastro_criar">Criar conta</string>
+    <string name="cadastro_limpar">Limpar campos</string>
     <string name="cadastro_erro_nome">Informe o nome.</string>
     <string name="cadastro_erro_telefone">Informe um celular válido com DDD.</string>
     <string name="cadastro_erro_email">Informe um e-mail válido.</string>
@@ -89,7 +90,7 @@
     <string name="painel_galeria_dica">Toque em \"+ Foto\" para publicar. Segure uma foto para remover.</string>
     <string name="painel_codigo">Seu código: %1$s</string>
     <string name="painel_situacao_publicado">● Perfil visível para as clientes</string>
-    <string name="painel_situacao_incompleto">● Perfil incompleto: preencha nome, cidade e pelo menos 1 serviço para aparecer nas buscas</string>
+    <string name="painel_situacao_incompleto">● Perfil sem nome: toque em \"Editar meu perfil\" para aparecer nas buscas</string>
     <string name="painel_situacao_bloqueado">● Perfil bloqueado pela administração</string>
     <string name="painel_sem_apresentacao">Toque em \"Editar meu perfil\" e escreva uma apresentação para suas clientes.</string>
     <string name="painel_sem_sobre">Conte sobre seu trabalho: técnicas, especialidades, materiais que usa.</string>
@@ -180,6 +181,12 @@
     <string name="cliente_n_servicos">%1$d serviços</string>
     <string name="cliente_a_partir">a partir de %1$s</string>
     <string name="cliente_n_fotos">%1$d fotos</string>
+    <string name="cliente_distancia">a %1$s</string>
+    <string name="cliente_ver_perfil">Ver perfil</string>
+    <string name="cliente_preferido_msg">Quer que o app abra direto neste perfil sempre que você entrar?</string>
+    <string name="cliente_preferido_check">Sempre abrir este perfil ao entrar</string>
+    <string name="perfil_preferido">★ Este perfil abre quando você entra no app · toque para desfazer</string>
+    <string name="perfil_preferido_removido">Pronto: o app volta a abrir na lista de profissionais.</string>
 
     <!-- Admin -->
     <string name="admin_cadastrar">Cadastrar administrador</string>

@@ -21,12 +21,13 @@ interface IProfissionalRepository {
     suspend fun salvarPerfil(dados: Map<String, Any?>): Result<Unit>
     suspend fun trocarFotoPerfil(uri: Uri): Result<Unit>
     suspend fun salvarServicos(servicos: List<Servico>): Result<Unit>
+    suspend fun atualizarPerfilAntigo(): Result<Unit>
 
     // Galeria (até Profissional.MAX_FOTOS).
     suspend fun adicionarFoto(uri: Uri): Result<Unit>
     suspend fun removerFoto(foto: FotoPortfolio): Result<Unit>
 
-    // Perfis visíveis pras clientes: publicados e não bloqueados. "texto"
+    // Perfis visíveis pras clientes: publicados (com nome) e não bloqueados. "texto"
     // procura no nome, cidade e bairro (vazio = todas).
     suspend fun listarPublicadas(texto: String): Result<List<Profissional>>
     suspend fun buscarPorCodigo(codigo: String): Result<Profissional?>

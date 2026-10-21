@@ -22,6 +22,9 @@ val KEY_UID = stringPreferencesKey("uid")
 // (erro real visto no Caronas: TOO_MANY_ATTEMPTS_TRY_LATER).
 val KEY_ULTIMO_REENVIO_VERIFICACAO = longPreferencesKey("ultimoReenvioVerificacao")
 
+// Perfil que abre direto quando a cliente entra no app (escolha dela).
+val KEY_PERFIL_FAVORITO = stringPreferencesKey("perfilFavorito")
+
 private val Context.startPrefsDataStore: DataStore<Preferences> by preferencesDataStore(name = "ManicurePrefs")
 
 @Module

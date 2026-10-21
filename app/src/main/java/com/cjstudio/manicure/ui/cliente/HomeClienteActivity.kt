@@ -1,11 +1,14 @@
 package com.cjstudio.manicure.ui.cliente
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.EditText
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
@@ -20,6 +23,7 @@ import com.cjstudio.manicure.ui.common.coletar
 import com.cjstudio.manicure.ui.common.mostrarMensagem
 import com.cjstudio.manicure.ui.perfil.PerfilProfissionalActivity
 import com.cjstudio.manicure.ui.profissional.ResumoPerfil
+import com.cjstudio.manicure.util.Distancia
 import com.cjstudio.manicure.util.Formato
 import com.cjstudio.manicure.util.carregarFotoRedonda
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -30,7 +34,13 @@ class HomeClienteActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeClienteBinding
     private val viewModel: HomeClienteViewModel by viewModels()
-    private val adapter = ProfissionaisAdapter { abrirPerfil(it) }
+    private val adapter = ProfissionaisAdapter { viewModel.tocou(it) }
+
+    // Com a localização, as profissionais mais perto vão pro topo. Negada,
+    // a lista continua funcionando (ordem por nome).
+    private val pedirLocalizacao = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { r ->
+        if (r.values.any { it }) viewModel.localizacaoLiberada()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +52,8 @@ class HomeClienteActivity : AppCompatActivity() {
         binding.btnSair.setOnClickListener { viewModel.sair() }
         binding.etBusca.doAfterTextChanged { viewModel.digitar(it.toString()) }
         binding.tvCodigo.setOnClickListener { pedirCodigo() }
+
+        pedirLocalizacao.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
 
         coletar(viewModel.cliente) { c ->
             binding.tvOla.text = getString(R.string.home_ola, c?.nome.orEmpty().substringBefore(" "))
@@ -55,6 +67,7 @@ class HomeClienteActivity : AppCompatActivity() {
             when (evento) {
                 HomeClienteViewModel.Evento.Saiu -> Navegacao.irLimpando(this, Navegacao.telaLogin())
                 is HomeClienteViewModel.Evento.AbrirPerfil -> abrirPerfil(evento.id)
+                is HomeClienteViewModel.Evento.PerguntarPreferido -> perguntarPreferido(evento.id, evento.nome)
                 is HomeClienteViewModel.Evento.Mensagem -> mostrarMensagem(evento.texto)
             }
         }
@@ -62,6 +75,26 @@ class HomeClienteActivity : AppCompatActivity() {
 
     private fun abrirPerfil(id: String) {
         startActivity(Intent(this, PerfilProfissionalActivity::class.java).putExtra(PerfilProfissionalActivity.EXTRA_ID, id))
+    }
+
+    // Ao tocar numa profissional: caixa "abrir sempre este perfil ao entrar".
+    private fun perguntarPreferido(id: String, nome: String) {
+        val margem = (20 * resources.displayMetrics.density).toInt()
+        val caixa = CheckBox(this).apply {
+            setText(R.string.cliente_preferido_check)
+            buttonTintList = androidx.core.content.ContextCompat.getColorStateList(context, R.color.rosa)
+        }
+        val container = android.widget.FrameLayout(this).apply {
+            setPadding(margem, margem / 2, margem, 0)
+            addView(caixa)
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(nome)
+            .setMessage(R.string.cliente_preferido_msg)
+            .setView(container)
+            .setPositiveButton(R.string.cliente_ver_perfil) { _, _ -> viewModel.abrir(id, caixa.isChecked) }
+            .setNegativeButton(R.string.cancelar, null)
+            .show()
     }
 
     private fun pedirCodigo() {
@@ -82,10 +115,10 @@ class HomeClienteActivity : AppCompatActivity() {
             .show()
     }
 
-    private class ProfissionaisAdapter(private val aoTocar: (String) -> Unit) :
+    private class ProfissionaisAdapter(private val aoTocar: (Profissional) -> Unit) :
         RecyclerView.Adapter<ProfissionaisAdapter.Holder>() {
 
-        var lista: List<Profissional> = emptyList()
+        var lista: List<HomeClienteViewModel.ItemLista> = emptyList()
             set(valor) {
                 field = valor
                 @Suppress("NotifyDataSetChanged")
@@ -100,19 +133,23 @@ class HomeClienteActivity : AppCompatActivity() {
         override fun getItemCount() = lista.size
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
-            val p = lista[position]
+            val item = lista[position]
+            val p = item.profissional
             val b = holder.binding
             val contexto = b.root.context
             b.ivFoto.carregarFotoRedonda(p.fotoPerfilUrl)
             b.tvNome.text = p.nomeExibicao
-            b.tvLocal.text = ResumoPerfil.local(p)
+            b.tvLocal.text = listOfNotNull(
+                item.distanciaKm?.let { contexto.getString(R.string.cliente_distancia, Distancia.texto(it)) },
+                ResumoPerfil.local(p).ifBlank { null }
+            ).joinToString("  ·  ")
             val menor = p.servicos.minOfOrNull { it.preco }
             b.tvResumo.text = listOfNotNull(
                 contexto.getString(R.string.cliente_n_servicos, p.servicos.size),
                 menor?.let { contexto.getString(R.string.cliente_a_partir, Formato.valor(it)) },
                 contexto.getString(R.string.cliente_n_fotos, p.fotos.size)
             ).joinToString("  ·  ")
-            b.root.setOnClickListener { p.id?.let(aoTocar) }
+            b.root.setOnClickListener { aoTocar(p) }
         }
     }
 }

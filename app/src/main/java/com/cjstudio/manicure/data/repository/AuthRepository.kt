@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.cjstudio.manicure.data.model.EmailJaCadastradoException
 import com.cjstudio.manicure.data.model.EmailNaoVerificadoException
+import com.cjstudio.manicure.di.KEY_PERFIL_FAVORITO
 import com.cjstudio.manicure.di.KEY_UID
 import com.cjstudio.manicure.di.KEY_ULTIMO_REENVIO_VERIFICACAO
 import com.google.firebase.auth.FirebaseAuth
@@ -123,7 +124,10 @@ class AuthRepository @Inject constructor(
             auth.get().signOut()
         } catch (_: Exception) {
         }
-        prefs.edit { it.remove(KEY_UID) }
+        prefs.edit {
+            it.remove(KEY_UID)
+            it.remove(KEY_PERFIL_FAVORITO)
+        }
     }
 
     private companion object {

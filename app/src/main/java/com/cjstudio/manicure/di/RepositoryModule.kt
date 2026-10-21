@@ -11,6 +11,10 @@ import com.cjstudio.manicure.data.repository.IAuthRepository
 import com.cjstudio.manicure.data.repository.IClienteRepository
 import com.cjstudio.manicure.data.repository.IFalhasRepository
 import com.cjstudio.manicure.data.repository.IProfissionalRepository
+import com.cjstudio.manicure.data.repository.ILocalizacaoRepository
+import com.cjstudio.manicure.data.repository.IPreferenciasRepository
+import com.cjstudio.manicure.data.repository.LocalizacaoRepository
+import com.cjstudio.manicure.data.repository.PreferenciasRepository
 import com.cjstudio.manicure.data.repository.ProfissionalRepository
 import dagger.Binds
 import dagger.Module
@@ -45,4 +49,12 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindClienteRepository(impl: ClienteRepository): IClienteRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLocalizacaoRepository(impl: LocalizacaoRepository): ILocalizacaoRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPreferenciasRepository(impl: PreferenciasRepository): IPreferenciasRepository
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cjstudio.manicure.R
 import com.cjstudio.manicure.data.model.Profissional
+import com.cjstudio.manicure.data.repository.IPreferenciasRepository
 import com.cjstudio.manicure.data.repository.IProfissionalRepository
 import com.cjstudio.manicure.ui.common.UiTexto
 import com.cjstudio.manicure.ui.common.paraUiTexto
@@ -23,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PerfilProfissionalViewModel @Inject constructor(
     private val profissionais: IProfissionalRepository,
+    private val preferencias: IPreferenciasRepository,
     estado: SavedStateHandle
 ) : ViewModel() {
 
@@ -31,16 +33,29 @@ class PerfilProfissionalViewModel @Inject constructor(
     private val _perfil = MutableStateFlow<Profissional?>(null)
     val perfil: StateFlow<Profissional?> = _perfil
 
+    // Este perfil é o que abre direto quando a cliente entra no app.
+    private val _preferido = MutableStateFlow(false)
+    val preferido: StateFlow<Boolean> = _preferido
+
     private val _mensagens = Channel<UiTexto>(Channel.BUFFERED)
     val mensagens: Flow<UiTexto> = _mensagens.receiveAsFlow()
 
     init {
+        viewModelScope.launch { _preferido.value = preferencias.perfilFavorito() == id }
         viewModelScope.launch {
             profissionais.buscar(id)
                 .onSuccess { p ->
                     if (p == null) _mensagens.send(texto(R.string.perfil_nao_encontrado)) else _perfil.value = p
                 }
                 .onFailure { _mensagens.send(it.paraUiTexto()) }
+        }
+    }
+
+    fun deixarDePreferir() {
+        viewModelScope.launch {
+            preferencias.definirPerfilFavorito(null)
+            _preferido.value = false
+            _mensagens.send(texto(R.string.perfil_preferido_removido))
         }
     }
 }

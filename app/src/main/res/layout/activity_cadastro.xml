@@ -94,6 +94,17 @@
                 style="@style/BotaoPrimario"
                 android:text="@string/cadastro_criar" />
 
+            <TextView
+                android:id="@+id/tvLimpar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp"
+                android:padding="8dp"
+                android:text="@string/cadastro_limpar"
+                android:textColor="@color/rosa"
+                android:textSize="14sp" />
+
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="32dp"
