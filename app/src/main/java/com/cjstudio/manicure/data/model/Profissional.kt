@@ -51,6 +51,19 @@ data class Profissional(
     // Texto em minúsculas sem acento pra busca (nome + cidade + bairro).
     var busca: String? = null,
 
+    // ===== Assinatura (ver util/Assinatura) =====
+    // Quando publicou a primeira agenda: começa o teste grátis de 30 dias.
+    // A própria profissional grava uma vez só (firestore.rules); o resto só
+    // a Cloud Function confirmarCompraManicure grava.
+    var testeInicioEm: Date? = null,
+    // Fim do período pago (já somados os planos comprados).
+    var acessoPagoAte: Date? = null,
+    // Último plano pago ("basico" | "plus").
+    var plano: String? = null,
+    // Agendas compradas além das 3 do plano, valendo até extrasAte.
+    var agendasExtras: Int = 0,
+    var extrasAte: Date? = null,
+
     // Aparece pras clientes assim que tem nome; o admin pode bloquear.
     var publicado: Boolean = false,
     var bloqueado: Boolean = false,

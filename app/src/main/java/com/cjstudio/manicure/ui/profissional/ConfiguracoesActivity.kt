@@ -21,7 +21,7 @@ import com.cjstudio.manicure.util.Suporte
 import dagger.hilt.android.AndroidEntryPoint
 
 // Configurações da profissional (mesmo jeito do Caronas): instruções do app,
-// termos, contato com o suporte e excluir o cadastro.
+// termos, contato com o suporte, pagamentos e excluir o cadastro.
 @AndroidEntryPoint
 class ConfiguracoesActivity : AppCompatActivity() {
 
@@ -36,6 +36,9 @@ class ConfiguracoesActivity : AppCompatActivity() {
 
         binding.topo.tvTitulo.setText(R.string.config_titulo)
         binding.topo.btnVoltar.setOnClickListener { finish() }
+        binding.btnPagamentos.setOnClickListener {
+            startActivity(Intent(this, com.cjstudio.manicure.ui.pagamentos.PagamentosActivity::class.java))
+        }
         binding.btnInstrucoes.setOnClickListener { startActivity(Intent(this, InstrucoesActivity::class.java)) }
         binding.btnTermos.setOnClickListener { startActivity(Intent(this, TermosActivity::class.java)) }
         binding.btnAjuda.setOnClickListener { Suporte.abrirEmail(this, getString(R.string.config_ajuda_assunto)) }

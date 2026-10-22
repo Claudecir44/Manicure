@@ -1,4 +1,5 @@
 [versions]
+billing = "9.1.0"
 shortcutbadger = "6d4ce808b0"
 agp = "9.3.2"
 kotlin = "2.3.20"
@@ -30,6 +31,7 @@ places = "4.1.0"
 mapsUtils = "3.8.2"
 
 [libraries]
+billing-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billing" }
 shortcutbadger = { group = "com.github.leolin310148", name = "ShortcutBadger", version.ref = "shortcutbadger" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }

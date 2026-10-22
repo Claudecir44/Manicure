@@ -156,6 +156,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.play.services.location)
+    implementation(libs.billing.ktx)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

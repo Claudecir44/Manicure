@@ -94,6 +94,34 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <!-- ===== Pagamentos ===== -->
+    <style name="CartaoPlano">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:background">@drawable/bg_secao_perfil</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">18dp</item>
+    </style>
+
+    <style name="CartaoPlanoNome">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/texto</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="CartaoPlanoPreco">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:textColor">?attr/corDestaque</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <!-- ===== Perfil público (capa, atalhos redondos e cartões) ===== -->
     <style name="AcaoPerfil">
         <item name="android:layout_width">78dp</item>

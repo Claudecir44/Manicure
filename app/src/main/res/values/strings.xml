@@ -491,4 +491,61 @@
     <string name="chat_conversa_apagada">Conversa apagada.</string>
     <string name="chat_dica_segurar">Segure uma conversa para apagar.</string>
     <string name="chat_menu">Mais opções</string>
+    <!-- Pagamentos / assinatura da profissional -->
+    <string name="config_pagamentos">Pagamentos</string>
+    <string name="config_pagamentos_sub">Assinatura, agendas extras e histórico</string>
+    <string name="pag_titulo">Pagamentos</string>
+    <string name="pag_aguarde">Aguarde carregar a sua assinatura.</string>
+    <string name="pag_planos">Planos</string>
+    <string name="pag_basico">Plano Básico</string>
+    <string name="pag_basico_desc">30 dias de uso ilimitado, com até 3 agendas publicadas ao mesmo tempo.</string>
+    <string name="pag_plus">Plano Plus</string>
+    <string name="pag_plus_selo">Mais econômico</string>
+    <string name="pag_plus_desc">90 dias de uso ilimitado, com até 3 agendas publicadas ao mesmo tempo.</string>
+    <string name="pag_preco_mes">%1$s / 30 dias</string>
+    <string name="pag_preco_90">%1$s / 90 dias</string>
+    <string name="pag_preco_extra">+ %1$s por agenda</string>
+    <string name="pag_assinar">Assinar</string>
+    <string name="pag_extra_titulo">Agenda extra</string>
+    <string name="pag_extra_desc">Quer publicar mais de 3 agendas? Cada agenda a mais custa R$ 50,00 e vale até o fim do período pago atual. Você paga só a diferença.</string>
+    <string name="pag_extra_comprar">Comprar 1 agenda extra</string>
+    <string name="pag_extra_so_pago">A agenda extra é para quem já tem um plano pago em dia.</string>
+    <string name="pag_renovar_bloqueado">Você poderá pagar o próximo período a partir de %1$s (faltando %2$d dias para acabar o atual).</string>
+    <string name="pag_como_funciona">Como funciona</string>
+    <string name="pag_regras">• Para as clientes o app é gratuito.\n• Você tem 30 dias grátis, contando a partir da publicação da sua primeira agenda.\n• Depois escolha o Plano Básico (R$ 200,00 por 30 dias) ou o Plano Plus (R$ 500,00 por 90 dias).\n• Os dois planos permitem até 3 agendas publicadas ao mesmo tempo. Cada agenda a mais custa R$ 50,00.\n• O novo pagamento fica liberado nos 3 últimos dias do período pago, e o período novo começa quando o atual termina.\n• Se a assinatura vencer, as clientes deixam de ver e marcar horários nas suas agendas até você pagar.\n• O pagamento é feito pelo Google Play.</string>
+    <string name="pag_historico">Histórico de pagamentos</string>
+    <string name="pag_sem_historico">Nenhum pagamento ainda.</string>
+    <string name="pag_historico_linha">%1$s · %2$s\nPago em %3$s · vale até %4$s</string>
+    <string name="pag_status_nao_iniciada">Teste grátis</string>
+    <string name="pag_status_teste">Teste grátis</string>
+    <string name="pag_status_basico">Plano Básico</string>
+    <string name="pag_status_plus">Plano Plus</string>
+    <string name="pag_status_vencida">Assinatura vencida</string>
+    <string name="pag_dias_nao_iniciada">%1$d dias grátis</string>
+    <string name="pag_dias_vencida">Sem dias restantes</string>
+    <string name="pag_fim_nao_iniciada">Começam a contar quando você publicar a primeira agenda.</string>
+    <string name="pag_fim">Até %1$s</string>
+    <string name="pag_fim_vencida">Venceu em %1$s</string>
+    <string name="pag_agendas">Agendas publicadas: %1$d de %2$d</string>
+    <string name="pag_aviso_vencida">Sua assinatura venceu. As clientes não estão vendo suas agendas.</string>
+    <string name="pag_liberado">Pagamento confirmado! Sua assinatura foi atualizada.</string>
+    <string name="pag_pendente">Pagamento em processamento. Assim que o Google Play confirmar, sua assinatura é atualizada.</string>
+    <string name="pag_indisponivel">O pagamento pelo Google Play ainda não está disponível para este app. Tente novamente mais tarde.</string>
+    <string name="pag_erro_google">Google Play: %1$s</string>
+    <plurals name="painel_dias_gratis">
+        <item quantity="one">Resta %1$d dia gratuito</item>
+        <item quantity="other">Restam %1$d dias gratuitos</item>
+    </plurals>
+    <plurals name="painel_dias_pagos">
+        <item quantity="one">Resta %1$d dia pago</item>
+        <item quantity="other">Restam %1$d dias pagos</item>
+    </plurals>
+    <plurals name="painel_aviso_expirar">
+        <item quantity="one">Falta %1$d dia para expirar sua assinatura</item>
+        <item quantity="other">Faltam %1$d dias para expirar sua assinatura</item>
+    </plurals>
+    <string name="painel_teste_nao_iniciado">30 dias grátis ao publicar a 1ª agenda</string>
+    <string name="painel_assinatura_vencida">Assinatura vencida · toque para pagar</string>
+    <string name="agenda_erro_assinatura_vencida">Sua assinatura venceu. Vá em Configurações → Pagamentos para continuar publicando agendas.</string>
+    <string name="agenda_erro_limite">Você já tem %1$d agendas publicadas, o limite do seu plano. Para publicar mais, compre uma agenda extra (R$ 50,00) em Configurações → Pagamentos.</string>
 </resources>

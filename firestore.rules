@@ -37,6 +37,32 @@ service cloud.firestore {
         && d.servicos is list && d.servicos.size() <= 30;
     }
 
+    // ===== Assinatura da profissional (ver util/Assinatura.kt) =====
+    // Campos que só a Cloud Function confirmarCompraManicure grava.
+    function camposPagos() {
+      return ['acessoPagoAte', 'plano', 'agendasExtras', 'extrasAte'];
+    }
+
+    // testeInicioEm só nasce uma vez, com a hora do servidor (primeira agenda).
+    function testeOk() {
+      return !alterados().hasAny(['testeInicioEm'])
+        || (resource.data.get('testeInicioEm', null) == null && request.resource.data.testeInicioEm == request.time);
+    }
+
+    // Teste de 30 dias em dia, período pago em dia ou (perfil antigo) teste
+    // que ainda não começou.
+    function acessoEmDia(p) {
+      return (p.get('testeInicioEm', null) == null && p.get('acessoPagoAte', null) == null)
+        || (p.get('testeInicioEm', null) != null && p.testeInicioEm + duration.value(30, 'd') > request.time)
+        || (p.get('acessoPagoAte', null) != null && p.acessoPagoAte > request.time);
+    }
+
+    // Pra criar agenda: o teste já começou (a primeira agenda grava o
+    // testeInicioEm no mesmo lote) ou há período pago, e está em dia.
+    function agendaLiberada(p) {
+      return (p.get('testeInicioEm', null) != null || p.get('acessoPagoAte', null) != null) && acessoEmDia(p);
+    }
+
     // ===== Profissionais =====
     match /profissionais/{uid} {
       // Cliente logada vê perfis publicados; a dona e o admin veem sempre.
@@ -45,11 +71,19 @@ service cloud.firestore {
         || (ehAdmin() && permissaoAdmin('profissionais'));
       allow create: if dono(uid)
         && request.resource.data.bloqueado == false
+        // O modelo manda os campos da assinatura vazios; nada pago no cadastro.
+        && request.resource.data.get('acessoPagoAte', null) == null
+        && request.resource.data.get('plano', null) == null
+        && request.resource.data.get('agendasExtras', 0) == 0
+        && request.resource.data.get('extrasAte', null) == null
+        && request.resource.data.get('testeInicioEm', null) == null
         && request.resource.data.fotos.size() == 0
         && limites(request.resource.data);
       allow update: if (dono(uid)
           && resource.data.bloqueado == false
           && !alterados().hasAny(['bloqueado', 'email', 'codigo', 'criadoEm'])
+          && !alterados().hasAny(camposPagos())
+          && testeOk()
           && limites(request.resource.data))
         || (ehAdmin() && permissaoAdmin('profissionais') && alterados().hasOnly(['bloqueado']));
       allow delete: if false;
@@ -60,11 +94,16 @@ service cloud.firestore {
     // "ocupados" são só chaves de horário, sem nome de quem marcou).
     match /profissionais/{uid}/agendas/{agendaId} {
       allow read: if logado();
-      allow create, delete: if dono(uid);
+      // Agenda nova só com o acesso em dia; a primeira agenda grava junto o
+      // testeInicioEm (getAfter enxerga o teste começando no mesmo lote).
+      allow create: if dono(uid) && agendaLiberada(getAfter(/databases/$(database)/documents/profissionais/$(uid)).data);
+      allow delete: if dono(uid);
       allow update: if dono(uid)
         // Cliente reservando: só acrescenta UM horário livre aos ocupados,
-        // e a marcação correspondente é criada no mesmo lote.
+        // e a marcação correspondente é criada no mesmo lote. Só com a
+        // assinatura da profissional em dia.
         || (logado() && !dono(uid)
+          && acessoEmDia(get(/databases/$(database)/documents/profissionais/$(uid)).data)
           && alterados().hasOnly(['ocupados', 'ultimoReservado'])
           && request.resource.data.ultimoReservado is string
           && !(request.resource.data.ultimoReservado in resource.data.ocupados)
@@ -183,6 +222,16 @@ service cloud.firestore {
       // Só a foto, pelo próprio admin. Criar/excluir: só Cloud Function.
       allow update: if dono(uid) && alterados().hasOnly(['fotoUrl']);
       allow create, delete: if false;
+    }
+
+    // Pagamentos da assinatura: só a Cloud Function grava.
+    match /pagamentos/{id} {
+      allow read: if (logado() && resource.data.uid == request.auth.uid) || ehAdmin();
+      allow write: if false;
+    }
+
+    match /pagamentosProcessados/{id} {
+      allow read, write: if false;
     }
 
     match /logsAdministracao/{id} {

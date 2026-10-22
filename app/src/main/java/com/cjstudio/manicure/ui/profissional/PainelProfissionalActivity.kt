@@ -25,6 +25,8 @@ import com.cjstudio.manicure.util.Aparencia
 import com.cjstudio.manicure.util.BadgeIcone
 import com.cjstudio.manicure.util.carregarFotoRedonda
 import com.google.android.material.color.MaterialColors
+import com.cjstudio.manicure.util.Assinatura
+import com.cjstudio.manicure.util.Assinatura.Situacao
 import dagger.hilt.android.AndroidEntryPoint
 
 // Painel da manicure: resumo do perfil e atalhos (agenda, meu perfil, chat,
@@ -77,6 +79,26 @@ class PainelProfissionalActivity : AppCompatActivity() {
         }
     }
 
+    // "Restam X dias gratuitos/pagos" e, faltando 5 dias, o lembrete vermelho.
+    private fun mostrarAssinatura(p: Profissional) {
+        val a = Assinatura.estado(p)
+        binding.tvDiasAssinatura.text = when (a.situacao) {
+            Situacao.NAO_INICIADA -> getString(R.string.painel_teste_nao_iniciado)
+            Situacao.TESTE -> resources.getQuantityString(R.plurals.painel_dias_gratis, a.diasRestantes, a.diasRestantes)
+            Situacao.PAGA -> resources.getQuantityString(R.plurals.painel_dias_pagos, a.diasRestantes, a.diasRestantes)
+            Situacao.VENCIDA -> getString(R.string.painel_assinatura_vencida)
+        }
+        binding.tvDiasAssinatura.setTextColor(
+            if (a.situacao == Situacao.VENCIDA) ContextCompat.getColor(this, R.color.vermelho)
+            else MaterialColors.getColor(binding.tvDiasAssinatura, R.attr.corDestaqueClaro)
+        )
+        binding.tvAvisoAssinatura.visibility = if (a.avisoVencimento) View.VISIBLE else View.GONE
+        binding.tvAvisoAssinatura.text = resources.getQuantityString(R.plurals.painel_aviso_expirar, a.diasRestantes, a.diasRestantes)
+        binding.tvDiasAssinatura.setOnClickListener {
+            startActivity(android.content.Intent(this, com.cjstudio.manicure.ui.pagamentos.PagamentosActivity::class.java))
+        }
+    }
+
     private fun mostrar(p: Profissional) {
         binding.ivFoto.carregarFotoRedonda(p.fotoPerfilUrl)
         val primeiroNome = p.nomeExibicao?.trim()?.substringBefore(' ')?.takeIf { it.isNotBlank() }
@@ -85,6 +107,7 @@ class PainelProfissionalActivity : AppCompatActivity() {
         binding.tvNome.visibility = if (p.nomeExibicao.isNullOrBlank()) View.GONE else View.VISIBLE
         binding.tvTipo.setText(if (p.tipoPerfil == TipoPerfil.SALAO) R.string.perfil_tipo_salao else R.string.perfil_tipo_pessoal)
         binding.tvCodigo.text = getString(R.string.painel_codigo, p.codigo.orEmpty())
+        mostrarAssinatura(p)
 
         // Situação do perfil pras clientes.
         val (situacao, cor) = when {

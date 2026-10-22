@@ -1,5 +1,6 @@
 // Cloud Functions do Manicure (profissional, cliente e admin no mesmo projeto
 // Firebase: manicure-8a657): administradores (cadastrar, editar, excluir),
+// assinatura da profissional (Google Play),
 // exclusão de cadastros e push. O resto (perfil, galeria, agenda, bloqueio)
 // é gravação direta, protegida por firestore.rules.
 require('dotenv').config();
@@ -430,6 +431,145 @@ exports.excluirCadastro = onCall(async (request) => {
         await registrarLog('excluirCadastro', uidChamador, { uid, tipo, nome, autorizadoPor, contaApagada });
     }
     return { ok: true, contaApagada };
+});
+
+
+// ============================================================
+// Assinatura da profissional (a cliente não paga). Pagamento pelo Google
+// Play com produtos avulsos consumíveis — mesmo desenho do Caronas
+// (confirmarCompraGooglePlayMotorista): o app compra, manda o token pra cá,
+// conferimos no Google, consumimos e liberamos. Regras no app em
+// util/Assinatura.kt (precisam bater com estas):
+// - teste grátis de 30 dias a partir da primeira agenda publicada;
+// - Básico R$ 200,00 / 30 dias; Plus R$ 500,00 / 90 dias; 3 agendas ao
+//   mesmo tempo; R$ 50,00 por agenda a mais até o fim do período pago;
+// - o período novo começa quando o atual (pago ou teste) acaba.
+// ============================================================
+const { GoogleAuth } = require('google-auth-library');
+
+const PACOTE_APP = 'com.cjstudio.manicure';
+const DIAS_TESTE = 30;
+const DIA_MS = 24 * 60 * 60 * 1000;
+
+const PRODUTOS_MANICURE = {
+    manicure_basico_30: { tipo: 'plano', plano: 'basico', dias: 30, valor: 200 },
+    manicure_plus_90: { tipo: 'plano', plano: 'plus', dias: 90, valor: 500 },
+    manicure_agenda_extra: { tipo: 'extra', valor: 50 },
+};
+
+// Conta de serviço com acesso à API do Google Play Developer: a da própria
+// função (firebase-adminsdk-fbsvc, convidada no Play Console em Usuários e
+// permissões) ou um JSON em GOOGLE_PLAY_SERVICE_ACCOUNT_JSON (functions/.env).
+let clientePlay = null;
+async function clienteGooglePlay() {
+    if (clientePlay) return clientePlay;
+    const json = process.env.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON;
+    const auth = new GoogleAuth({
+        credentials: json ? JSON.parse(json) : undefined,
+        scopes: ['https://www.googleapis.com/auth/androidpublisher'],
+    });
+    clientePlay = await auth.getClient();
+    return clientePlay;
+}
+
+function urlCompra(productId, token) {
+    return `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${PACOTE_APP}`
+        + `/purchases/products/${encodeURIComponent(productId)}/tokens/${encodeURIComponent(token)}`;
+}
+
+function millis(valor) {
+    if (!valor) return 0;
+    if (typeof valor.toMillis === 'function') return valor.toMillis();
+    if (valor instanceof Date) return valor.getTime();
+    return Number(valor) || 0;
+}
+
+// Calcula os campos novos do perfil pra uma compra (sem gravar nada).
+function aplicarCompraManicure(perfil, produto, agora) {
+    const fimTeste = perfil.testeInicioEm ? millis(perfil.testeInicioEm) + DIAS_TESTE * DIA_MS : 0;
+    const pagoAte = millis(perfil.acessoPagoAte);
+    if (produto.tipo === 'plano') {
+        const inicio = Math.max(agora, pagoAte, fimTeste);
+        const fim = inicio + produto.dias * DIA_MS;
+        return {
+            campos: { acessoPagoAte: new Date(fim), plano: produto.plano },
+            inicio,
+            fim,
+        };
+    }
+    // Agenda extra: vale até o fim do período pago atual (paga só a diferença).
+    const extrasAte = millis(perfil.extrasAte);
+    const extrasAtuais = extrasAte > agora ? (perfil.agendasExtras || 0) : 0;
+    const fim = pagoAte > agora ? pagoAte : agora + 30 * DIA_MS;
+    return {
+        campos: { agendasExtras: extrasAtuais + 1, extrasAte: new Date(Math.max(fim, extrasAte)) },
+        inicio: agora,
+        fim,
+    };
+}
+
+exports.confirmarCompraManicure = onCall(async (request) => {
+    const uid = request.auth && request.auth.uid;
+    if (!uid) throw new HttpsError('unauthenticated', 'Entre na sua conta.');
+    const { purchaseToken, productId } = request.data || {};
+    const produto = PRODUTOS_MANICURE[productId];
+    if (!purchaseToken || !produto) throw new HttpsError('invalid-argument', 'Compra inválida.');
+
+    let compra;
+    try {
+        const cliente = await clienteGooglePlay();
+        compra = (await cliente.request({ url: urlCompra(productId, purchaseToken) })).data;
+    } catch (e) {
+        console.error('Erro ao conferir compra no Google Play:', e.message);
+        throw new HttpsError('internal', 'Não foi possível conferir a compra no Google Play. Tente de novo em instantes.');
+    }
+    // 0 = comprado, 1 = cancelado, 2 = pendente (Pix/boleto).
+    if (compra.purchaseState === 2) return { ok: false, pendente: true };
+    if (compra.purchaseState !== 0) throw new HttpsError('failed-precondition', 'Compra não concluída.');
+    if (compra.obfuscatedExternalAccountId && compra.obfuscatedExternalAccountId !== uid) {
+        throw new HttpsError('permission-denied', 'Esta compra pertence a outra conta.');
+    }
+
+    const db = admin.firestore();
+    // Idempotência: o mesmo token libera uma vez só.
+    const travaRef = db.collection('pagamentosProcessados').doc(`gp_${purchaseToken}`);
+    try {
+        await travaRef.create({ uid, productId, processadoEm: FieldValue.serverTimestamp() });
+    } catch (e) {
+        if (e.code === 6) return { ok: true, jaProcessado: true }; // ALREADY_EXISTS
+        throw e;
+    }
+
+    // Consumir: o mesmo produto é comprado de novo a cada período.
+    if (compra.consumptionState !== 1) {
+        try {
+            const cliente = await clienteGooglePlay();
+            await cliente.request({ url: urlCompra(productId, purchaseToken) + ':consume', method: 'POST' });
+        } catch (e) {
+            console.error('Erro ao consumir compra (acesso liberado mesmo assim):', e.message);
+        }
+    }
+
+    const perfilRef = db.collection('profissionais').doc(uid);
+    const resultado = await db.runTransaction(async (tx) => {
+        const perfil = (await tx.get(perfilRef)).data() || {};
+        const r = aplicarCompraManicure(perfil, produto, Date.now());
+        tx.update(perfilRef, r.campos);
+        tx.set(db.collection('pagamentos').doc(), {
+            uid,
+            nome: perfil.nomeExibicao || perfil.email || '',
+            produto: productId,
+            tipo: produto.tipo,
+            plano: produto.plano || null,
+            valor: produto.valor,
+            inicio: new Date(r.inicio),
+            fim: new Date(r.fim),
+            googlePlayOrderId: compra.orderId || '',
+            criadoEm: FieldValue.serverTimestamp(),
+        });
+        return r;
+    });
+    return { ok: true, fim: resultado.fim };
 });
 
 

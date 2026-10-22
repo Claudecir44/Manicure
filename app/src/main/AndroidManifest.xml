@@ -94,6 +94,10 @@
             android:exported="false"
             android:theme="@style/Theme.Manicure.Profissional" />
         <activity
+            android:name=".ui.pagamentos.PagamentosActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Manicure.Profissional" />
+        <activity
             android:name=".ui.profissional.InstrucoesActivity"
             android:exported="false"
             android:theme="@style/Theme.Manicure.Profissional" />

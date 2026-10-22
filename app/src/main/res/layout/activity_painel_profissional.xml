@@ -81,6 +81,31 @@
                                 android:textSize="12sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
+
+                        <!-- Dias da assinatura (toque abre Pagamentos) e, faltando
+                             5 dias, o lembrete em vermelho. -->
+                        <TextView
+                            android:id="@+id/tvDiasAssinatura"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:maxWidth="170dp"
+                            android:paddingTop="2dp"
+                            android:paddingBottom="2dp"
+                            android:textColor="?attr/corDestaqueClaro"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvAvisoAssinatura"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:maxWidth="170dp"
+                            android:textColor="@color/vermelho"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
                     </LinearLayout>
 
                     <ImageView

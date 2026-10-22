@@ -3,6 +3,8 @@ package com.cjstudio.manicure.data.repository
 import com.cjstudio.manicure.data.model.Agenda
 import com.cjstudio.manicure.data.model.Agendamento
 import com.cjstudio.manicure.data.model.HorarioOcupadoException
+import com.cjstudio.manicure.data.model.Profissional
+import com.cjstudio.manicure.util.Assinatura
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
@@ -41,6 +43,13 @@ class AgendaRepository @Inject constructor(
     override suspend fun minhasAgendas(): Result<List<Agenda>> = agendasDaProfissional(uid())
 
     override suspend fun agendasDaProfissional(profissionalId: String): Result<List<Agenda>> = runCatching {
+        // Assinatura vencida: as clientes não veem as agendas (as regras
+        // também recusam a reserva). A própria profissional sempre vê.
+        if (profissionalId != auth.uidLogado()) {
+            val perfil = etapa("ler perfil") { db.get().collection("profissionais").document(profissionalId).get().await() }
+                .toObject(Profissional::class.java)
+            if (perfil != null && Assinatura.estado(perfil).situacao == Assinatura.Situacao.VENCIDA) return@runCatching emptyList()
+        }
         etapa("ler agendas") { agendas(profissionalId).get().await() }
             .documents.mapNotNull { d -> d.toObject(Agenda::class.java)?.also { it.id = d.id } }
             .sortedWith(compareBy<Agenda> { it.mes }.thenBy { it.categoria })
@@ -61,7 +70,14 @@ class AgendaRepository @Inject constructor(
         etapa("salvar agenda") {
             val id = agenda.id
             if (id == null) {
-                agendas(uid()).add(dados + mapOf("ocupados" to emptyList<String>(), "criadoEm" to FieldValue.serverTimestamp())).await()
+                // A primeira agenda publicada começa os 30 dias grátis (no
+                // mesmo lote: as regras conferem o teste ao criar a agenda).
+                val perfilRef = db.get().collection("profissionais").document(uid())
+                val semTeste = perfilRef.get().await().get("testeInicioEm") == null
+                val lote = db.get().batch()
+                lote.set(agendas(uid()).document(), dados + mapOf("ocupados" to emptyList<String>(), "criadoEm" to FieldValue.serverTimestamp()))
+                if (semTeste) lote.update(perfilRef, "testeInicioEm", FieldValue.serverTimestamp())
+                lote.commit().await()
             } else {
                 agendas(uid()).document(id).update(dados).await()
             }

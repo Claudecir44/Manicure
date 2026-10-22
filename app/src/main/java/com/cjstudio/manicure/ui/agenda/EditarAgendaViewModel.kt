@@ -185,6 +185,23 @@ class EditarAgendaViewModel @Inject constructor(
                 _eventos.send(Evento.Mensagem(it.paraUiTexto()))
                 return@launch
             }
+            // Agenda nova: assinatura em dia e dentro do limite do plano.
+            if (id == null) {
+                val perfil = profissionais.buscarLogada().getOrNull()
+                val assinatura = perfil?.let { com.cjstudio.manicure.util.Assinatura.estado(it) }
+                val publicadas = minhas.count { !AgendaUtil.mesPassado(it.mes) }
+                val erroAssinatura = when {
+                    assinatura == null -> null
+                    assinatura.situacao == com.cjstudio.manicure.util.Assinatura.Situacao.VENCIDA -> texto(R.string.agenda_erro_assinatura_vencida)
+                    publicadas >= assinatura.agendasPermitidas -> texto(R.string.agenda_erro_limite, assinatura.agendasPermitidas)
+                    else -> null
+                }
+                if (erroAssinatura != null) {
+                    _salvando.value = false
+                    _eventos.send(Evento.Mensagem(erroAssinatura))
+                    return@launch
+                }
+            }
             val nome = TextoUtil.normalizar(atendente)
             val repetida = minhas.firstOrNull { it.id != id && it.mes == m.mes && TextoUtil.normalizar(it.atendente.orEmpty()) == nome }
             if (repetida != null) {

@@ -22,6 +22,33 @@
             android:padding="16dp">
 
             <LinearLayout
+                android:id="@+id/btnPagamentos"
+                style="@style/LinhaConfig">
+
+                <TextView
+                    style="@style/LinhaConfigIcone"
+                    android:text="💳" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CartaoAcaoTitulo"
+                        android:text="@string/config_pagamentos" />
+
+                    <TextView
+                        android:id="@+id/tvPagamentosSub"
+                        style="@style/CartaoAcaoTexto"
+                        android:text="@string/config_pagamentos_sub" />
+                </LinearLayout>
+
+                <TextView style="@style/LinhaConfigSeta" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btnInstrucoes"
                 style="@style/LinhaConfig">
 
