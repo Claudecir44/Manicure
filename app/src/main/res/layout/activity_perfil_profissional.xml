@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Perfil público. A foto fica no alto e o "←" por cima, no canto. -->
+<!-- Perfil público. Capa com brilho da cor do perfil, foto no meio, "←" no
+     canto esquerdo e o tipo de atendimento no canto direito. Embaixo: atalhos
+     redondos, agendar, textos, serviços, fotos e, por último, Informações. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,260 +15,371 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="20dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="20dp"
-            android:paddingBottom="20dp">
+            android:paddingBottom="28dp">
 
-            <ImageView
-                android:id="@+id/ivFoto"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/bg_foto_anel"
-                android:contentDescription="@null"
-                android:padding="5dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_pessoa" />
-
-            <TextView
-                android:id="@+id/tvNome"
+            <!-- ===== Capa (o "←" e o selo rolam junto com ela) ===== -->
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:gravity="center"
-                android:textColor="@color/texto"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/tvTipo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="?attr/corDestaque"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/tvLocal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:gravity="center"
-                android:textColor="@color/texto_secundario"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/tvPreferido"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:gravity="center"
-                android:padding="4dp"
-                android:text="@string/perfil_preferido"
-                android:textColor="?attr/corDestaqueClaro"
-                android:textSize="12sp"
-                android:visibility="gone" />
-
-            <!-- Contatos: só aparecem os que ela preencheu. -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal">
+                android:background="@drawable/bg_capa_perfil"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingStart="20dp"
+                android:paddingTop="72dp"
+                android:paddingEnd="20dp">
+
+                <ImageView
+                    android:id="@+id/ivFoto"
+                    android:layout_width="132dp"
+                    android:layout_height="132dp"
+                    android:background="@drawable/bg_foto_anel"
+                    android:contentDescription="@null"
+                    android:elevation="6dp"
+                    android:padding="5dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_pessoa" />
 
                 <TextView
-                    android:id="@+id/btnChat"
-                    style="@style/BotaoContato"
-                    android:text="@string/perfil_chat" />
+                    android:id="@+id/tvNome"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center"
+                    android:letterSpacing="0.01"
+                    android:textColor="@color/texto"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/btnLigar"
-                    style="@style/BotaoContato"
-                    android:text="@string/perfil_ligar" />
+                    android:id="@+id/tvTipo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/bg_pilula_destaque"
+                    android:paddingStart="14dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="4dp"
+                    android:textColor="?attr/corDestaqueClaro"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <!-- Números rápidos: serviços, preço inicial e fotos. -->
+                <TextView
+                    android:id="@+id/tvResumo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:textColor="@color/texto_secundario"
+                    android:textSize="13sp" />
 
                 <TextView
-                    android:id="@+id/btnInstagram"
-                    style="@style/BotaoContato"
-                    android:text="@string/perfil_instagram" />
+                    android:id="@+id/tvPreferido"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:text="@string/perfil_preferido"
+                    android:textColor="?attr/corDestaqueClaro"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
 
-                <TextView
-                    android:id="@+id/btnMapa"
-                    style="@style/BotaoContato"
-                    android:text="@string/perfil_mapa" />
+                <!-- Atalhos redondos: só aparecem os que ela preencheu. -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/btnChat"
+                        style="@style/AcaoPerfil">
+
+                        <ImageView
+                            style="@style/AcaoPerfilIcone"
+                            android:src="@drawable/ic_chat" />
+
+                        <TextView
+                            style="@style/AcaoPerfilTexto"
+                            android:text="@string/perfil_chat" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btnLigar"
+                        style="@style/AcaoPerfil">
+
+                        <ImageView
+                            style="@style/AcaoPerfilIcone"
+                            android:src="@drawable/ic_telefone" />
+
+                        <TextView
+                            style="@style/AcaoPerfilTexto"
+                            android:text="@string/perfil_ligar" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btnInstagram"
+                        style="@style/AcaoPerfil">
+
+                        <ImageView
+                            style="@style/AcaoPerfilIcone"
+                            android:src="@drawable/ic_instagram" />
+
+                        <TextView
+                            style="@style/AcaoPerfilTexto"
+                            android:text="@string/perfil_instagram" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btnMapa"
+                        style="@style/AcaoPerfil">
+
+                        <ImageView
+                            style="@style/AcaoPerfilIcone"
+                            android:src="@drawable/ic_local" />
+
+                        <TextView
+                            style="@style/AcaoPerfilTexto"
+                            android:text="@string/perfil_mapa" />
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- Agendar: uma opção por categoria com horário livre. -->
+            <!-- Canto superior esquerdo: voltar. -->
+            <ImageView
+                android:id="@+id/btnVoltar"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_gravity="top|start"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_botao_vidro"
+                android:contentDescription="@string/voltar"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:padding="9dp"
+                android:src="@drawable/ic_voltar" />
+
+            <!-- Canto superior direito: como atende e, só pra dona, a Aparência. -->
             <LinearLayout
-                android:id="@+id/blocoAgendar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="18dp"
+                android:layout_marginEnd="14dp"
+                android:gravity="end"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvAtendimento"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_pilula_vidro"
+                    android:drawablePadding="6dp"
+                    android:gravity="center_vertical"
+                    android:maxWidth="210dp"
+                    android:paddingStart="10dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:textColor="@color/texto"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/btnAparencia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_pilula_destaque"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="10dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_paleta" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="@string/aparencia_botao"
+                        android:textColor="?attr/corDestaque"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+            </FrameLayout>
+
+            <!-- ===== Seções ===== -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
 
-                <TextView
-                    style="@style/TituloSecao"
-                    android:text="@string/perfil_agendar" />
-
-                <!-- Lembrete do horário que a cliente já marcou aqui. -->
+                <!-- Agendar: uma opção por categoria com horário livre. -->
                 <LinearLayout
-                    android:id="@+id/blocoLembrete"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/bg_botao_contorno"
-                    android:orientation="vertical"
-                    android:padding="12dp"
+                    android:id="@+id/blocoAgendar"
+                    style="@style/SecaoPerfil"
                     android:visibility="gone">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/perfil_lembrete_titulo"
-                        android:textColor="?attr/corDestaque"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                        style="@style/SecaoPerfilTitulo"
+                        android:drawableStart="@drawable/ic_agenda"
+                        android:text="@string/perfil_agendar" />
 
                     <TextView
-                        android:id="@+id/tvLembrete"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:lineSpacingExtra="3dp"
-                        android:textColor="@color/texto"
-                        android:textSize="14sp" />
+                        style="@style/TextoCorpo"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/perfil_agendar_dica"
+                        android:textSize="13sp" />
 
-                    <TextView
-                        android:id="@+id/tvCancelarHorario"
-                        android:layout_width="wrap_content"
+                    <!-- Lembrete do horário que a cliente já marcou aqui. -->
+                    <LinearLayout
+                        android:id="@+id/blocoLembrete"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:layout_marginTop="4dp"
-                        android:padding="4dp"
-                        android:text="@string/agendar_cancelar_titulo"
-                        android:textColor="@color/vermelho"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/bg_pilula_destaque"
+                        android:orientation="vertical"
+                        android:paddingStart="16dp"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="10dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/perfil_lembrete_titulo"
+                            android:textColor="?attr/corDestaque"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvLembrete"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:lineSpacingExtra="3dp"
+                            android:textColor="@color/texto"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tvCancelarHorario"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:padding="4dp"
+                            android:text="@string/agendar_cancelar_titulo"
+                            android:textColor="@color/vermelho"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/cgCategorias"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/cgCategorias"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:id="@+id/blocoApresentacao"
+                    style="@style/SecaoPerfil">
+
+                    <TextView
+                        style="@style/SecaoPerfilTitulo"
+                        android:drawableStart="@drawable/ic_pessoa"
+                        android:text="@string/perfil_apresentacao" />
+
+                    <TextView
+                        android:id="@+id/tvApresentacao"
+                        style="@style/SecaoPerfilTexto" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/blocoSobre"
+                    style="@style/SecaoPerfil">
+
+                    <TextView
+                        style="@style/SecaoPerfilTitulo"
+                        android:drawableStart="@drawable/ic_documento"
+                        android:text="@string/perfil_sobre_trabalho" />
+
+                    <TextView
+                        android:id="@+id/tvSobreTrabalho"
+                        style="@style/SecaoPerfilTexto" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/blocoServicos"
+                    style="@style/SecaoPerfil">
+
+                    <TextView
+                        style="@style/SecaoPerfilTitulo"
+                        android:drawableStart="@drawable/ic_paleta"
+                        android:text="@string/perfil_servicos" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvServicos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <!-- Fotos logo acima das Informações. -->
+                <LinearLayout
+                    android:id="@+id/blocoGaleria"
+                    style="@style/SecaoPerfil">
+
+                    <TextView
+                        android:id="@+id/tvTituloGaleria"
+                        style="@style/SecaoPerfilTitulo"
+                        android:drawableStart="@drawable/ic_camera"
+                        android:text="@string/perfil_galeria" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvFotos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <!-- Informações: uma linha com ícone por dado; endereço,
+                     WhatsApp e Instagram abrem ao tocar. -->
+                <LinearLayout
+                    android:id="@+id/blocoInfo"
+                    style="@style/SecaoPerfil">
+
+                    <TextView
+                        style="@style/SecaoPerfilTitulo"
+                        android:drawableStart="@drawable/ic_local"
+                        android:text="@string/perfil_contatos" />
+
+                    <LinearLayout
+                        android:id="@+id/llInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+                </LinearLayout>
             </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/blocoApresentacao"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/TituloSecao"
-                    android:text="@string/perfil_apresentacao" />
-
-                <TextView
-                    android:id="@+id/tvApresentacao"
-                    style="@style/TextoCorpo" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/blocoServicos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/TituloSecao"
-                    android:text="@string/perfil_servicos" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvServicos"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/blocoGaleria"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/TituloSecao"
-                    android:text="@string/perfil_galeria" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvFotos"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/blocoSobre"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/TituloSecao"
-                    android:text="@string/perfil_sobre_trabalho" />
-
-                <TextView
-                    android:id="@+id/tvSobreTrabalho"
-                    style="@style/TextoCorpo" />
-            </LinearLayout>
-
-            <TextView
-                style="@style/TituloSecao"
-                android:text="@string/perfil_contatos" />
-
-            <TextView
-                android:id="@+id/tvContatos"
-                style="@style/TextoCorpo"
-                android:textIsSelectable="true" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <include
-        android:id="@+id/topo"
-        layout="@layout/include_topo"
-        android:layout_width="wrap_content"
-        android:layout_height="56dp" />
-
-    <!-- Canto superior direito; só a dona do perfil vê: escolhe a cor que as clientes vão ver. -->
-    <LinearLayout
-        android:id="@+id/btnAparencia"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|end"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="14dp"
-        android:background="@drawable/bg_pilula_destaque"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="10dp"
-        android:paddingTop="6dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="6dp"
-        android:visibility="gone">
-
-        <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:importantForAccessibility="no"
-            android:src="@drawable/ic_paleta" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:text="@string/aparencia_botao"
-            android:textColor="?attr/corDestaque"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-    </LinearLayout>
 </FrameLayout>

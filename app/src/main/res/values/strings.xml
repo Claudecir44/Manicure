@@ -460,4 +460,35 @@
     <string name="agendar_remarcado_titulo">Horário remarcado!</string>
     <string name="agendar_remarcado_msg">Pronto, seu novo horário está reservado e o antigo ficou livre.</string>
     <string name="agendar_remarcado_sem_desmarcar">O novo horário foi reservado, mas o antigo não pôde ser desmarcado. Desmarque o antigo em \"Meus horários\".</string>
+    <!-- Perfil público (visual novo) -->
+    <string name="perfil_agendar_dica">Escolha o serviço para ver os dias e horários livres.</string>
+    <string name="perfil_resumo_servicos">%1$d serviços</string>
+    <string name="perfil_resumo_um_servico">1 serviço</string>
+    <string name="perfil_resumo_a_partir">a partir de %1$s</string>
+    <string name="perfil_resumo_fotos">%1$d fotos</string>
+    <string name="perfil_galeria_qtd">Trabalhos (%1$d)</string>
+    <string name="info_endereco">Endereço</string>
+    <string name="info_local">Bairro e cidade</string>
+    <string name="info_atendimento">Atendimento</string>
+    <string name="info_horario">Horário de atendimento</string>
+    <string name="info_whatsapp">WhatsApp</string>
+    <string name="info_telefone">Telefone</string>
+    <string name="info_instagram">Instagram</string>
+
+    <!-- Chat: apagar mensagem / conversa -->
+    <string name="chat_apagar_titulo">Apagar mensagem</string>
+    <string name="chat_apagar_mim">Apagar para mim</string>
+    <string name="chat_apagar_todos">Apagar para todos</string>
+    <string name="chat_mensagem_apagada">🚫 Mensagem apagada</string>
+    <string name="chat_copiar">Copiar</string>
+    <string name="chat_copiado">Mensagem copiada.</string>
+    <string name="chat_apagar_todos_msg">Apagar esta mensagem para todos? Ela some para você e para a outra pessoa.</string>
+    <string name="chat_apagar_conversa">Apagar conversa</string>
+    <string name="chat_apagar_conversa_mim">Apagar só para mim</string>
+    <string name="chat_apagar_conversa_todos">Apagar para todos</string>
+    <string name="chat_apagar_conversa_msg">O que você quer fazer com a conversa com %1$s?\n\n• Só para mim: some da sua lista e as mensagens antigas não aparecem mais para você (a outra pessoa continua vendo).\n• Para todos: todas as mensagens são apagadas para as duas pessoas.</string>
+    <string name="chat_apagar_conversa_todos_msg">Apagar todas as mensagens da conversa com %1$s para as duas pessoas? Não dá para desfazer.</string>
+    <string name="chat_conversa_apagada">Conversa apagada.</string>
+    <string name="chat_dica_segurar">Segure uma conversa para apagar.</string>
+    <string name="chat_menu">Mais opções</string>
 </resources>

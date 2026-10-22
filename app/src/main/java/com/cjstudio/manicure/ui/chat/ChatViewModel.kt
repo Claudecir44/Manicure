@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -46,9 +47,20 @@ class ChatViewModel @Inject constructor(
         .flatMapLatest { chat.escutarConversa(it).catch { emit(null) } }
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
+    // Sem as que apaguei só pra mim e sem as de antes de eu apagar a conversa.
     val mensagens: StateFlow<List<Mensagem>> = conversaId.filterNotNull()
         .flatMapLatest { id -> chat.escutarMensagens(id).catch { emit(emptyList()) } }
+        .combine(conversa) { lista, c ->
+            val apagadaEm = c?.apagadaPorMimEm(meuId) ?: 0L
+            lista.filter { m ->
+                meuId !in m.ocultaPara && (apagadaEm == 0L || (m.timestamp?.time ?: Long.MAX_VALUE) > apagadaEm)
+            }
+        }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    // A tela fecha depois de apagar a conversa.
+    private val _apagou = Channel<Unit>(Channel.BUFFERED)
+    val apagou: Flow<Unit> = _apagou.receiveAsFlow()
 
     // Id da conversa já resolvido (a tela usa pra não notificar a conversa aberta).
     val idAtual: StateFlow<String?> = conversaId
@@ -90,6 +102,26 @@ class ChatViewModel @Inject constructor(
         val meuNome = (if (c.souProfissional(meuId)) c.profissionalNome else c.clienteNome).orEmpty()
         viewModelScope.launch {
             chat.enviar(c, limpo, meuNome).onFailure { _erros.send(it.paraUiTexto()) }
+        }
+    }
+
+    fun apagarParaMim(m: Mensagem) {
+        val id = conversaId.value ?: return
+        val mensagemId = m.id ?: return
+        viewModelScope.launch { chat.apagarMensagemParaMim(id, mensagemId).onFailure { _erros.send(it.paraUiTexto()) } }
+    }
+
+    fun apagarParaTodos(m: Mensagem, aviso: String) {
+        val c = conversa.value ?: return
+        val ultima = mensagens.value.lastOrNull()?.id == m.id
+        viewModelScope.launch { chat.apagarMensagemParaTodos(c, m, ultima, aviso).onFailure { _erros.send(it.paraUiTexto()) } }
+    }
+
+    fun apagarConversa(paraTodos: Boolean) {
+        val c = conversa.value ?: return
+        viewModelScope.launch {
+            val r = if (paraTodos) chat.apagarConversaParaTodos(c) else chat.apagarConversaParaMim(c)
+            r.onSuccess { _apagou.send(Unit) }.onFailure { _erros.send(it.paraUiTexto()) }
         }
     }
 

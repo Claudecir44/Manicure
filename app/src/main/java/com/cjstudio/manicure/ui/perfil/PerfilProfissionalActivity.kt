@@ -19,6 +19,9 @@ import com.cjstudio.manicure.ui.agenda.AgendarActivity
 import com.cjstudio.manicure.ui.common.adicionarChip
 import com.cjstudio.manicure.data.model.TipoPerfil
 import com.cjstudio.manicure.databinding.ActivityPerfilProfissionalBinding
+import com.cjstudio.manicure.databinding.ItemInfoPerfilBinding
+import com.cjstudio.manicure.data.model.TipoAtendimento
+import com.cjstudio.manicure.util.Formato
 import com.cjstudio.manicure.ui.common.FotosAdapter
 import com.cjstudio.manicure.ui.common.ServicosAdapter
 import com.cjstudio.manicure.ui.common.VisualizadorFoto
@@ -30,8 +33,9 @@ import com.cjstudio.manicure.util.Aparencia
 import com.cjstudio.manicure.util.carregarFotoRedonda
 import dagger.hilt.android.AndroidEntryPoint
 
-// Perfil público: apresentação, serviços com preço, galeria e contatos
-// (WhatsApp, ligar, Instagram, ver no mapa).
+// Perfil público: capa com foto e atalhos (chat, ligar, Instagram, mapa),
+// agendar, apresentação, serviços com preço, galeria e, no fim, as
+// Informações (endereço, contatos), que é o único lugar com o endereço.
 @AndroidEntryPoint
 class PerfilProfissionalActivity : AppCompatActivity() {
 
@@ -53,7 +57,7 @@ class PerfilProfissionalActivity : AppCompatActivity() {
         binding = ActivityPerfilProfissionalBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.topo.btnVoltar.setOnClickListener { finish() }
+        binding.btnVoltar.setOnClickListener { finish() }
         binding.rvServicos.layoutManager = LinearLayoutManager(this)
         binding.rvServicos.adapter = servicosAdapter
         binding.rvServicos.isNestedScrollingEnabled = false
@@ -91,7 +95,14 @@ class PerfilProfissionalActivity : AppCompatActivity() {
         } else {
             getString(R.string.perfil_tipo_pessoal)
         }
-        binding.tvLocal.text = listOf(ResumoPerfil.local(p), ResumoPerfil.atendimento(this, p)).filter { it.isNotBlank() }.joinToString(" · ")
+        // Canto superior direito: como ela atende.
+        binding.tvAtendimento.text = ResumoPerfil.atendimento(this, p)
+        val icone = androidx.core.content.ContextCompat.getDrawable(
+            this, if (p.atendimento == TipoAtendimento.DOMICILIO) R.drawable.ic_local else R.drawable.ic_casa
+        )?.mutate()?.apply { setBounds(0, 0, dp(15), dp(15)) }
+        binding.tvAtendimento.setCompoundDrawablesRelative(icone, null, null, null)
+        binding.tvResumo.text = resumo(p)
+        binding.tvResumo.visibility = if (binding.tvResumo.text.isNullOrBlank()) View.GONE else View.VISIBLE
 
         mostrarTexto(binding.blocoApresentacao, binding.tvApresentacao, p.apresentacao)
         mostrarTexto(binding.blocoSobre, binding.tvSobreTrabalho, p.sobreTrabalho)
@@ -101,8 +112,9 @@ class PerfilProfissionalActivity : AppCompatActivity() {
 
         fotosAdapter.atualizar(p.fotos, podeAdicionar = false)
         binding.blocoGaleria.visibility = if (p.fotos.isEmpty()) View.GONE else View.VISIBLE
+        binding.tvTituloGaleria.text = getString(R.string.perfil_galeria_qtd, p.fotos.size)
 
-        binding.tvContatos.text = ResumoPerfil.contatos(this, p)
+        mostrarInformacoes(p)
 
         // Chat dentro do app (a própria profissional olhando o perfil não conversa consigo).
         binding.btnChat.visibility = if (p.id == viewModel.meuId) View.GONE else View.VISIBLE
@@ -116,6 +128,57 @@ class PerfilProfissionalActivity : AppCompatActivity() {
         binding.btnMapa.visibility = if (p.endereco.isNullOrBlank()) View.GONE else View.VISIBLE
         binding.btnMapa.setOnClickListener { abrir("geo:0,0?q=" + Uri.encode(enderecoMapa)) }
     }
+
+    // "2 serviços · a partir de R$ 50,00 · 2 fotos"
+    private fun resumo(p: Profissional): String {
+        val servicos = p.servicos.size
+        val menor = p.servicos.map { it.preco }.filter { it > 0 }.minOrNull()
+        return listOfNotNull(
+            when (servicos) {
+                0 -> null
+                1 -> getString(R.string.perfil_resumo_um_servico)
+                else -> getString(R.string.perfil_resumo_servicos, servicos)
+            },
+            menor?.let { getString(R.string.perfil_resumo_a_partir, Formato.valor(it)) },
+            p.fotos.size.takeIf { it > 0 }?.let { getString(R.string.perfil_resumo_fotos, it) }
+        ).joinToString("  ·  ")
+    }
+
+    // Informações: uma linha com ícone por dado preenchido. Endereço abre o
+    // mapa, WhatsApp abre a conversa e Instagram abre o perfil.
+    private fun mostrarInformacoes(p: Profissional) {
+        binding.llInfo.removeAllViews()
+        val enderecoMapa = listOf(p.endereco, p.bairro, p.cidade).filter { !it.isNullOrBlank() }.joinToString(", ")
+        p.endereco?.takeIf { it.isNotBlank() }?.let { e ->
+            linhaInfo(R.drawable.ic_local, R.string.info_endereco, e) { abrir("geo:0,0?q=" + Uri.encode(enderecoMapa)) }
+        }
+        ResumoPerfil.local(p).takeIf { it.isNotBlank() }?.let { linhaInfo(R.drawable.ic_local, R.string.info_local, it) }
+        linhaInfo(R.drawable.ic_casa, R.string.info_atendimento, ResumoPerfil.atendimento(this, p))
+        p.horarioAtendimento?.takeIf { it.isNotBlank() }?.let { linhaInfo(R.drawable.ic_relogio, R.string.info_horario, it) }
+        p.whatsapp?.takeIf { it.isNotBlank() }?.let { w ->
+            val numero = w.filter { it.isDigit() }.let { if (it.length in 10..11) "55$it" else it }
+            linhaInfo(R.drawable.ic_chat, R.string.info_whatsapp, w) { abrir("https://wa.me/$numero") }
+        }
+        p.telefone?.takeIf { it.isNotBlank() && it != p.whatsapp }?.let { t ->
+            linhaInfo(R.drawable.ic_telefone, R.string.info_telefone, t) {
+                startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + t.filter { it.isDigit() })))
+            }
+        }
+        p.instagram?.takeIf { it.isNotBlank() }?.let { i ->
+            linhaInfo(R.drawable.ic_instagram, R.string.info_instagram, "@$i") { abrir("https://instagram.com/$i") }
+        }
+    }
+
+    private fun linhaInfo(icone: Int, rotulo: Int, valor: String, aoTocar: (() -> Unit)? = null) {
+        val linha = ItemInfoPerfilBinding.inflate(layoutInflater, binding.llInfo, true)
+        linha.ivIcone.setImageResource(icone)
+        linha.tvRotulo.setText(rotulo)
+        linha.tvValor.text = valor
+        linha.tvSeta.visibility = if (aoTocar != null) View.VISIBLE else View.GONE
+        if (aoTocar != null) linha.root.setOnClickListener { aoTocar() } else linha.root.isClickable = false
+    }
+
+    private fun dp(valor: Int) = (valor * resources.displayMetrics.density).toInt()
 
     // Um botão por categoria com horário livre -> tela de agendar.
     private fun mostrarCategorias(categorias: List<String>) {

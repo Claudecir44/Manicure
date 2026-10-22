@@ -23,6 +23,10 @@ import com.cjstudio.manicure.data.repository.IChatRepository
 import com.cjstudio.manicure.databinding.ActivityConversasBinding
 import com.cjstudio.manicure.databinding.ItemConversaBinding
 import com.cjstudio.manicure.ui.common.coletar
+import com.cjstudio.manicure.ui.common.mostrarMensagem
+import com.cjstudio.manicure.ui.common.paraUiTexto
+import com.cjstudio.manicure.ui.common.texto
+import kotlinx.coroutines.launch
 import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +34,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -39,7 +44,7 @@ import javax.inject.Inject
 // falaram com ela; a cliente vê as profissionais.
 @HiltViewModel
 class ConversasViewModel @Inject constructor(
-    chat: IChatRepository,
+    private val chat: IChatRepository,
     auth: IAuthRepository,
     estado: SavedStateHandle
 ) : ViewModel() {
@@ -51,6 +56,16 @@ class ConversasViewModel @Inject constructor(
         .map { lista -> lista.filter { it.souProfissional(meuId) == comoProfissional } }
         .catch { emit(emptyList()) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    private val _mensagens = kotlinx.coroutines.channels.Channel<com.cjstudio.manicure.ui.common.UiTexto>(kotlinx.coroutines.channels.Channel.BUFFERED)
+    val mensagens = _mensagens.receiveAsFlow()
+
+    fun apagar(c: Conversa, paraTodos: Boolean) {
+        viewModelScope.launch {
+            val r = if (paraTodos) chat.apagarConversaParaTodos(c) else chat.apagarConversaParaMim(c)
+            _mensagens.send(r.fold({ texto(R.string.chat_conversa_apagada) }, { it.paraUiTexto() }))
+        }
+    }
 }
 
 @AndroidEntryPoint
@@ -60,13 +75,17 @@ class ConversasActivity : AppCompatActivity() {
     private val viewModel: ConversasViewModel by viewModels()
     private val comoProfissional by lazy { intent.getBooleanExtra(EXTRA_COMO_PROFISSIONAL, false) }
     private val adapter by lazy {
-        ConversasAdapter(viewModel.meuId) { c ->
-            startActivity(
-                Intent(this, ChatActivity::class.java)
-                    .putExtra(ChatActivity.EXTRA_CONVERSA, c.id)
-                    .putExtra(ChatActivity.EXTRA_COMO_PROFISSIONAL, comoProfissional)
-            )
-        }
+        ConversasAdapter(
+            viewModel.meuId,
+            aoTocar = { c ->
+                startActivity(
+                    Intent(this, ChatActivity::class.java)
+                        .putExtra(ChatActivity.EXTRA_CONVERSA, c.id)
+                        .putExtra(ChatActivity.EXTRA_COMO_PROFISSIONAL, comoProfissional)
+                )
+            },
+            aoSegurar = { c -> ApagarConversa.perguntar(this, c.nomeOutro(viewModel.meuId).orEmpty()) { viewModel.apagar(c, it) } }
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,7 +102,9 @@ class ConversasActivity : AppCompatActivity() {
             binding.progressBar.visibility = if (lista == null) View.VISIBLE else View.GONE
             binding.tvVazio.visibility = if (lista?.isEmpty() == true) View.VISIBLE else View.GONE
             adapter.submitList(lista.orEmpty())
+            binding.tvDica.visibility = if (lista.isNullOrEmpty()) View.GONE else View.VISIBLE
         }
+        coletar(viewModel.mensagens) { mostrarMensagem(it) }
     }
 
     companion object {
@@ -95,7 +116,8 @@ class ConversasActivity : AppCompatActivity() {
 // de mensagens novas. Lida: tudo mais apagado.
 private class ConversasAdapter(
     private val meuId: String?,
-    private val aoTocar: (Conversa) -> Unit
+    private val aoTocar: (Conversa) -> Unit,
+    private val aoSegurar: (Conversa) -> Unit
 ) : ListAdapter<Conversa, ConversasAdapter.Holder>(Diferenca) {
 
     class Holder(val binding: ItemConversaBinding) : RecyclerView.ViewHolder(binding.root)
@@ -124,6 +146,10 @@ private class ConversasAdapter(
         b.tvNaoLidas.visibility = if (nova) View.VISIBLE else View.GONE
         b.tvNaoLidas.text = if (naoLidas > 99) "99+" else naoLidas.toString()
         b.root.setOnClickListener { aoTocar(c) }
+        b.root.setOnLongClickListener {
+            aoSegurar(c)
+            true
+        }
     }
 
     private object Diferenca : DiffUtil.ItemCallback<Conversa>() {

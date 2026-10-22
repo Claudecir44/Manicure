@@ -46,6 +46,7 @@ class FotosAdapter(
         }
         val foto = fotos[position - if (podeAdicionar) 1 else 0]
         b.tvAdicionar.visibility = View.GONE
+        b.ivFoto.clipToOutline = true
         b.ivFoto.load(foto.url)
         b.root.setOnClickListener { aoTocar(foto) }
         b.root.setOnLongClickListener {

@@ -18,6 +18,8 @@ import com.cjstudio.manicure.databinding.ActivityChatBinding
 import com.cjstudio.manicure.databinding.ItemMensagemBinding
 import com.cjstudio.manicure.ui.common.coletar
 import com.cjstudio.manicure.ui.common.mostrarMensagem
+import com.cjstudio.manicure.ui.common.texto
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.cjstudio.manicure.util.ajustarPaddingParaTeclado
 import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,7 +31,7 @@ class ChatActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityChatBinding
     private val viewModel: ChatViewModel by viewModels()
-    private val adapter by lazy { MensagensAdapter(viewModel.meuId) }
+    private val adapter by lazy { MensagensAdapter(viewModel.meuId) { opcoesMensagem(it) } }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // A profissional vê o chat na cor que ela escolheu em Aparência.
@@ -64,6 +66,42 @@ class ChatActivity : AppCompatActivity() {
             id?.let { getSystemService(NotificationManager::class.java)?.cancel(it.hashCode()) }
         }
         coletar(viewModel.erros) { mostrarMensagem(it) }
+        coletar(viewModel.apagou) {
+            mostrarMensagem(texto(R.string.chat_conversa_apagada))
+            finish()
+        }
+        binding.btnApagarConversa.setOnClickListener {
+            viewModel.conversa.value?.let { c -> ApagarConversa.perguntar(this, c.nomeOutro(viewModel.meuId).orEmpty()) { viewModel.apagarConversa(it) } }
+        }
+    }
+
+    // Segurar uma mensagem: copiar, apagar para mim e (só nas minhas) apagar para todos.
+    private fun opcoesMensagem(m: Mensagem) {
+        val minha = m.remetenteId == viewModel.meuId
+        val opcoes = buildList<Pair<Int, () -> Unit>> {
+            if (!m.apagada) add(R.string.chat_copiar to { copiar(m.conteudo.orEmpty()) })
+            add(R.string.chat_apagar_mim to { viewModel.apagarParaMim(m) })
+            if (minha && !m.apagada) add(R.string.chat_apagar_todos to {
+                MaterialAlertDialogBuilder(this@ChatActivity)
+                    .setTitle(R.string.chat_apagar_todos)
+                    .setMessage(R.string.chat_apagar_todos_msg)
+                    .setPositiveButton(R.string.chat_apagar_todos) { _, _ ->
+                        viewModel.apagarParaTodos(m, getString(R.string.chat_mensagem_apagada))
+                    }
+                    .setNegativeButton(R.string.cancelar, null)
+                    .show()
+            })
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.chat_apagar_titulo)
+            .setItems(opcoes.map { getString(it.first) }.toTypedArray()) { _, i -> opcoes[i].second() }
+            .show()
+    }
+
+    private fun copiar(texto: String) {
+        val area = getSystemService(android.content.ClipboardManager::class.java) ?: return
+        area.setPrimaryClip(android.content.ClipData.newPlainText("mensagem", texto))
+        mostrarMensagem(texto(R.string.chat_copiado))
     }
 
     override fun onResume() {
@@ -79,7 +117,7 @@ class ChatActivity : AppCompatActivity() {
 
     // Balões todos à esquerda: quem escreveu e data/hora no alto; nas minhas,
     // "✓ Enviada" (cinza) ou "✓✓ Lida" (cor de destaque) embaixo.
-    private class MensagensAdapter(private val meuId: String?) :
+    private class MensagensAdapter(private val meuId: String?, private val aoSegurar: (Mensagem) -> Unit) :
         ListAdapter<Mensagem, MensagensAdapter.Holder>(Diferenca) {
 
         class Holder(val binding: ItemMensagemBinding) : RecyclerView.ViewHolder(binding.root)
@@ -102,12 +140,24 @@ class ChatActivity : AppCompatActivity() {
             val ctx = b.root.context
             val destaque = MaterialColors.getColor(b.root, R.attr.corDestaque)
             val secundaria = ContextCompat.getColor(ctx, R.color.texto_secundario)
-            b.tvTexto.text = m.conteudo
+            b.tvTexto.text = if (m.apagada) ctx.getString(R.string.chat_mensagem_apagada) else m.conteudo
+            b.tvTexto.setTypeface(null, if (m.apagada) android.graphics.Typeface.ITALIC else android.graphics.Typeface.NORMAL)
+            b.tvTexto.setTextColor(ContextCompat.getColor(ctx, if (m.apagada) R.color.texto_secundario else R.color.texto))
+            // Selecionável atrapalha o "segurar" pra abrir as opções.
+            b.tvTexto.setTextIsSelectable(false)
+            b.balao.setOnLongClickListener {
+                aoSegurar(m)
+                true
+            }
+            b.tvTexto.setOnLongClickListener {
+                aoSegurar(m)
+                true
+            }
             b.tvHora.text = m.timestamp?.let { HORA.format(it) }.orEmpty()
             b.tvAutor.text = if (minha) ctx.getString(R.string.chat_autor_voce) else nomeOutro.ifBlank { m.remetenteNome.orEmpty() }
             b.tvAutor.setTextColor(if (minha) destaque else ContextCompat.getColor(ctx, R.color.texto))
             b.balao.setBackgroundResource(if (minha) R.drawable.bg_balao_meu else R.drawable.bg_balao_outro)
-            b.tvStatus.visibility = if (minha) View.VISIBLE else View.GONE
+            b.tvStatus.visibility = if (minha && !m.apagada) View.VISIBLE else View.GONE
             if (minha) {
                 b.tvStatus.setText(if (m.lida) R.string.chat_lida else R.string.chat_enviada)
                 b.tvStatus.setTextColor(if (m.lida) destaque else secundaria)

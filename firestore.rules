@@ -117,12 +117,18 @@ service cloud.firestore {
         && request.resource.data.profissionalId != request.resource.data.clienteId
         && conversaId == request.resource.data.profissionalId + '_' + request.resource.data.clienteId
         && exists(/databases/$(database)/documents/profissionais/$(request.resource.data.profissionalId));
-      // Só o resumo muda (última mensagem, contadores, nomes/foto).
+      // Só o resumo muda (última mensagem, contadores, nomes/foto) e o
+      // "apagar só para mim" (cada um mexe só na própria chave de apagadaPara).
       allow update: if participante(resource.data)
         && alterados().hasOnly(['ultimaMensagem', 'ultimoTimestamp', 'ultimoRemetenteId',
                                 'naoLidasProfissional', 'naoLidasCliente',
-                                'profissionalNome', 'profissionalFotoUrl', 'clienteNome']);
-      allow delete: if false;
+                                'profissionalNome', 'profissionalFotoUrl', 'clienteNome',
+                                'apagadaPara'])
+        && (!alterados().hasAny(['apagadaPara'])
+          || request.resource.data.apagadaPara.diff(resource.data.get('apagadaPara', {})).affectedKeys().hasOnly([request.auth.uid]));
+      // "Apagar para todos": qualquer uma das duas pessoas (as mensagens
+      // são apagadas antes, ver mensagens abaixo).
+      allow delete: if participante(resource.data);
 
       match /mensagens/{mensagemId} {
         function conversa() {
@@ -137,10 +143,23 @@ service cloud.firestore {
           && request.resource.data.conteudo.size() > 0
           && request.resource.data.conteudo.size() <= 2000
           && request.resource.data.lida == false;
-        // Só quem recebeu marca como lida.
-        allow update: if logado() && resource.data.destinatarioId == request.auth.uid
-          && alterados().hasOnly(['lida']);
-        allow delete: if false;
+        allow update: if
+          // Só quem recebeu marca como lida.
+          (logado() && resource.data.destinatarioId == request.auth.uid
+            && alterados().hasOnly(['lida']))
+          // Apagar para mim: só acrescenta o próprio uid em ocultaPara.
+          || (participante(conversa())
+            && alterados().hasOnly(['ocultaPara'])
+            && request.resource.data.ocultaPara.toSet().difference(resource.data.get('ocultaPara', []).toSet()).hasOnly([request.auth.uid])
+            && resource.data.get('ocultaPara', []).toSet().difference(request.resource.data.ocultaPara.toSet()).size() == 0)
+          // Apagar para todos: só quem mandou; o texto vira vazio.
+          || (resource.data.remetenteId == request.auth.uid
+            && participante(conversa())
+            && alterados().hasOnly(['apagada', 'conteudo'])
+            && request.resource.data.apagada == true
+            && request.resource.data.conteudo == '');
+        // Apagar a conversa para todos leva as mensagens junto.
+        allow delete: if participante(conversa());
       }
     }
 

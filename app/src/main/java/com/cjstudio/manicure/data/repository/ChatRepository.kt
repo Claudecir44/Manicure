@@ -35,6 +35,16 @@ interface IChatRepository {
     suspend fun enviar(conversa: Conversa, texto: String, meuNome: String): Result<Unit>
     suspend fun marcarComoLida(conversa: Conversa): Result<Unit>
 
+    // Apagar mensagem: só pra mim (qualquer uma) ou pra todos (só as minhas).
+    // ultimaDaConversa: era a última -> o resumo da lista vira o aviso.
+    suspend fun apagarMensagemParaMim(conversaId: String, mensagemId: String): Result<Unit>
+    suspend fun apagarMensagemParaTodos(conversa: Conversa, mensagem: Mensagem, ultimaDaConversa: Boolean, aviso: String): Result<Unit>
+
+    // Apagar conversa: só pra mim (some da minha lista e do meu histórico) ou
+    // pra todos (apaga as mensagens e a conversa das duas pessoas).
+    suspend fun apagarConversaParaMim(conversa: Conversa): Result<Unit>
+    suspend fun apagarConversaParaTodos(conversa: Conversa): Result<Unit>
+
     // Todas as conversas em que estou (como profissional e/ou cliente).
     fun escutarMinhasConversas(): Flow<List<Conversa>>
 
@@ -151,6 +161,55 @@ class ChatRepository @Inject constructor(
         Unit
     }
 
+    override suspend fun apagarMensagemParaMim(conversaId: String, mensagemId: String): Result<Unit> = runCatching {
+        etapa("apagar mensagem") {
+            mensagens(conversaId).document(mensagemId).update("ocultaPara", FieldValue.arrayUnion(uid())).await()
+        }
+        Unit
+    }
+
+    override suspend fun apagarMensagemParaTodos(
+        conversa: Conversa,
+        mensagem: Mensagem,
+        ultimaDaConversa: Boolean,
+        aviso: String
+    ): Result<Unit> = runCatching {
+        val conversaId = conversa.id ?: throw IllegalStateException("Conversa sem id.")
+        val mensagemId = mensagem.id ?: throw IllegalStateException("Mensagem sem id.")
+        val lote = db.get().batch()
+        lote.update(mensagens(conversaId).document(mensagemId), mapOf("apagada" to true, "conteudo" to ""))
+        if (ultimaDaConversa) lote.update(conversas().document(conversaId), "ultimaMensagem", aviso)
+        etapa("apagar mensagem para todos") { lote.commit().await() }
+        Unit
+    }
+
+    override suspend fun apagarConversaParaMim(conversa: Conversa): Result<Unit> = runCatching {
+        val eu = uid()
+        val conversaId = conversa.id ?: throw IllegalStateException("Conversa sem id.")
+        etapa("apagar conversa") {
+            conversas().document(conversaId).update(
+                mapOf(
+                    "apagadaPara.$eu" to System.currentTimeMillis(),
+                    (if (conversa.souProfissional(eu)) "naoLidasProfissional" else "naoLidasCliente") to 0
+                )
+            ).await()
+        }
+        Unit
+    }
+
+    // Mensagens primeiro (as regras delas leem a conversa), depois a conversa.
+    override suspend fun apagarConversaParaTodos(conversa: Conversa): Result<Unit> = runCatching {
+        val conversaId = conversa.id ?: throw IllegalStateException("Conversa sem id.")
+        val todas = etapa("ler mensagens") { mensagens(conversaId).get().await() }.documents
+        todas.chunked(400).forEach { parte ->
+            val lote = db.get().batch()
+            parte.forEach { lote.delete(it.reference) }
+            etapa("apagar mensagens") { lote.commit().await() }
+        }
+        etapa("apagar conversa") { conversas().document(conversaId).delete().await() }
+        Unit
+    }
+
     override fun escutarMinhasConversas(): Flow<List<Conversa>> = callbackFlow {
         val eu = auth.uidLogado()
         if (eu == null) {
@@ -165,8 +224,9 @@ class ChatRepository @Inject constructor(
             }
             trySend(
                 snap?.documents?.mapNotNull { d -> d.toObject(Conversa::class.java)?.also { it.id = d.id } }.orEmpty()
-                    // Conversa aberta sem nenhuma mensagem não aparece na lista.
-                    .filter { it.ultimaMensagem != null }
+                    // Conversa aberta sem nenhuma mensagem não aparece na lista,
+                    // nem a que apaguei só pra mim (até chegar mensagem nova).
+                    .filter { it.ultimaMensagem != null && !it.ocultaPara(eu) }
                     .sortedByDescending { it.ultimoTimestamp?.time ?: 0L }
             )
         }

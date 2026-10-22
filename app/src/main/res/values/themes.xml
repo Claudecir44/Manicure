@@ -94,6 +94,65 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <!-- ===== Perfil público (capa, atalhos redondos e cartões) ===== -->
+    <style name="AcaoPerfil">
+        <item name="android:layout_width">78dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="AcaoPerfilIcone">
+        <item name="android:layout_width">54dp</item>
+        <item name="android:layout_height">54dp</item>
+        <item name="android:background">@drawable/bg_acao_perfil</item>
+        <item name="android:padding">14dp</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+
+    <style name="AcaoPerfilTexto">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:textColor">@color/texto</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="SecaoPerfil">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">14dp</item>
+        <item name="android:background">@drawable/bg_secao_perfil</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">18dp</item>
+    </style>
+
+    <style name="SecaoPerfilTitulo">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:drawablePadding">10dp</item>
+        <item name="android:drawableTint">?attr/corDestaque</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/texto</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="SecaoPerfilTexto">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/texto_secundario</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:lineSpacingExtra">4dp</item>
+    </style>
+
     <style name="TituloSecao">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

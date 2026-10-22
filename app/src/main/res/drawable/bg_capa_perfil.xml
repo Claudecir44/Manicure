@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Capa do perfil público: brilho da cor do perfil descendo até o fundo. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient
+        android:angle="270"
+        android:centerColor="?attr/corBrilho"
+        android:centerY="0.35"
+        android:endColor="@color/fundo"
+        android:startColor="?attr/corDestaqueEscuro" />
+</shape>
