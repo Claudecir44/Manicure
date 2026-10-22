@@ -82,6 +82,18 @@
         <item name="android:textColor">?attr/corDestaque</item>
     </style>
 
+    <!-- Ação destrutiva discreta no fim da tela (Excluir meu cadastro). -->
+    <style name="BotaoExcluir">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">14dp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:textColor">@color/vermelho</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="TituloSecao">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

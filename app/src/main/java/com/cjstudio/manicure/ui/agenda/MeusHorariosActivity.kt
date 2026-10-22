@@ -32,7 +32,8 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
-// Horários que a cliente marcou (os que ainda não passaram).
+// Horários que a cliente marcou (os que ainda não passaram): remarcar ou
+// desmarcar.
 @HiltViewModel
 class MeusHorariosViewModel @Inject constructor(
     private val agendas: IAgendaRepository
@@ -72,14 +73,36 @@ class MeusHorariosActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMeusHorariosBinding
     private val viewModel: MeusHorariosViewModel by viewModels()
     private val adapter = LinhaAdapter { linha ->
-        viewModel.lista.value?.firstOrNull { it.id == linha.id }?.let { m ->
-            com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                .setTitle(AgendaUtil.descrever(m.horario))
-                .setMessage(getString(R.string.agendar_cancelar_msg, AgendaUtil.descrever(m.horario)))
-                .setPositiveButton(R.string.agendar_cancelar_sim) { _, _ -> viewModel.cancelar(m) }
-                .setNegativeButton(R.string.voltar, null)
-                .show()
-        }
+        viewModel.lista.value?.firstOrNull { it.id == linha.id }?.let { opcoes(it) }
+    }
+
+    private fun opcoes(m: Agendamento) {
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(AgendaUtil.descrever(m.horario))
+            .setMessage("${Categorias.nome(m.categoria)}  ·  ${m.atendente.orEmpty()}\n${m.profissionalNome.orEmpty()}")
+            .setPositiveButton(R.string.agendar_remarcar) { _, _ -> remarcar(m) }
+            .setNegativeButton(R.string.agendar_cancelar_sim) { _, _ ->
+                com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.agendar_cancelar_titulo)
+                    .setMessage(getString(R.string.agendar_cancelar_msg, AgendaUtil.descrever(m.horario)))
+                    .setPositiveButton(R.string.agendar_cancelar_sim) { _, _ -> viewModel.cancelar(m) }
+                    .setNegativeButton(R.string.voltar, null)
+                    .show()
+            }
+            .setNeutralButton(R.string.voltar, null)
+            .show()
+    }
+
+    private fun remarcar(m: Agendamento) {
+        startActivity(
+            android.content.Intent(this, AgendarActivity::class.java)
+                .putExtra(AgendarActivity.EXTRA_PROFISSIONAL, m.profissionalId)
+                .putExtra(AgendarActivity.EXTRA_NOME, m.profissionalNome.orEmpty())
+                .putExtra(AgendarActivity.EXTRA_CATEGORIA, m.categoria)
+                .putExtra(AgendarActivity.EXTRA_REMARCAR_ID, m.id)
+                .putExtra(AgendarActivity.EXTRA_REMARCAR_AGENDA, m.agendaId)
+                .putExtra(AgendarActivity.EXTRA_REMARCAR_HORARIO, m.horario)
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

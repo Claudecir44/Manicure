@@ -50,7 +50,15 @@ class CadastroAdminActivity : AppCompatActivity() {
             binding.containerPermissoes.visibility = if (id == R.id.rbColaborador) View.VISIBLE else View.GONE
         }
 
-        binding.topo.tvTitulo.setText(R.string.admin_novo_titulo)
+        binding.topo.tvTitulo.setText(if (viewModel.editando) R.string.admin_editar_titulo else R.string.admin_novo_titulo)
+        if (viewModel.editando) {
+            // E-mail e senha de login não mudam pela edição.
+            binding.etEmail.isEnabled = false
+            binding.etSenha.visibility = View.GONE
+            binding.etConfirmarSenha.visibility = View.GONE
+            binding.btnCadastrar.setText(R.string.admin_salvar)
+            binding.tvSenhaMasterDica.setText(R.string.admin_senha_master_dica_editar)
+        }
         binding.topo.btnVoltar.setOnClickListener { finish() }
         binding.btnCadastrar.setOnClickListener { enviar() }
 
@@ -64,8 +72,31 @@ class CadastroAdminActivity : AppCompatActivity() {
                     mostrarMensagem(texto(R.string.admin_cadastrado))
                     finish()
                 }
+                CadastroAdminViewModel.Evento.Salvo -> {
+                    mostrarMensagem(texto(R.string.admin_salvo))
+                    finish()
+                }
+                is CadastroAdminViewModel.Evento.Preencher -> preencher(evento.admin)
                 is CadastroAdminViewModel.Evento.Mensagem -> mostrarMensagem(evento.texto)
             }
+        }
+    }
+
+    private fun preencher(admin: Admin) {
+        // Girando a tela os campos voltam sozinhos; não sobrescrever.
+        if (binding.etNome.text.isNotEmpty()) return
+        binding.etNome.setText(admin.nome)
+        binding.etSobrenome.setText(admin.sobrenome)
+        binding.etCpf.setText(admin.cpf)
+        binding.etTelefone.setText(admin.telefone)
+        binding.etEmail.setText(admin.email)
+        binding.rgPapel.check(if (admin.ehColaborador) R.id.rbColaborador else R.id.rbAdmin)
+        checkboxesPermissao.forEach { (chave, cb) -> cb.isChecked = admin.permissoes?.get(chave) ?: true }
+        // Master sempre tem acesso total: o tipo de acesso dele não muda.
+        if (admin.ehMaster) {
+            binding.tvPapel.visibility = View.GONE
+            binding.rgPapel.visibility = View.GONE
+            binding.containerPermissoes.visibility = View.GONE
         }
     }
 
@@ -84,5 +115,10 @@ class CadastroAdminActivity : AppCompatActivity() {
                 senhaAutorizacao = binding.etSenhaMaster.text.toString()
             )
         )
+    }
+
+    companion object {
+        // Presente = editar este admin (sem = novo).
+        const val EXTRA_ID = "adminId"
     }
 }

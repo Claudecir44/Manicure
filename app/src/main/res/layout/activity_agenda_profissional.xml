@@ -38,6 +38,12 @@
                     android:text="@string/agenda_minhas" />
 
                 <TextView
+                    style="@style/TextoCorpo"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/agenda_minhas_dica"
+                    android:textSize="12sp" />
+
+                <TextView
                     android:id="@+id/tvSemAgendas"
                     style="@style/TextoCorpo"
                     android:text="@string/agenda_sem_agendas"

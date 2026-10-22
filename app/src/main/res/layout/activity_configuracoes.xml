@@ -91,6 +91,20 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/btnExcluirCadastro"
+                style="@style/BotaoExcluir"
+                android:layout_marginTop="28dp"
+                android:text="@string/excluir_meu_cadastro" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_horizontal"
+                android:indeterminateTint="?attr/corDestaque"
+                android:visibility="gone" />
+
+            <TextView
                 android:id="@+id/tvVersao"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

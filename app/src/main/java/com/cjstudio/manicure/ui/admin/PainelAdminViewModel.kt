@@ -9,8 +9,10 @@ import com.cjstudio.manicure.data.model.Profissional
 import com.cjstudio.manicure.data.repository.IAdminRepository
 import com.cjstudio.manicure.data.repository.IAuthRepository
 import com.cjstudio.manicure.data.repository.IClienteRepository
+import com.cjstudio.manicure.data.repository.IContaRepository
 import com.cjstudio.manicure.data.repository.IFalhasRepository
 import com.cjstudio.manicure.data.repository.IProfissionalRepository
+import com.cjstudio.manicure.data.repository.TipoCadastro
 import com.cjstudio.manicure.ui.common.UiTexto
 import com.cjstudio.manicure.ui.common.paraUiTexto
 import com.cjstudio.manicure.ui.common.texto
@@ -34,6 +36,7 @@ class PainelAdminViewModel @Inject constructor(
     private val admins: IAdminRepository,
     private val profissionais: IProfissionalRepository,
     private val clientes: IClienteRepository,
+    private val conta: IContaRepository,
     private val falhas: IFalhasRepository
 ) : ViewModel() {
 
@@ -46,13 +49,17 @@ class PainelAdminViewModel @Inject constructor(
         val carregando: Boolean = false
     )
 
-    // Toque numa profissional ou cliente: ver perfil / bloquear.
+    // Toque numa profissional ou cliente: ver perfil / bloquear / excluir.
     data class Alvo(val id: String, val nome: String, val bloqueado: Boolean, val profissional: Boolean)
+
+    // Toque num admin: editar / excluir (master e o próprio admin não se excluem).
+    data class AlvoAdmin(val id: String, val nome: String, val master: Boolean, val souEu: Boolean)
 
     sealed interface Evento {
         data object Saiu : Evento
         data class Mensagem(val texto: UiTexto) : Evento
         data class Opcoes(val alvo: Alvo) : Evento
+        data class OpcoesAdmin(val alvo: AlvoAdmin) : Evento
     }
 
     private val _estado = MutableStateFlow(Estado())
@@ -62,6 +69,7 @@ class PainelAdminViewModel @Inject constructor(
     val eventos: Flow<Evento> = _eventos.receiveAsFlow()
 
     private var alvos: Map<String, Alvo> = emptyMap()
+    private var alvosAdmin: Map<String, AlvoAdmin> = emptyMap()
 
     init {
         falhas.definirUsuario(auth.uidLogado())
@@ -93,7 +101,11 @@ class PainelAdminViewModel @Inject constructor(
                     alvos = lista.mapNotNull { c -> c.id?.let { it to Alvo(it, c.nome.orEmpty(), c.bloqueado, false) } }.toMap()
                     lista.map { it.paraItem() }
                 }
-                Secao.ADMINISTRADORES -> admins.listarTodos().map { lista -> lista.map { it.paraItem() } }
+                Secao.ADMINISTRADORES -> admins.listarTodos().map { lista ->
+                    val eu = auth.uidLogado()
+                    alvosAdmin = lista.mapNotNull { a -> a.id?.let { it to AlvoAdmin(it, a.nomeCompleto, a.ehMaster, it == eu) } }.toMap()
+                    lista.map { it.paraItem() }
+                }
             }
             itens.onSuccess { lista -> _estado.update { it.copy(itens = lista, carregando = false) } }
                 .onFailure { e ->
@@ -104,8 +116,11 @@ class PainelAdminViewModel @Inject constructor(
     }
 
     fun tocou(id: String) {
-        if (_estado.value.secao == Secao.ADMINISTRADORES) return
-        alvos[id]?.let { _eventos.trySend(Evento.Opcoes(it)) }
+        if (_estado.value.secao == Secao.ADMINISTRADORES) {
+            alvosAdmin[id]?.let { _eventos.trySend(Evento.OpcoesAdmin(it)) }
+        } else {
+            alvos[id]?.let { _eventos.trySend(Evento.Opcoes(it)) }
+        }
     }
 
     fun alternarBloqueio(alvo: Alvo) {
@@ -121,6 +136,28 @@ class PainelAdminViewModel @Inject constructor(
                     _estado.value.secao?.let { abrir(it) }
                 }
                 .onFailure { _eventos.send(Evento.Mensagem(it.paraUiTexto())) }
+        }
+    }
+
+    // Apaga o cadastro (profissional ou cliente) com tudo que é dele. A
+    // senha é a do master ou a do próprio admin (o servidor confere).
+    fun excluirCadastro(alvo: Alvo, senha: String) {
+        _estado.update { it.copy(carregando = true) }
+        viewModelScope.launch {
+            conta.excluirCadastroDe(alvo.id, if (alvo.profissional) TipoCadastro.PROFISSIONAL else TipoCadastro.CLIENTE, senha)
+                .onSuccess { _eventos.send(Evento.Mensagem(texto(R.string.admin_cadastro_excluido, alvo.nome))) }
+                .onFailure { _eventos.send(Evento.Mensagem(it.paraUiTexto())) }
+            _estado.value.secao?.let { abrir(it) }
+        }
+    }
+
+    fun excluirAdmin(alvo: AlvoAdmin, senhaMaster: String) {
+        _estado.update { it.copy(carregando = true) }
+        viewModelScope.launch {
+            admins.excluirAdmin(alvo.id, senhaMaster)
+                .onSuccess { _eventos.send(Evento.Mensagem(texto(R.string.admin_admin_excluido, alvo.nome))) }
+                .onFailure { _eventos.send(Evento.Mensagem(it.paraUiTexto())) }
+            _estado.value.secao?.let { abrir(it) }
         }
     }
 

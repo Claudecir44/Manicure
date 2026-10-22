@@ -10,6 +10,8 @@ import com.cjstudio.manicure.data.repository.IAgendaRepository
 import com.cjstudio.manicure.data.repository.ArquivoRepository
 import com.cjstudio.manicure.data.repository.AuthRepository
 import com.cjstudio.manicure.data.repository.ClienteRepository
+import com.cjstudio.manicure.data.repository.ContaRepository
+import com.cjstudio.manicure.data.repository.IContaRepository
 import com.cjstudio.manicure.data.repository.FalhasRepository
 import com.cjstudio.manicure.data.repository.IAdminRepository
 import com.cjstudio.manicure.data.repository.IArquivoRepository
@@ -75,4 +77,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindNotificacaoRepository(impl: NotificacaoRepository): INotificacaoRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindContaRepository(impl: ContaRepository): IContaRepository
 }

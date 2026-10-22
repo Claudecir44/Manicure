@@ -120,6 +120,12 @@
                     style="@style/BotaoPrimario"
                     android:layout_marginTop="20dp"
                     android:text="@string/salvar" />
+
+                <TextView
+                    android:id="@+id/btnExcluirCadastro"
+                    style="@style/BotaoExcluir"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/excluir_meu_cadastro" />
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

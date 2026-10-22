@@ -15,6 +15,8 @@ interface IAdminRepository {
 
     suspend fun listarTodos(): Result<List<Admin>>
 
+    suspend fun buscar(uid: String): Result<Admin>
+
     // Cria outro administrador pela Cloud Function "cadastrarAdmin" — exige a
     // senha do administrador master (fica só em functions/.env) e, quando já
     // existe algum admin, também a permissão "administradores" de quem chama.
@@ -35,4 +37,22 @@ interface IAdminRepository {
     // O próprio admin troca a foto dele (firestore.rules só libera fotoUrl
     // pro dono do documento).
     suspend fun atualizarMinhaFoto(uri: Uri): Result<String>
+
+    // Edita nome, CPF, telefone e tipo de acesso de outro admin (Cloud
+    // Function "atualizarAdmin": permissão "administradores" + senha do
+    // master). E-mail e senha de login não mudam aqui.
+    suspend fun atualizarAdmin(
+        uid: String,
+        nome: String,
+        sobrenome: String,
+        telefone: String,
+        cpf: String,
+        role: String,
+        permissoes: Map<String, Boolean>,
+        senhaAutorizacao: String
+    ): Result<Unit>
+
+    // Tira o acesso ao painel (Cloud Function "excluirAdmin", mesma trava).
+    // O master e o próprio admin logado não podem ser excluídos.
+    suspend fun excluirAdmin(uid: String, senhaAutorizacao: String): Result<Unit>
 }

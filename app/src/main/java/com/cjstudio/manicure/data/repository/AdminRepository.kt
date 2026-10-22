@@ -47,6 +47,11 @@ class AdminRepository @Inject constructor(
             .documents.mapNotNull { doc -> doc.toObject(Admin::class.java)?.also { it.id = doc.id } }
     }
 
+    override suspend fun buscar(uid: String): Result<Admin> = runCatching {
+        val doc = colecao().document(uid).get().await()
+        doc.toObject(Admin::class.java)?.also { it.id = doc.id } ?: throw IllegalStateException("Administrador não encontrado.")
+    }
+
     override suspend fun cadastrarAdmin(
         nome: String,
         sobrenome: String,
@@ -69,15 +74,45 @@ class AdminRepository @Inject constructor(
             "permissoes" to permissoes,
             "senhaAutorizacao" to senhaAutorizacao
         )
-        try {
-            val resposta = functions.get().getHttpsCallable("cadastrarAdmin").call(dados).await()
-            (resposta.getData() as? Map<*, *>)?.get("uid") as? String
-                ?: throw IllegalStateException("Resposta inesperada do servidor.")
-        } catch (e: FirebaseFunctionsException) {
-            // Repassa a mensagem do servidor ("Senha de autorização incorreta.")
-            // em vez do texto genérico da exceção.
-            throw IllegalStateException(e.message ?: "Não foi possível cadastrar o administrador.")
-        }
+        val resposta = chamar("cadastrarAdmin", dados, "Não foi possível cadastrar o administrador.")
+        (resposta as? Map<*, *>)?.get("uid") as? String ?: throw IllegalStateException("Resposta inesperada do servidor.")
+    }
+
+    override suspend fun atualizarAdmin(
+        uid: String,
+        nome: String,
+        sobrenome: String,
+        telefone: String,
+        cpf: String,
+        role: String,
+        permissoes: Map<String, Boolean>,
+        senhaAutorizacao: String
+    ): Result<Unit> = runCatching {
+        val dados = mapOf(
+            "uid" to uid,
+            "nome" to nome,
+            "sobrenome" to sobrenome,
+            "telefone" to telefone,
+            "cpf" to cpf,
+            "role" to role,
+            "permissoes" to permissoes,
+            "senhaAutorizacao" to senhaAutorizacao
+        )
+        chamar("atualizarAdmin", dados, "Não foi possível salvar o administrador.")
+        Unit
+    }
+
+    override suspend fun excluirAdmin(uid: String, senhaAutorizacao: String): Result<Unit> = runCatching {
+        chamar("excluirAdmin", mapOf("uid" to uid, "senhaAutorizacao" to senhaAutorizacao), "Não foi possível excluir o administrador.")
+        Unit
+    }
+
+    // Repassa a mensagem do servidor ("Senha do administrador master
+    // incorreta.") em vez do texto genérico da exceção.
+    private suspend fun chamar(funcao: String, dados: Map<String, Any?>, erroPadrao: String): Any? = try {
+        functions.get().getHttpsCallable(funcao).call(dados).await().getData()
+    } catch (e: FirebaseFunctionsException) {
+        throw IllegalStateException(e.message ?: erroPadrao)
     }
 
     override suspend fun atualizarMinhaFoto(uri: Uri): Result<String> = runCatching {

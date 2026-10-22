@@ -8,9 +8,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.cjstudio.manicure.R
+import com.cjstudio.manicure.data.repository.TipoCadastro
 import com.cjstudio.manicure.databinding.ActivityPerfilClienteBinding
+import com.cjstudio.manicure.ui.common.ExcluirCadastroViewModel
+import com.cjstudio.manicure.ui.common.Navegacao
 import com.cjstudio.manicure.ui.common.coletar
 import com.cjstudio.manicure.ui.common.mostrarMensagem
+import com.cjstudio.manicure.ui.common.pedirSenha
 import com.cjstudio.manicure.ui.common.texto
 import com.cjstudio.manicure.util.FotoUtil
 import com.cjstudio.manicure.util.ajustarPaddingParaTeclado
@@ -18,12 +22,14 @@ import com.cjstudio.manicure.util.carregarFotoRedonda
 import com.cjstudio.manicure.util.mascaraTelefone
 import dagger.hilt.android.AndroidEntryPoint
 
-// "Meu perfil" da cliente (link na tela inicial): trocar foto, nome e telefone.
+// "Meu perfil" da cliente (link na tela inicial): trocar foto, nome e
+// telefone, ou excluir o cadastro.
 @AndroidEntryPoint
 class PerfilClienteActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPerfilClienteBinding
     private val viewModel: PerfilClienteViewModel by viewModels()
+    private val excluir: ExcluirCadastroViewModel by viewModels()
     private var preenchido = false
 
     private val seletorFoto = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -52,6 +58,28 @@ class PerfilClienteActivity : AppCompatActivity() {
         }
         binding.btnSalvar.setOnClickListener {
             viewModel.salvar(binding.etNome.text.toString(), binding.etTelefone.text.toString())
+        }
+
+        binding.btnExcluirCadastro.setOnClickListener {
+            pedirSenha(
+                titulo = getString(R.string.excluir_meu_cadastro),
+                mensagem = getString(R.string.excluir_cliente_msg),
+                dica = R.string.excluir_sua_senha,
+                botao = R.string.excluir
+            ) { senha -> excluir.excluir(TipoCadastro.CLIENTE, senha) }
+        }
+        coletar(excluir.excluindo) { ocupado ->
+            binding.progressBar.visibility = if (ocupado) View.VISIBLE else View.GONE
+            binding.btnExcluirCadastro.isEnabled = !ocupado
+        }
+        coletar(excluir.eventos) { evento ->
+            when (evento) {
+                ExcluirCadastroViewModel.Evento.Excluido -> {
+                    mostrarMensagem(texto(R.string.excluir_feito))
+                    Navegacao.irLimpando(this, Navegacao.telaLogin())
+                }
+                is ExcluirCadastroViewModel.Evento.Mensagem -> mostrarMensagem(evento.texto)
+            }
         }
 
         coletar(viewModel.cliente) { c ->

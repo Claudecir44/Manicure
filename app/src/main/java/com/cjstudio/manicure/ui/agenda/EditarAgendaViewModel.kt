@@ -57,6 +57,7 @@ class EditarAgendaViewModel @Inject constructor(
 
     sealed interface Evento {
         data object Salvo : Evento
+        data object Excluida : Evento
         data class Mensagem(val texto: UiTexto) : Evento
     }
 
@@ -154,6 +155,18 @@ class EditarAgendaViewModel @Inject constructor(
             _eventos.trySend(Evento.Mensagem(texto(erro)))
             return
         }
+        // Horário já marcado por uma cliente não pode sumir da agenda (dia
+        // desmarcado, horário apagado ou bloqueado): cancelar antes.
+        val presos = _inicio.value?.agenda?.ocupados.orEmpty().filter { chave ->
+            chave.substringBefore("-") !in m.dias || chave.horaDaChave() !in m.horarios || chave in m.bloqueados
+        }
+        if (presos.isNotEmpty()) {
+            _eventos.trySend(Evento.Mensagem(texto(
+                R.string.agenda_erro_horario_marcado,
+                presos.sorted().joinToString(", ") { AgendaUtil.descrever(it) }
+            )))
+            return
+        }
         val agenda = (_inicio.value?.agenda ?: Agenda()).copy(
             categoria = categoria,
             mes = m.mes,
@@ -187,6 +200,20 @@ class EditarAgendaViewModel @Inject constructor(
             r.onSuccess {
                 _eventos.send(Evento.Mensagem(texto(R.string.agenda_salva)))
                 _eventos.send(Evento.Salvo)
+            }.onFailure { _eventos.send(Evento.Mensagem(it.paraUiTexto())) }
+        }
+    }
+
+    fun excluir() {
+        val agenda = _inicio.value?.agenda ?: return
+        if (_salvando.value) return
+        _salvando.value = true
+        viewModelScope.launch {
+            val r = agendas.excluirAgenda(agenda)
+            _salvando.value = false
+            r.onSuccess {
+                _eventos.send(Evento.Mensagem(texto(R.string.agenda_excluida)))
+                _eventos.send(Evento.Excluida)
             }.onFailure { _eventos.send(Evento.Mensagem(it.paraUiTexto())) }
         }
     }

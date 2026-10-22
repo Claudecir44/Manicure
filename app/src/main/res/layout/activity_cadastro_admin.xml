@@ -77,6 +77,7 @@
                 android:inputType="textPassword" />
 
             <TextView
+                android:id="@+id/tvPapel"
                 style="@style/TituloSecao"
                 android:text="@string/admin_papel" />
 
@@ -116,6 +117,7 @@
                 android:text="@string/admin_senha_master" />
 
             <TextView
+                android:id="@+id/tvSenhaMasterDica"
                 style="@style/TextoCorpo"
                 android:layout_marginBottom="10dp"
                 android:text="@string/admin_senha_master_dica" />

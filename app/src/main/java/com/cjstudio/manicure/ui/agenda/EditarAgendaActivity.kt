@@ -40,6 +40,8 @@ class EditarAgendaActivity : AppCompatActivity() {
             viewModel.gerarHorarios(binding.etInicio.text.toString(), binding.etFim.text.toString(), binding.etIntervalo.text.toString())
         }
         binding.btnAjustarDia.setOnClickListener { escolherDiaParaAjustar() }
+        binding.btnExcluir.visibility = if (viewModel.editando) View.VISIBLE else View.GONE
+        binding.btnExcluir.setOnClickListener { confirmarExclusao() }
         binding.btnSalvar.setOnClickListener {
             viewModel.salvar(
                 categoria = categorias.getOrNull(binding.spCategoria.selectedItemPosition)?.first,
@@ -52,13 +54,27 @@ class EditarAgendaActivity : AppCompatActivity() {
         coletar(viewModel.salvando) {
             binding.progressBar.visibility = if (it) View.VISIBLE else View.GONE
             binding.btnSalvar.isEnabled = !it
+            binding.btnExcluir.isEnabled = !it
         }
         coletar(viewModel.eventos) { evento ->
             when (evento) {
-                EditarAgendaViewModel.Evento.Salvo -> finish()
+                EditarAgendaViewModel.Evento.Salvo, EditarAgendaViewModel.Evento.Excluida -> finish()
                 is EditarAgendaViewModel.Evento.Mensagem -> mostrarMensagem(evento.texto)
             }
         }
+    }
+
+    private fun confirmarExclusao() {
+        val marcados = viewModel.inicio.value?.agenda?.ocupados?.size ?: 0
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.agenda_excluir)
+            .setMessage(
+                if (marcados == 0) getString(R.string.agenda_excluir_msg)
+                else resources.getQuantityString(R.plurals.agenda_excluir_com_marcados, marcados, marcados)
+            )
+            .setPositiveButton(R.string.excluir) { _, _ -> viewModel.excluir() }
+            .setNegativeButton(R.string.cancelar, null)
+            .show()
     }
 
     private fun preencher(inicio: EditarAgendaViewModel.Inicio) {

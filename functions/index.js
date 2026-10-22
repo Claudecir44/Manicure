@@ -6,6 +6,9 @@ require('dotenv').config();
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const { setGlobalOptions } = require('firebase-functions/v2');
 const admin = require('firebase-admin');
+// FieldValue pelo módulo próprio: admin.firestore.FieldValue vem
+// indefinido nesta versão do firebase-admin (achado no emulador).
+const { FieldValue } = require('firebase-admin/firestore');
 
 admin.initializeApp();
 
@@ -74,7 +77,8 @@ async function senhaDaContaConfere(email, senha) {
     if (!WEB_API_KEY) return false;
     try {
         const resposta = await fetch(
-            `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${WEB_API_KEY}`,
+            // No emulador o login de teste fica no emulador do Auth.
+            `${process.env.FIREBASE_AUTH_EMULATOR_HOST ? `http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/` : 'https://'}identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${WEB_API_KEY}`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -93,7 +97,7 @@ async function registrarLog(acao, uidAutor, detalhes) {
             acao,
             uidAutor: uidAutor || null,
             detalhes: detalhes || null,
-            criadoEm: admin.firestore.FieldValue.serverTimestamp(),
+            criadoEm: FieldValue.serverTimestamp(),
         });
     } catch (e) {
         console.warn('Falha ao registrar log de administração:', e.message);
@@ -181,10 +185,250 @@ exports.cadastrarAdmin = onCall(async (request) => {
         cpf,
         role,
         permissoes,
-        criadoEm: admin.firestore.FieldValue.serverTimestamp(),
+        criadoEm: FieldValue.serverTimestamp(),
     });
     await registrarLog('cadastrarAdmin', uidChamador, { uid, email, role });
     return { uid };
+});
+
+
+// ============================================================
+// Editar e excluir administradores (mesmo jeito do Caronas): permissão
+// "administradores" de quem chama + senha do admin master. O e-mail e a
+// senha de login não mudam por aqui.
+// ============================================================
+async function exigirAdminComSenhaMaster(request, senhaAutorizacao) {
+    if (!ADMIN_MASTER_PASSWORD) {
+        throw new HttpsError('failed-precondition', 'Administração não configurada no servidor.');
+    }
+    const uidChamador = request.auth && request.auth.uid;
+    if (!uidChamador) throw new HttpsError('unauthenticated', 'Entre como administrador.');
+    await exigirPermissao(uidChamador, 'administradores');
+    if (senhaAutorizacao !== ADMIN_MASTER_PASSWORD) {
+        throw new HttpsError('permission-denied', 'Senha do administrador master incorreta.');
+    }
+    return uidChamador;
+}
+
+exports.atualizarAdmin = onCall(async (request) => {
+    const dados = request.data || {};
+    const uidChamador = await exigirAdminComSenhaMaster(request, dados.senhaAutorizacao);
+    const uid = String(dados.uid || '').trim();
+    const nome = String(dados.nome || '').trim();
+    const sobrenome = String(dados.sobrenome || '').trim();
+    const telefone = String(dados.telefone || '').trim();
+    const cpf = String(dados.cpf || '').replace(/\D/g, '');
+    const role = dados.role === 'colaborador' ? 'colaborador' : 'admin';
+
+    if (!uid || !nome || !sobrenome || !telefone || !cpf) {
+        throw new HttpsError('invalid-argument', 'Preencha todos os campos.');
+    }
+    if (!cpfValido(cpf)) throw new HttpsError('invalid-argument', 'CPF inválido.');
+
+    const db = admin.firestore();
+    const ref = db.collection('admins').doc(uid);
+    const doc = await ref.get();
+    if (!doc.exists) throw new HttpsError('not-found', 'Administrador não encontrado.');
+    const alvo = doc.data();
+
+    // O CPF identifica o master: ninguém tira nem passa esse CPF por edição.
+    if (ehMaster(alvo) && cpf !== CPF_ADMIN_MASTER) {
+        throw new HttpsError('failed-precondition', 'O CPF do administrador master não pode ser alterado.');
+    }
+    const mesmoCpf = await db.collection('admins').where('cpf', '==', cpf).get();
+    if (mesmoCpf.docs.some((d) => d.id !== uid)) {
+        throw new HttpsError('already-exists', 'Já existe um administrador com este CPF.');
+    }
+
+    // Master tem sempre acesso total; o papel dele não muda.
+    const novoRole = ehMaster(alvo) ? 'admin' : role;
+    const permissoes = novoRole === 'colaborador'
+        ? sanitizarPermissoes(dados.permissoes)
+        : sanitizarPermissoes(Object.fromEntries(CHAVES_PERMISSOES.map((c) => [c, true])));
+    if (novoRole === 'colaborador' && !Object.values(permissoes).some(Boolean)) {
+        throw new HttpsError('invalid-argument', 'Marque pelo menos uma permissão para o colaborador.');
+    }
+
+    await ref.update({ nome, sobrenome, telefone, cpf, role: novoRole, permissoes });
+    await admin.auth().updateUser(uid, { displayName: `${nome} ${sobrenome}` }).catch(() => {});
+    await registrarLog('atualizarAdmin', uidChamador, { uid, nome: `${nome} ${sobrenome}`, role: novoRole });
+    return { ok: true };
+});
+
+// Tira o acesso ao painel (apaga admins/{uid}). A conta de login continua
+// se a pessoa também for profissional ou cliente; se não for mais nada, a
+// conta é apagada junto. O master e o próprio admin logado não se excluem.
+exports.excluirAdmin = onCall(async (request) => {
+    const dados = request.data || {};
+    const uidChamador = await exigirAdminComSenhaMaster(request, dados.senhaAutorizacao);
+    const uid = String(dados.uid || '').trim();
+    if (!uid) throw new HttpsError('invalid-argument', 'Administrador não informado.');
+    if (uid === uidChamador) {
+        throw new HttpsError('failed-precondition', 'Você não pode excluir o seu próprio acesso de administrador.');
+    }
+
+    const db = admin.firestore();
+    const ref = db.collection('admins').doc(uid);
+    const doc = await ref.get();
+    if (!doc.exists) throw new HttpsError('not-found', 'Administrador não encontrado.');
+    const alvo = doc.data();
+    if (ehMaster(alvo)) {
+        throw new HttpsError('failed-precondition', 'O administrador master não pode ser excluído.');
+    }
+
+    await ref.delete();
+    if (alvo.fotoUrl) await apagarArquivoPorUrl(alvo.fotoUrl);
+    const contaApagada = await apagarContaSemPerfis(db, uid);
+    await registrarLog('excluirAdmin', uidChamador, {
+        uid,
+        nome: [alvo.nome, alvo.sobrenome].filter(Boolean).join(' '),
+        contaApagada,
+    });
+    return { ok: true, contaApagada };
+});
+
+// ============================================================
+// Exclusão de cadastro (profissional ou cliente). Uma conta pode ter os
+// dois cadastros (e ainda ser admin): apaga só o cadastro pedido e tudo
+// que é dele; a conta de login só é apagada quando não sobra nenhum.
+//   - a própria pessoa: sem uid (o app confirma a senha dela antes);
+//   - admin: uid + permissão da seção + senha master OU a senha do próprio
+//     admin.
+// ============================================================
+
+// "https://firebasestorage.googleapis.com/v0/b/<bucket>/o/<caminho>?alt=..."
+// -> apaga <caminho>. Melhor esforço: arquivo que já sumiu não é erro.
+async function apagarArquivo(caminho) {
+    try {
+        await admin.storage().bucket().file(caminho).delete({ ignoreNotFound: true });
+    } catch (e) {
+        console.warn('Falha ao apagar arquivo:', e.message);
+    }
+}
+
+async function apagarArquivoPorUrl(url) {
+    const m = /\/o\/([^?]+)/.exec(String(url || ''));
+    if (m) await apagarArquivo(decodeURIComponent(m[1]));
+}
+
+async function apagarEmLotes(db, refs) {
+    for (let i = 0; i < refs.length; i += 400) {
+        const lote = db.batch();
+        refs.slice(i, i + 400).forEach((r) => lote.delete(r));
+        await lote.commit();
+    }
+}
+
+// Conversas do chat em que a pessoa está do lado "campo" (profissionalId ou
+// clienteId), com as mensagens.
+async function apagarConversas(db, campo, uid) {
+    const conversas = await db.collection('conversas').where(campo, '==', uid).get();
+    for (const conversa of conversas.docs) {
+        const mensagens = await conversa.ref.collection('mensagens').get();
+        await apagarEmLotes(db, mensagens.docs.map((d) => d.ref));
+        await conversa.ref.delete();
+    }
+}
+
+async function excluirCadastroProfissional(db, uid) {
+    const ref = db.collection('profissionais').doc(uid);
+    const perfil = await ref.get();
+    // Horários marcados: some também a cópia em "Meus horários" da cliente.
+    const agendamentos = await ref.collection('agendamentos').get();
+    const refs = [];
+    for (const a of agendamentos.docs) {
+        refs.push(a.ref);
+        const clienteId = a.data().clienteId;
+        if (clienteId) refs.push(db.collection('clientes').doc(clienteId).collection('agendamentos').doc(a.id));
+    }
+    const agendas = await ref.collection('agendas').get();
+    refs.push(...agendas.docs.map((d) => d.ref));
+    await apagarEmLotes(db, refs);
+    await apagarConversas(db, 'profissionalId', uid);
+    if (!perfil.exists) return '-';
+    const p = perfil.data();
+    if (p.fotoPerfilUrl) await apagarArquivoPorUrl(p.fotoPerfilUrl);
+    for (const foto of p.fotos || []) {
+        if (foto && foto.caminho) await apagarArquivo(foto.caminho);
+        else if (foto && foto.url) await apagarArquivoPorUrl(foto.url);
+    }
+    await ref.delete();
+    return p.nomeExibicao || p.nomeResponsavel || p.email || '-';
+}
+
+async function excluirCadastroCliente(db, uid) {
+    const ref = db.collection('clientes').doc(uid);
+    const perfil = await ref.get();
+    // Cada horário marcado volta a ficar livre na agenda da profissional.
+    const copias = await ref.collection('agendamentos').get();
+    for (const copia of copias.docs) {
+        const a = copia.data();
+        if (!a.profissionalId) continue;
+        const profissional = db.collection('profissionais').doc(a.profissionalId);
+        await profissional.collection('agendamentos').doc(copia.id).delete();
+        if (a.agendaId && a.horario) {
+            await profissional.collection('agendas').doc(a.agendaId)
+                .update({ ocupados: FieldValue.arrayRemove(a.horario) })
+                .catch(() => {}); // agenda já excluída
+        }
+    }
+    await apagarEmLotes(db, copias.docs.map((d) => d.ref));
+    await apagarConversas(db, 'clienteId', uid);
+    if (!perfil.exists) return '-';
+    const c = perfil.data();
+    if (c.fotoUrl) await apagarArquivoPorUrl(c.fotoUrl);
+    await ref.delete();
+    return c.nome || c.email || '-';
+}
+
+// Sem cadastro nenhum (profissional, cliente, admin) a conta de login some,
+// e o e-mail fica livre pra um cadastro novo.
+async function apagarContaSemPerfis(db, uid) {
+    const [p, c, a] = await Promise.all([
+        db.collection('profissionais').doc(uid).get(),
+        db.collection('clientes').doc(uid).get(),
+        db.collection('admins').doc(uid).get(),
+    ]);
+    if (p.exists || c.exists || a.exists) return false;
+    await db.collection('dispositivos').doc(uid).delete().catch(() => {});
+    try {
+        await admin.auth().deleteUser(uid);
+    } catch (e) {
+        if (e.code !== 'auth/user-not-found') throw e;
+    }
+    return true;
+}
+
+exports.excluirCadastro = onCall(async (request) => {
+    const dados = request.data || {};
+    const tipo = ['profissional', 'cliente'].includes(dados.tipo) ? dados.tipo : null;
+    if (!tipo) throw new HttpsError('invalid-argument', 'Tipo de cadastro inválido.');
+    const uidChamador = request.auth && request.auth.uid;
+    if (!uidChamador) throw new HttpsError('unauthenticated', 'Entre na sua conta.');
+
+    const uid = String(dados.uid || '').trim() || uidChamador;
+    let autorizadoPor = 'proprio';
+    if (uid !== uidChamador) {
+        const dadosAdmin = await exigirPermissao(uidChamador, tipo === 'profissional' ? 'profissionais' : 'clientes');
+        const senha = String(dados.senhaAutorizacao || '');
+        if (ADMIN_MASTER_PASSWORD && senha === ADMIN_MASTER_PASSWORD) {
+            autorizadoPor = 'senhaMaster';
+        } else if (senha && await senhaDaContaConfere(dadosAdmin.email, senha)) {
+            autorizadoPor = 'senhaPropria';
+        } else {
+            throw new HttpsError('permission-denied', 'Senha incorreta.');
+        }
+    }
+
+    const db = admin.firestore();
+    const nome = tipo === 'profissional'
+        ? await excluirCadastroProfissional(db, uid)
+        : await excluirCadastroCliente(db, uid);
+    const contaApagada = await apagarContaSemPerfis(db, uid);
+    if (autorizadoPor !== 'proprio') {
+        await registrarLog('excluirCadastro', uidChamador, { uid, tipo, nome, autorizadoPor, contaApagada });
+    }
+    return { ok: true, contaApagada };
 });
 
 
@@ -207,7 +451,7 @@ async function enviarPush(uid, dados) {
     } catch (error) {
         console.warn('Erro ao enviar push:', error.message);
         if (error.code === 'messaging/registration-token-not-registered') {
-            await db.collection('dispositivos').doc(uid).update({ fcmToken: admin.firestore.FieldValue.delete() });
+            await db.collection('dispositivos').doc(uid).update({ fcmToken: FieldValue.delete() });
         }
     }
 }

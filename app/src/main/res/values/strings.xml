@@ -207,7 +207,7 @@
     <string name="admin_profissionais">Profissionais</string>
     <string name="admin_clientes">Clientes</string>
     <string name="admin_administradores">Administradores</string>
-    <string name="admin_dica">Escolha uma seção acima.\n\nToque numa profissional para ver o perfil dela ou bloquear. Perfis bloqueados somem das buscas das clientes.</string>
+    <string name="admin_dica">Escolha uma seção acima.\n\nToque numa profissional ou cliente para ver o perfil, bloquear ou excluir o cadastro. Toque num administrador para editar ou excluir.</string>
     <string name="admin_nenhum">Nada por aqui.</string>
     <string name="admin_novo_admin">+ Novo administrador</string>
     <string name="admin_ver_perfil">Ver perfil</string>
@@ -252,7 +252,7 @@
     <string name="agenda_horarios_dia">%1$d horários por dia</string>
     <string name="agenda_editar">Editar agenda</string>
     <string name="agenda_excluir">Excluir agenda</string>
-    <string name="agenda_excluir_msg">Excluir esta agenda? As clientes não vão mais ver estes horários. Os horários já marcados continuam na sua lista.</string>
+    <string name="agenda_excluir_msg">Excluir esta agenda? As clientes não vão mais ver estes horários.</string>
     <string name="agenda_excluida">Agenda excluída.</string>
     <string name="agenda_cancelar_horario">Cancelar horário</string>
     <string name="agenda_cancelar_msg">Cancelar este horário? Ele volta a ficar livre para outras clientes. Avise a cliente pelo WhatsApp.</string>
@@ -426,4 +426,38 @@
     <string name="cliente_foto_salva">Foto atualizada.</string>
     <string name="cliente_perfil_dica">Seu nome e telefone aparecem para a profissional quando você marca um horário ou conversa no chat.</string>
     <string name="cliente_foto_obrigatoria">Para continuar usando o app, coloque uma foto sua. Toque na foto acima.</string>
+    <!-- Editar / excluir administradores e cadastros -->
+    <string name="excluir">Excluir</string>
+    <string name="admin_editar">Editar</string>
+    <string name="admin_editar_titulo">Editar administrador</string>
+    <string name="admin_salvar">Salvar alterações</string>
+    <string name="admin_salvo">Administrador atualizado.</string>
+    <string name="admin_senha_master_dica_editar">Só o administrador master tem esta senha. Ela autoriza a alteração. O e-mail e a senha de login não mudam por aqui.</string>
+    <string name="admin_excluir_admin">Excluir administrador</string>
+    <string name="admin_excluir_admin_msg">Excluir o acesso de %1$s ao painel? Se a conta também for de profissional ou cliente, esses cadastros continuam. Digite a senha do administrador master.</string>
+    <string name="admin_admin_excluido">%1$s não é mais administrador.</string>
+    <string name="admin_excluir_cadastro">Excluir cadastro</string>
+    <string name="admin_excluir_profissional_msg">Excluir o cadastro de %1$s? Somem o perfil, a galeria, as agendas, os horários marcados pelas clientes e as conversas. Não dá para desfazer.</string>
+    <string name="admin_excluir_cliente_msg">Excluir o cadastro de %1$s? Somem o perfil, os horários marcados (que voltam a ficar livres) e as conversas. Não dá para desfazer.</string>
+    <string name="admin_senha_master_ou_sua">Senha do master ou a sua senha</string>
+    <string name="admin_cadastro_excluido">Cadastro de %1$s excluído.</string>
+    <string name="excluir_meu_cadastro">Excluir meu cadastro</string>
+    <string name="excluir_profissional_msg">Excluir seu cadastro de profissional? Somem o seu perfil, a galeria, as agendas, os horários marcados pelas clientes e as conversas. Não dá para desfazer.\n\nSe você também usa o app como cliente, esse cadastro continua. Digite sua senha para confirmar.</string>
+    <string name="excluir_cliente_msg">Excluir seu cadastro de cliente? Somem o seu perfil, os horários marcados (que voltam a ficar livres) e as conversas. Não dá para desfazer.\n\nSe você também usa o app como profissional, esse cadastro continua. Digite sua senha para confirmar.</string>
+    <string name="excluir_sua_senha">Sua senha</string>
+    <string name="excluir_feito">Cadastro excluído.</string>
+
+    <!-- Agenda: editar / excluir / remarcar -->
+    <string name="agenda_minhas_dica">Toque numa agenda para editar ou excluir.</string>
+    <plurals name="agenda_excluir_com_marcados">
+        <item quantity="one">Excluir esta agenda? Ela tem %1$d horário marcado por cliente, que será desmarcado junto. Avise a cliente pelo chat.</item>
+        <item quantity="other">Excluir esta agenda? Ela tem %1$d horários marcados por clientes, que serão desmarcados junto. Avise as clientes pelo chat.</item>
+    </plurals>
+    <string name="agenda_erro_horario_marcado">Estes horários já foram marcados por clientes e não podem sair da agenda: %1$s. Cancele-os primeiro em Minha agenda (tocando no dia).</string>
+    <string name="agendar_remarcar">Remarcar</string>
+    <string name="agendar_remarcar_titulo">Remarcar · %1$s</string>
+    <string name="agendar_remarcar_atual">%1$s\nHorário atual: %2$s</string>
+    <string name="agendar_remarcado_titulo">Horário remarcado!</string>
+    <string name="agendar_remarcado_msg">Pronto, seu novo horário está reservado e o antigo ficou livre.</string>
+    <string name="agendar_remarcado_sem_desmarcar">O novo horário foi reservado, mas o antigo não pôde ser desmarcado. Desmarque o antigo em \"Meus horários\".</string>
 </resources>

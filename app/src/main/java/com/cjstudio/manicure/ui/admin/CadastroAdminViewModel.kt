@@ -1,5 +1,6 @@
 package com.cjstudio.manicure.ui.admin
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cjstudio.manicure.R
@@ -19,12 +20,17 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// Novo administrador/colaborador. A trava de verdade (senha do master,
-// permissão "administradores" de quem chama) é da Cloud Function.
+// Novo administrador/colaborador, ou edição de um existente (EXTRA_ID).
+// A trava de verdade (senha do master, permissão "administradores" de quem
+// chama) é da Cloud Function.
 @HiltViewModel
 class CadastroAdminViewModel @Inject constructor(
-    private val admins: IAdminRepository
+    private val admins: IAdminRepository,
+    estado: SavedStateHandle
 ) : ViewModel() {
+
+    private val id: String? = estado[CadastroAdminActivity.EXTRA_ID]
+    val editando: Boolean = id != null
 
     data class Formulario(
         val nome: String,
@@ -41,6 +47,9 @@ class CadastroAdminViewModel @Inject constructor(
 
     sealed interface Evento {
         data object Cadastrado : Evento
+        data object Salvo : Evento
+        // Edição: dados atuais pra preencher a tela.
+        data class Preencher(val admin: Admin) : Evento
         data class Mensagem(val texto: UiTexto) : Evento
     }
 
@@ -50,6 +59,18 @@ class CadastroAdminViewModel @Inject constructor(
     private val _eventos = Channel<Evento>(Channel.BUFFERED)
     val eventos: Flow<Evento> = _eventos.receiveAsFlow()
 
+    init {
+        if (id != null) {
+            _enviando.value = true
+            viewModelScope.launch {
+                admins.buscar(id)
+                    .onSuccess { _eventos.send(Evento.Preencher(it)) }
+                    .onFailure { _eventos.send(Evento.Mensagem(it.paraUiTexto())) }
+                _enviando.value = false
+            }
+        }
+    }
+
     fun cadastrar(form: Formulario) {
         if (_enviando.value) return
         validar(form)?.let {
@@ -58,30 +79,46 @@ class CadastroAdminViewModel @Inject constructor(
         }
         _enviando.value = true
         viewModelScope.launch {
-            val resultado = admins.cadastrarAdmin(
-                nome = form.nome.trim(),
-                sobrenome = form.sobrenome.trim(),
-                email = form.email.trim(),
-                telefone = form.telefone,
-                cpf = CpfUtil.somenteDigitos(form.cpf),
-                senha = form.senha,
-                role = if (form.colaborador) "colaborador" else "admin",
-                // Admin (não colaborador) tem tudo liberado.
-                permissoes = if (form.colaborador) form.permissoes else Admin.CHAVES_PERMISSOES.associate { it.first to true },
-                senhaAutorizacao = form.senhaAutorizacao
-            )
+            val role = if (form.colaborador) "colaborador" else "admin"
+            // Admin (não colaborador) tem tudo liberado.
+            val permissoes = if (form.colaborador) form.permissoes else Admin.CHAVES_PERMISSOES.associate { it.first to true }
+            val evento = if (id != null) {
+                admins.atualizarAdmin(
+                    uid = id,
+                    nome = form.nome.trim(),
+                    sobrenome = form.sobrenome.trim(),
+                    telefone = form.telefone,
+                    cpf = CpfUtil.somenteDigitos(form.cpf),
+                    role = role,
+                    permissoes = permissoes,
+                    senhaAutorizacao = form.senhaAutorizacao
+                ).fold({ Evento.Salvo }, { Evento.Mensagem(it.paraUiTexto()) })
+            } else {
+                admins.cadastrarAdmin(
+                    nome = form.nome.trim(),
+                    sobrenome = form.sobrenome.trim(),
+                    email = form.email.trim(),
+                    telefone = form.telefone,
+                    cpf = CpfUtil.somenteDigitos(form.cpf),
+                    senha = form.senha,
+                    role = role,
+                    permissoes = permissoes,
+                    senhaAutorizacao = form.senhaAutorizacao
+                ).fold({ Evento.Cadastrado }, { Evento.Mensagem(it.paraUiTexto()) })
+            }
             _enviando.value = false
-            _eventos.send(resultado.fold({ Evento.Cadastrado }, { Evento.Mensagem(it.paraUiTexto()) }))
+            _eventos.send(evento)
         }
     }
 
+    // Na edição e-mail e senha não aparecem (não mudam por aqui).
     private fun validar(form: Formulario): UiTexto? = when {
         form.nome.isBlank() || form.sobrenome.isBlank() -> texto(R.string.cadastro_erro_nome)
-        !Validacao.email(form.email.trim()) -> texto(R.string.cadastro_erro_email)
+        !editando && !Validacao.email(form.email.trim()) -> texto(R.string.cadastro_erro_email)
         !Validacao.telefone(form.telefone) -> texto(R.string.cadastro_erro_telefone)
         !CpfUtil.valido(form.cpf) -> texto(R.string.cadastro_erro_cpf)
-        !Validacao.senha(form.senha) -> texto(R.string.cadastro_erro_senha)
-        form.senha != form.confirmarSenha -> texto(R.string.cadastro_erro_senhas_diferentes)
+        !editando && !Validacao.senha(form.senha) -> texto(R.string.cadastro_erro_senha)
+        !editando && form.senha != form.confirmarSenha -> texto(R.string.cadastro_erro_senhas_diferentes)
         form.colaborador && form.permissoes.values.none { it } -> texto(R.string.admin_erro_permissoes)
         form.senhaAutorizacao.isBlank() -> texto(R.string.admin_erro_senha_master)
         else -> null

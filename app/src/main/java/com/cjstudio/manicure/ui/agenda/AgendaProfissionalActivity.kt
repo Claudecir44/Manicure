@@ -148,14 +148,22 @@ class AgendaProfissionalActivity : AppCompatActivity() {
                 if (i == 0) {
                     startActivity(Intent(this, EditarAgendaActivity::class.java).putExtra(EditarAgendaActivity.EXTRA_ID, a.id))
                 } else {
-                    MaterialAlertDialogBuilder(this)
-                        .setTitle(R.string.agenda_excluir)
-                        .setMessage(R.string.agenda_excluir_msg)
-                        .setPositiveButton(R.string.remover) { _, _ -> viewModel.excluir(a) }
-                        .setNegativeButton(R.string.cancelar, null)
-                        .show()
+                    confirmarExclusao(a)
                 }
             }
+            .show()
+    }
+
+    private fun confirmarExclusao(a: Agenda) {
+        val marcados = a.ocupados.size
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.agenda_excluir)
+            .setMessage(
+                if (marcados == 0) getString(R.string.agenda_excluir_msg)
+                else resources.getQuantityString(R.plurals.agenda_excluir_com_marcados, marcados, marcados)
+            )
+            .setPositiveButton(R.string.excluir) { _, _ -> viewModel.excluir(a) }
+            .setNegativeButton(R.string.cancelar, null)
             .show()
     }
 

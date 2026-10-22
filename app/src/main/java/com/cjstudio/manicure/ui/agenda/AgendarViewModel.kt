@@ -24,7 +24,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 // Cliente marcando horário numa categoria de uma profissional. Só aparecem
-// os horários livres — nunca quem marcou os outros.
+// os horários livres — nunca quem marcou os outros. Com EXTRA_REMARCAR_ID é
+// uma remarcação: reserva o novo e só depois desmarca o antigo (se o novo
+// falhar, ela não fica sem horário nenhum).
 @HiltViewModel
 class AgendarViewModel @Inject constructor(
     private val agendas: IAgendaRepository,
@@ -36,6 +38,16 @@ class AgendarViewModel @Inject constructor(
     val profissionalId: String = estado[AgendarActivity.EXTRA_PROFISSIONAL] ?: ""
     val profissionalNome: String = estado[AgendarActivity.EXTRA_NOME] ?: ""
     val categoria: String = estado[AgendarActivity.EXTRA_CATEGORIA] ?: ""
+
+    private val antigo: Agendamento? = estado.get<String>(AgendarActivity.EXTRA_REMARCAR_ID)?.let { id ->
+        Agendamento(
+            profissionalId = profissionalId,
+            agendaId = estado[AgendarActivity.EXTRA_REMARCAR_AGENDA],
+            horario = estado[AgendarActivity.EXTRA_REMARCAR_HORARIO]
+        ).also { it.id = id }
+    }
+    val remarcando: Boolean = antigo != null
+    val horarioAntigo: String? = antigo?.horario
 
     data class Estado(
         val agendas: List<Agenda> = emptyList(),
@@ -52,6 +64,8 @@ class AgendarViewModel @Inject constructor(
 
     sealed interface Evento {
         data object Marcado : Evento
+        // Remarcou, mas o horário antigo não saiu (ela desmarca à mão).
+        data object RemarcadoSemDesmarcar : Evento
         data class Mensagem(val texto: UiTexto) : Evento
     }
 
@@ -124,7 +138,8 @@ class AgendarViewModel @Inject constructor(
             )
             _estado.update { it.copy(salvando = false) }
             r.onSuccess {
-                _eventos.send(Evento.Marcado)
+                val desmarcou = antigo?.let { agendas.cancelarMeuHorario(it).isSuccess } ?: true
+                _eventos.send(if (desmarcou) Evento.Marcado else Evento.RemarcadoSemDesmarcar)
             }.onFailure {
                 _eventos.send(Evento.Mensagem(it.paraUiTexto()))
                 // Outra cliente pode ter pegado o horário: recarrega o que está livre.

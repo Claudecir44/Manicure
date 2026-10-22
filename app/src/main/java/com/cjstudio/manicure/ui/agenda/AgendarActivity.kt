@@ -30,9 +30,18 @@ class AgendarActivity : AppCompatActivity() {
         binding = ActivityAgendarBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.topo.tvTitulo.text = Categorias.nome(viewModel.categoria)
+        binding.topo.tvTitulo.text = if (viewModel.remarcando) {
+            getString(R.string.agendar_remarcar_titulo, Categorias.nome(viewModel.categoria))
+        } else {
+            Categorias.nome(viewModel.categoria)
+        }
+        if (viewModel.remarcando) {
+            binding.tvProfissional.text = getString(
+                R.string.agendar_remarcar_atual, viewModel.profissionalNome, AgendaUtil.descrever(viewModel.horarioAntigo)
+            )
+        }
         binding.topo.btnVoltar.setOnClickListener { finish() }
-        binding.tvProfissional.text = viewModel.profissionalNome
+        if (!viewModel.remarcando) binding.tvProfissional.text = viewModel.profissionalNome
         binding.btnConfirmar.setOnClickListener { confirmar() }
 
         aoEscolher(binding.cgAgendas) { viewModel.escolherAgenda(it) }
@@ -43,8 +52,14 @@ class AgendarActivity : AppCompatActivity() {
         coletar(viewModel.eventos) { evento ->
             when (evento) {
                 AgendarViewModel.Evento.Marcado -> MaterialAlertDialogBuilder(this)
-                    .setTitle(R.string.agendar_marcado_titulo)
-                    .setMessage(R.string.agendar_marcado_msg)
+                    .setTitle(if (viewModel.remarcando) R.string.agendar_remarcado_titulo else R.string.agendar_marcado_titulo)
+                    .setMessage(if (viewModel.remarcando) R.string.agendar_remarcado_msg else R.string.agendar_marcado_msg)
+                    .setPositiveButton(R.string.ok) { _, _ -> finish() }
+                    .setCancelable(false)
+                    .show()
+                AgendarViewModel.Evento.RemarcadoSemDesmarcar -> MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.agendar_remarcado_titulo)
+                    .setMessage(R.string.agendar_remarcado_sem_desmarcar)
                     .setPositiveButton(R.string.ok) { _, _ -> finish() }
                     .setCancelable(false)
                     .show()
@@ -108,5 +123,10 @@ class AgendarActivity : AppCompatActivity() {
         const val EXTRA_PROFISSIONAL = "profissionalId"
         const val EXTRA_NOME = "profissionalNome"
         const val EXTRA_CATEGORIA = "categoria"
+
+        // Remarcação: o horário que a cliente quer trocar.
+        const val EXTRA_REMARCAR_ID = "remarcarId"
+        const val EXTRA_REMARCAR_AGENDA = "remarcarAgenda"
+        const val EXTRA_REMARCAR_HORARIO = "remarcarHorario"
     }
 }

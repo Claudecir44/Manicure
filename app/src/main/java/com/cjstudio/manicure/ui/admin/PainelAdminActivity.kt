@@ -14,6 +14,7 @@ import com.cjstudio.manicure.ui.admin.PainelAdminViewModel.Secao
 import com.cjstudio.manicure.ui.common.Navegacao
 import com.cjstudio.manicure.ui.common.coletar
 import com.cjstudio.manicure.ui.common.mostrarMensagem
+import com.cjstudio.manicure.ui.common.pedirSenha
 import com.cjstudio.manicure.ui.perfil.PerfilProfissionalActivity
 import com.cjstudio.manicure.util.FotoUtil
 import com.cjstudio.manicure.util.carregarFotoRedonda
@@ -54,6 +55,7 @@ class PainelAdminActivity : AppCompatActivity() {
                 PainelAdminViewModel.Evento.Saiu -> Navegacao.irLimpando(this, Navegacao.telaLogin())
                 is PainelAdminViewModel.Evento.Mensagem -> mostrarMensagem(evento.texto)
                 is PainelAdminViewModel.Evento.Opcoes -> mostrarOpcoes(evento.alvo)
+                is PainelAdminViewModel.Evento.OpcoesAdmin -> mostrarOpcoesAdmin(evento.alvo)
             }
         }
     }
@@ -99,20 +101,57 @@ class PainelAdminActivity : AppCompatActivity() {
         adapter.submitList(estado.itens)
     }
 
-    // Profissional: ver o perfil público ou bloquear. Cliente: só bloquear.
+    // Profissional: ver o perfil público, bloquear ou excluir. Cliente:
+    // bloquear ou excluir.
     private fun mostrarOpcoes(alvo: PainelAdminViewModel.Alvo) {
-        val bloquear = getString(if (alvo.bloqueado) R.string.admin_desbloquear else R.string.admin_bloquear)
-        val opcoes = if (alvo.profissional) arrayOf(getString(R.string.admin_ver_perfil), bloquear) else arrayOf(bloquear)
+        val verPerfil: () -> Unit = {
+            startActivity(Intent(this, PerfilProfissionalActivity::class.java).putExtra(PerfilProfissionalActivity.EXTRA_ID, alvo.id))
+        }
+        val opcoes = listOfNotNull(
+            if (alvo.profissional) getString(R.string.admin_ver_perfil) to verPerfil else null,
+            getString(if (alvo.bloqueado) R.string.admin_desbloquear else R.string.admin_bloquear) to { confirmarBloqueio(alvo) },
+            getString(R.string.admin_excluir_cadastro) to { confirmarExclusao(alvo) }
+        )
         MaterialAlertDialogBuilder(this)
             .setTitle(alvo.nome)
-            .setItems(opcoes) { _, i ->
-                if (alvo.profissional && i == 0) {
-                    startActivity(Intent(this, PerfilProfissionalActivity::class.java).putExtra(PerfilProfissionalActivity.EXTRA_ID, alvo.id))
-                } else {
-                    confirmarBloqueio(alvo)
-                }
-            }
+            .setItems(opcoes.map { it.first }.toTypedArray()) { _, i -> opcoes[i].second() }
             .show()
+    }
+
+    private fun confirmarExclusao(alvo: PainelAdminViewModel.Alvo) {
+        pedirSenha(
+            titulo = getString(R.string.admin_excluir_cadastro),
+            mensagem = getString(
+                if (alvo.profissional) R.string.admin_excluir_profissional_msg else R.string.admin_excluir_cliente_msg,
+                alvo.nome
+            ),
+            dica = R.string.admin_senha_master_ou_sua,
+            botao = R.string.excluir
+        ) { senha -> viewModel.excluirCadastro(alvo, senha) }
+    }
+
+    // Admin: editar; excluir não aparece pro master nem pra si mesmo.
+    private fun mostrarOpcoesAdmin(alvo: PainelAdminViewModel.AlvoAdmin) {
+        val editar: () -> Unit = {
+            startActivity(Intent(this, CadastroAdminActivity::class.java).putExtra(CadastroAdminActivity.EXTRA_ID, alvo.id))
+        }
+        val opcoes = listOfNotNull(
+            getString(R.string.admin_editar) to editar,
+            if (alvo.master || alvo.souEu) null else getString(R.string.admin_excluir_admin) to { confirmarExclusaoAdmin(alvo) }
+        )
+        MaterialAlertDialogBuilder(this)
+            .setTitle(alvo.nome)
+            .setItems(opcoes.map { it.first }.toTypedArray()) { _, i -> opcoes[i].second() }
+            .show()
+    }
+
+    private fun confirmarExclusaoAdmin(alvo: PainelAdminViewModel.AlvoAdmin) {
+        pedirSenha(
+            titulo = getString(R.string.admin_excluir_admin),
+            mensagem = getString(R.string.admin_excluir_admin_msg, alvo.nome),
+            dica = R.string.admin_senha_master,
+            botao = R.string.excluir
+        ) { senha -> viewModel.excluirAdmin(alvo, senha) }
     }
 
     private fun confirmarBloqueio(alvo: PainelAdminViewModel.Alvo) {

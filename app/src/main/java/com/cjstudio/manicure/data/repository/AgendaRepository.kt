@@ -69,9 +69,19 @@ class AgendaRepository @Inject constructor(
         Unit
     }
 
+    // Os horários já marcados nesta agenda são desmarcados junto (some
+    // também a cópia em "Meus horários" da cliente) — senão ficavam
+    // marcações apontando pra uma agenda que não existe mais.
     override suspend fun excluirAgenda(agenda: Agenda): Result<Unit> = runCatching {
         val id = agenda.id ?: return@runCatching
-        etapa("excluir agenda") { agendas(uid()).document(id).delete().await() }
+        val marcados = etapa("ler horários da agenda") { agendamentos(uid()).whereEqualTo("agendaId", id).get().await() }
+        val lote = db.get().batch()
+        marcados.documents.forEach { d ->
+            lote.delete(d.reference)
+            d.getString("clienteId")?.let { lote.delete(copiasDaCliente(it).document(d.id)) }
+        }
+        lote.delete(agendas(uid()).document(id))
+        etapa("excluir agenda") { lote.commit().await() }
         Unit
     }
 
