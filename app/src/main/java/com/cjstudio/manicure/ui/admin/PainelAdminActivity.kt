@@ -130,14 +130,31 @@ class PainelAdminActivity : AppCompatActivity() {
         ) { senha -> viewModel.excluirCadastro(alvo, senha) }
     }
 
-    // Admin: editar; excluir não aparece pro master nem pra si mesmo.
+    // Admin: editar ou excluir. O master (e o próprio admin logado) nunca é
+    // excluído: a opção aparece, mas só explica por quê (o servidor também recusa).
     private fun mostrarOpcoesAdmin(alvo: PainelAdminViewModel.AlvoAdmin) {
         val editar: () -> Unit = {
             startActivity(Intent(this, CadastroAdminActivity::class.java).putExtra(CadastroAdminActivity.EXTRA_ID, alvo.id))
         }
-        val opcoes = listOfNotNull(
+        val excluir: () -> Unit = {
+            val motivo = when {
+                alvo.master -> R.string.admin_master_protegido
+                alvo.souEu -> R.string.admin_nao_exclui_a_si
+                else -> null
+            }
+            if (motivo != null) {
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.admin_excluir_admin)
+                    .setMessage(motivo)
+                    .setPositiveButton(R.string.ok, null)
+                    .show()
+            } else {
+                confirmarExclusaoAdmin(alvo)
+            }
+        }
+        val opcoes = listOf(
             getString(R.string.admin_editar) to editar,
-            if (alvo.master || alvo.souEu) null else getString(R.string.admin_excluir_admin) to { confirmarExclusaoAdmin(alvo) }
+            getString(if (alvo.master) R.string.admin_excluir_admin_bloqueado else R.string.admin_excluir_admin) to excluir
         )
         MaterialAlertDialogBuilder(this)
             .setTitle(alvo.nome)

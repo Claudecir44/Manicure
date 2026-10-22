@@ -434,6 +434,9 @@
     <string name="admin_salvo">Administrador atualizado.</string>
     <string name="admin_senha_master_dica_editar">Só o administrador master tem esta senha. Ela autoriza a alteração. O e-mail e a senha de login não mudam por aqui.</string>
     <string name="admin_excluir_admin">Excluir administrador</string>
+    <string name="admin_excluir_admin_bloqueado">🔒 Excluir administrador</string>
+    <string name="admin_master_protegido">Este é o administrador master do app e não pode ser excluído.</string>
+    <string name="admin_nao_exclui_a_si">Você não pode excluir o seu próprio acesso de administrador. Peça para outro administrador fazer isso.</string>
     <string name="admin_excluir_admin_msg">Excluir o acesso de %1$s ao painel? Se a conta também for de profissional ou cliente, esses cadastros continuam. Digite a senha do administrador master.</string>
     <string name="admin_admin_excluido">%1$s não é mais administrador.</string>
     <string name="admin_excluir_cadastro">Excluir cadastro</string>
