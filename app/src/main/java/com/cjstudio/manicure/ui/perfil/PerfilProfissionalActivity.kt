@@ -101,8 +101,6 @@ class PerfilProfissionalActivity : AppCompatActivity() {
             this, if (p.atendimento == TipoAtendimento.DOMICILIO) R.drawable.ic_local else R.drawable.ic_casa
         )?.mutate()?.apply { setBounds(0, 0, dp(15), dp(15)) }
         binding.tvAtendimento.setCompoundDrawablesRelative(icone, null, null, null)
-        binding.tvResumo.text = resumo(p)
-        binding.tvResumo.visibility = if (binding.tvResumo.text.isNullOrBlank()) View.GONE else View.VISIBLE
 
         mostrarTexto(binding.blocoApresentacao, binding.tvApresentacao, p.apresentacao)
         mostrarTexto(binding.blocoSobre, binding.tvSobreTrabalho, p.sobreTrabalho)
@@ -127,21 +125,6 @@ class PerfilProfissionalActivity : AppCompatActivity() {
         val enderecoMapa = listOf(p.endereco, p.bairro, p.cidade).filter { !it.isNullOrBlank() }.joinToString(", ")
         binding.btnMapa.visibility = if (p.endereco.isNullOrBlank()) View.GONE else View.VISIBLE
         binding.btnMapa.setOnClickListener { abrir("geo:0,0?q=" + Uri.encode(enderecoMapa)) }
-    }
-
-    // "2 serviços · a partir de R$ 50,00 · 2 fotos"
-    private fun resumo(p: Profissional): String {
-        val servicos = p.servicos.size
-        val menor = p.servicos.map { it.preco }.filter { it > 0 }.minOrNull()
-        return listOfNotNull(
-            when (servicos) {
-                0 -> null
-                1 -> getString(R.string.perfil_resumo_um_servico)
-                else -> getString(R.string.perfil_resumo_servicos, servicos)
-            },
-            menor?.let { getString(R.string.perfil_resumo_a_partir, Formato.valor(it)) },
-            p.fotos.size.takeIf { it > 0 }?.let { getString(R.string.perfil_resumo_fotos, it) }
-        ).joinToString("  ·  ")
     }
 
     // Informações: uma linha com ícone por dado preenchido. Endereço abre o
