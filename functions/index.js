@@ -1,6 +1,7 @@
 // Cloud Functions do Manicure (profissional, cliente e admin no mesmo projeto
-// Firebase: manicure-8a657): cadastro de administradores. O resto (perfil,
-// galeria, bloqueio) é gravação direta, protegida por firestore.rules.
+// Firebase: manicure-8a657): administradores (cadastrar, editar, excluir),
+// exclusão de cadastros e push. O resto (perfil, galeria, agenda, bloqueio)
+// é gravação direta, protegida por firestore.rules.
 require('dotenv').config();
 
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
