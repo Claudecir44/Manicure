@@ -45,14 +45,14 @@ class CalendarioAdapter(private val aoTocar: (String) -> Unit) : RecyclerView.Ad
         val ctx = tv.context
         val densidade = ctx.resources.displayMetrics.density
         val (fundo, texto) = when (dia.situacao) {
-            SituacaoDia.PASSADO -> R.color.cinza_dia to R.color.texto_secundario
+            SituacaoDia.PASSADO -> R.color.cinza_dia to R.color.dica
             SituacaoDia.MARCADO -> R.color.vermelho to R.color.branco
             SituacaoDia.ABERTO -> R.color.verde_neon to R.color.preto
-            SituacaoDia.FECHADO -> R.color.preto to R.color.dica
+            SituacaoDia.FECHADO -> R.color.dia_sem_agenda to R.color.texto_secundario
         }
-        // Dia tocado: anel branco grosso. Hoje: anel fino na cor de destaque.
+        // Dia tocado: anel escuro grosso. Hoje: anel fino na cor de destaque.
         val (anel, corAnel) = when {
-            data == selecionado -> 3 to R.color.branco
+            data == selecionado -> 3 to R.color.texto
             dia.hoje -> 2 to null
             dia.situacao == SituacaoDia.FECHADO -> 1 to R.color.borda
             else -> 0 to R.color.borda

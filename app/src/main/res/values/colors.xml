@@ -1,28 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Paleta tirada do logo: fundo preto e o rosa-pink das unhas. -->
-    <color name="fundo">#08070A</color>
-    <color name="superficie">#16131A</color>
-    <color name="superficie_alta">#211B26</color>
-    <color name="borda">#33293A</color>
-    <color name="rosa">#FF2D95</color>
-    <color name="rosa_claro">#FF6FB5</color>
-    <color name="rosa_escuro">#D9006C</color>
-    <color name="texto">#FFFFFF</color>
-    <color name="texto_secundario">#B3A9B8</color>
-    <color name="dica">#76697E</color>
+    <!-- Tema claro: fundo branco-rosado e o rosa-pink das unhas do logo. -->
+    <color name="fundo">#FFF7FB</color>
+    <color name="superficie">#FFFFFF</color>
+    <color name="superficie_alta">#F7EEF3</color>
+    <color name="borda">#E8DAE2</color>
+    <color name="rosa">#E6007E</color>
+    <color name="rosa_claro">#F0449E</color>
+    <color name="rosa_escuro">#B80065</color>
+    <color name="texto">#1E1A22</color>
+    <color name="texto_secundario">#6E6474</color>
+    <color name="dica">#A196A8</color>
     <color name="preto">#08070A</color>
     <color name="branco">#FFFFFF</color>
-    <color name="verde">#2ECC71</color>
-    <!-- Destaque das telas da profissional. -->
-    <color name="verde_neon">#39FF14</color>
-    <color name="verde_neon_claro">#9DFF85</color>
-    <color name="verde_neon_escuro">#16C400</color>
-    <!-- Brilho translúcido do verde neon (topo e ícones do painel). -->
-    <color name="destaque_brilho">#2E39FF14</color>
-    <color name="destaque_brilho_fraco">#1239FF14</color>
-    <color name="vermelho">#FF5A5A</color>
+    <color name="verde">#1E9E57</color>
+    <!-- Destaque das telas da profissional (verde forte, legível no fundo claro). -->
+    <color name="verde_neon">#11A000</color>
+    <color name="verde_neon_claro">#2FB51E</color>
+    <color name="verde_neon_escuro">#0B7A00</color>
+    <!-- Brilho translúcido do verde (topo e ícones do painel). -->
+    <color name="destaque_brilho">#2E11A000</color>
+    <color name="destaque_brilho_fraco">#1211A000</color>
+    <color name="vermelho">#E0393E</color>
     <!-- Dia que já passou no calendário da agenda. -->
-    <color name="cinza_dia">#4A4452</color>
+    <color name="cinza_dia">#EDE7EB</color>
+    <!-- Dia sem agenda no calendário. -->
+    <color name="dia_sem_agenda">#D6CCD9</color>
     <color name="ic_launcher_background">#000000</color>
 </resources>

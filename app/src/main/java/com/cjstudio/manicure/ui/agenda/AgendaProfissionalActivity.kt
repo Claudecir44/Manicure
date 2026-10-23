@@ -122,7 +122,7 @@ class AgendaProfissionalActivity : AppCompatActivity() {
         listOf(
             R.color.verde_neon to R.string.agenda_legenda_aberto,
             R.color.vermelho to R.string.agenda_legenda_marcado,
-            R.color.preto to R.string.agenda_legenda_fechado,
+            R.color.dia_sem_agenda to R.string.agenda_legenda_fechado,
             R.color.cinza_dia to R.string.agenda_legenda_passado
         ).forEach { (cor, nome) ->
             binding.legenda.addView(TextView(this).apply {

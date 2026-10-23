@@ -16,15 +16,15 @@ object Aparencia {
     data class Cor(val chave: String, @StringRes val nome: Int, @StyleRes val tema: Int, @ColorInt val amostra: Int)
 
     val CORES = listOf(
-        Cor("verde", R.string.aparencia_verde, R.style.Theme_Manicure_Profissional, 0xFF39FF14.toInt()),
-        Cor("rosa", R.string.aparencia_rosa, R.style.Theme_Manicure_Profissional_Rosa, 0xFFFF2D95.toInt()),
-        Cor("roxo", R.string.aparencia_roxo, R.style.Theme_Manicure_Profissional_Roxo, 0xFFB04DFF.toInt()),
-        Cor("azul", R.string.aparencia_azul, R.style.Theme_Manicure_Profissional_Azul, 0xFF2D9CFF.toInt()),
-        Cor("ciano", R.string.aparencia_ciano, R.style.Theme_Manicure_Profissional_Ciano, 0xFF00E5FF.toInt()),
-        Cor("dourado", R.string.aparencia_dourado, R.style.Theme_Manicure_Profissional_Dourado, 0xFFFFC83D.toInt()),
-        Cor("laranja", R.string.aparencia_laranja, R.style.Theme_Manicure_Profissional_Laranja, 0xFFFF7A1A.toInt()),
-        Cor("vermelho", R.string.aparencia_vermelho, R.style.Theme_Manicure_Profissional_Vermelho, 0xFFFF3B5C.toInt()),
-        Cor("prata", R.string.aparencia_prata, R.style.Theme_Manicure_Profissional_Prata, 0xFFE6E6E6.toInt())
+        Cor("verde", R.string.aparencia_verde, R.style.Theme_Manicure_Profissional, 0xFF11A000.toInt()),
+        Cor("rosa", R.string.aparencia_rosa, R.style.Theme_Manicure_Profissional_Rosa, 0xFFE6007E.toInt()),
+        Cor("roxo", R.string.aparencia_roxo, R.style.Theme_Manicure_Profissional_Roxo, 0xFF9333EA.toInt()),
+        Cor("azul", R.string.aparencia_azul, R.style.Theme_Manicure_Profissional_Azul, 0xFF1A7FE0.toInt()),
+        Cor("ciano", R.string.aparencia_ciano, R.style.Theme_Manicure_Profissional_Ciano, 0xFF0097B2.toInt()),
+        Cor("dourado", R.string.aparencia_dourado, R.style.Theme_Manicure_Profissional_Dourado, 0xFFC99200.toInt()),
+        Cor("laranja", R.string.aparencia_laranja, R.style.Theme_Manicure_Profissional_Laranja, 0xFFEA6A00.toInt()),
+        Cor("vermelho", R.string.aparencia_vermelho, R.style.Theme_Manicure_Profissional_Vermelho, 0xFFE11D48.toInt()),
+        Cor("prata", R.string.aparencia_prata, R.style.Theme_Manicure_Profissional_Prata, 0xFF8A9099.toInt())
     )
 
     private const val ARQUIVO = "aparencia"

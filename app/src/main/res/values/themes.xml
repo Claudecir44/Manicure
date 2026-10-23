@@ -1,12 +1,12 @@
-<resources>
-    <style name="Theme.Manicure" parent="Theme.MaterialComponents.NoActionBar">
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Manicure" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="corDestaque">@color/rosa</item>
         <item name="corDestaqueClaro">@color/rosa_claro</item>
         <item name="corDestaqueEscuro">@color/rosa_escuro</item>
         <item name="corTextoBotao">@color/branco</item>
-        <item name="corBalao">#5A1236</item>
-        <item name="corBrilho">#2EFF2D95</item>
-        <item name="corBrilhoFraco">#12FF2D95</item>
+        <item name="corBalao">#FFD3E8</item>
+        <item name="corBrilho">#2EE6007E</item>
+        <item name="corBrilhoFraco">#12E6007E</item>
         <item name="colorPrimary">@color/rosa</item>
         <item name="colorPrimaryVariant">@color/rosa_escuro</item>
         <item name="colorOnPrimary">@color/branco</item>
@@ -19,6 +19,9 @@
         <item name="android:windowBackground">@color/fundo</item>
         <item name="android:statusBarColor">@color/fundo</item>
         <item name="android:navigationBarColor">@color/fundo</item>
+        <!-- Ícones escuros nas barras do sistema, por causa do fundo claro. -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
         <item name="android:textColorPrimary">@color/texto</item>
         <item name="android:textColorSecondary">@color/texto_secundario</item>
         <item name="android:textColorHint">@color/dica</item>
@@ -31,7 +34,7 @@
         <item name="corDestaqueClaro">@color/verde_neon_claro</item>
         <item name="corDestaqueEscuro">@color/verde_neon_escuro</item>
         <item name="corTextoBotao">@color/preto</item>
-        <item name="corBalao">#14420F</item>
+        <item name="corBalao">#D4F5CC</item>
         <item name="corBrilho">@color/destaque_brilho</item>
         <item name="corBrilhoFraco">@color/destaque_brilho_fraco</item>
         <item name="colorPrimary">@color/verde_neon</item>

@@ -48,7 +48,7 @@ object DialogoCores {
                 background = GradientDrawable().apply {
                     shape = GradientDrawable.OVAL
                     setColor(cor.amostra)
-                    setStroke(((if (escolhida) 3 else 1) * d).toInt(), ContextCompat.getColor(activity, if (escolhida) R.color.branco else R.color.borda))
+                    setStroke(((if (escolhida) 3 else 1) * d).toInt(), ContextCompat.getColor(activity, if (escolhida) R.color.texto else R.color.borda))
                 }
             }
             val nome = TextView(activity).apply {
